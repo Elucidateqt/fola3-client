@@ -1,4 +1,4 @@
-# kano-surveyer-client
+# client
 
 ## Project setup
 ```
