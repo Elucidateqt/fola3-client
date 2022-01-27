@@ -1,0 +1,12 @@
+{
+    "base": {
+        "username": "Username"
+    },
+    "auth": {
+        "login": "Login",
+        "email": "Email",
+        "password": "Password",
+        "logout": "Logout",
+        "signup": "Create Account"
+    }
+}

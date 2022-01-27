@@ -1,0 +1,12 @@
+{
+    "base": {
+        "username": "Nutzername"
+    },
+    "auth": {
+        "login": "Anmelden",
+        "email": "Email",
+        "password": "Passwort",
+        "logout": "Abmelden",
+        "signup": "Konto erstellen"
+    }
+}

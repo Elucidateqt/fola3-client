@@ -15,7 +15,7 @@
         />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
-
+        <locale-changer/>
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
@@ -138,12 +138,14 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import Login from "@/components/Login.vue"
+import LocaleChanger from '@/components/LocaleChanger.vue'
 
 export default {
   name: "LayoutDefault",
 
   components: {
-    Login
+    Login,
+    LocaleChanger
   },
   data: () => ({
     leftDrawerOpen: false,

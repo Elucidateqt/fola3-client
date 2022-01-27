@@ -11,11 +11,11 @@
     >
       <q-tab
         name="login"
-        label="Login"
+        :label="$t('auth.login')"
       />
       <q-tab
         name="register"
-        label="Register"
+        :label="$t('auth.signup')"
       />
     </q-tabs>
 
@@ -33,13 +33,13 @@
           v-model="email"
           outlined
           type="email"
-          label="Email"
+          :label="$t('auth.email')"
         />
         <q-input
           v-model="password"
           filled
           :type="hidePassword ? 'password' : 'text'"
-          label="Password"
+          :label="$t('auth.password')"
         >
           <template #append>
             <q-icon
@@ -50,7 +50,7 @@
           </template>
         </q-input>
         <q-btn
-          label="Login"
+          :label="$t('auth.login')"
           type="submit"
           color="primary"
           @click="login"
@@ -65,18 +65,18 @@
           v-model="email"
           outlined
           type="email"
-          label="Email"
+          :label="$t('auth.email')"
         />
         <q-input
           v-model="username"
           outlined
-          label="Username"
+          :label="$t('base.username')"
         />
         <q-input
           v-model="password"
           filled
           :type="hidePassword ? 'password' : 'text'"
-          label="Password"
+          :label="$t('auth.password')"
         >
           <template #append>
             <q-icon
@@ -87,7 +87,7 @@
           </template>
         </q-input>
         <q-btn
-          label="Create Account"
+          :label="$t('auth.signup')"
           type="submit"
           color="primary"
           @click="register"
