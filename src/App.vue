@@ -15,7 +15,7 @@
         />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
-        <locale-changer/>
+        <locale-changer />
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
@@ -114,22 +114,13 @@
     </q-drawer>
 
     <q-page-container>
-      <q-page>
-        <div class="window-height window-width row justify-center items-center">
-          <div>
-            <login />
-            Server Status:<q-icon
-              name="circle"
-              :color="apiOnline ? 'green' : 'red'"
-              @click="hidePassword = !hidePassword"
-            />
-            <q-btn
-              color="primary"
-              label="Get all users"
-              @click="getAllUsers"
-            />
-          </div>
-        </div>
+      <q-page class="flex flex-center">
+        <router-view />
+        <q-btn
+          color="primary"
+          label="Get all users"
+          @click="getAllUsers"
+        />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -137,35 +128,24 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import Login from "@/components/Login.vue"
 import LocaleChanger from '@/components/LocaleChanger.vue'
 
 export default {
   name: "LayoutDefault",
 
   components: {
-    Login,
     LocaleChanger
   },
   data: () => ({
     leftDrawerOpen: false,
-    interval: null
   }),
   computed: {
-    ...mapState(['apiOnline']),
     ...mapState('users', ['users'])
   },
   created () {
-    this.checkApiHealth()
-    this.interval = setInterval(() => {
-      this.checkApiHealth()
-    }, 10000)
-  },
-  berforeUnmount: function(){
-    clearInterval(this.interval);
+    //TODO: check if user is logged in and redirect to login-view if not
   },
   methods: {
-    ...mapActions(['checkApiHealth']),
     ...mapActions('users', ['loadUsers']),
     async getAllUsers(){
       this.loadUsers()

@@ -101,7 +101,7 @@
 import {axiosAuth} from "../api/index.js";
 
 export default {
-  name: "Login",
+  name: "LoginForm",
 
   components: {
   },
