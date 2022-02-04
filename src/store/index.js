@@ -1,6 +1,10 @@
 import { createStore } from "vuex";
 import users from './modules/users'
-import axiosApi, {axiosAuth} from '../api/index.js'
+import auth from './modules/auth'
+import axiosApi, {axiosAuth} from '../api/axios.js'
+import createAxiosPlugin from '../api'
+
+const axiosPlugin = createAxiosPlugin()
 
 const checkApiHealth = async ({ commit }) => {
   try {
@@ -24,6 +28,8 @@ export default createStore({
   },
   actions: { checkApiHealth },
   modules: {
+    auth,
     users
   },
+  plugins: [axiosPlugin]
 });

@@ -1,4 +1,4 @@
-import axiosApi from '../../api'
+import axiosApi from '../../api/axios.js'
 
 const loadUsers = async ({ state, commit }) => {
   try {
@@ -6,12 +6,12 @@ const loadUsers = async ({ state, commit }) => {
       let offset = state.offset
       commit('INCREASE_OFFSET')
       let res = await axiosApi.get(`/users/`)
-      if (res.data.length == 0) {
+      state.users = res.data.userList
+      /*if (res.data.userList.length == 0) {
           commit('LOADING_FINISHED')
           return
       }
-      
-      commit('ADD_USERS', res.data)
+      commit('ADD_USERS', res.data.userList)*/
     }
   } catch(e) {
       console.error("could not load users",e)

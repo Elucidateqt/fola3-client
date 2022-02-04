@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import LocaleChanger from '@/components/LocaleChanger.vue'
 
 export default {
@@ -140,16 +140,24 @@ export default {
     leftDrawerOpen: false,
   }),
   computed: {
-    ...mapState('users', ['users'])
+    ...mapState('users', ['users']),
+    ...mapGetters('auth', ['isRefreshTokenValid', 'isAccessTokenValid'])
   },
-  created () {
+  async created () {
+    if(this.isRefreshTokenValid){
+      this.SET_REFRESH_TOKEN({token: localStorage.getItem('refresh_token')})
+      await this.request_new_tokens()
+
+    }
     //TODO: check if user is logged in and redirect to login-view if not
   },
   methods: {
     ...mapActions('users', ['loadUsers']),
+    ...mapActions('auth', ['request_new_tokens']),
+    ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
     async getAllUsers(){
-      this.loadUsers()
-      console.log('users:',this.users)
+      await this.loadUsers()
+      console.log('users:',...this.users)
     }
   },
 };

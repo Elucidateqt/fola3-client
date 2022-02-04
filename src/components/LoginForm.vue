@@ -55,6 +55,9 @@
           color="primary"
           @click="login"
         />
+        <span v-if="isRefreshTokenValid">
+          logged in
+        </span>
       </q-tab-panel>
 
       <q-tab-panel
@@ -98,7 +101,8 @@
 </template>
 
 <script>
-import {axiosAuth} from "../api/index.js";
+import { mapActions, mapGetters, mapState } from 'vuex'
+//import {axiosAuth} from "../api/index.js";
 
 export default {
   name: "LoginForm",
@@ -112,13 +116,15 @@ export default {
     password: null,
     hidePassword: true
   }),
+  computed: {
+    ...mapGetters('auth', ['isRefreshTokenValid'])
+  },
   methods: {
+    ...mapActions('auth', ['loginUser']),
     async login() {
       try {
-        const res = await axiosAuth.post("/auth/login", {
-          email: this.email,
-          password: this.password
-        })
+        await this.loginUser({email: this.email, password: this.password})
+        //TODO:redirect
         
       } catch (err) {
         console.error('Error logging in: ', err)
@@ -127,11 +133,7 @@ export default {
     },
     async register() {
       try {
-        const res = await axiosAuth.post("/auth/signup", {
-          email: this.email,
-          username: this.username,
-          password: this.password
-        })
+
       } catch (err) {
         console.error('Error creating account: ', err)
       }
