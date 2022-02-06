@@ -120,11 +120,11 @@ export default {
     ...mapGetters('auth', ['isRefreshTokenValid'])
   },
   methods: {
-    ...mapActions('auth', ['loginUser']),
+    ...mapActions('auth', ['loginUser', 'signupUser']),
     async login() {
       try {
         await this.loginUser({email: this.email, password: this.password})
-        //TODO:redirect
+        this.$router.push({name: 'Home'})
         
       } catch (err) {
         console.error('Error logging in: ', err)
@@ -133,7 +133,9 @@ export default {
     },
     async register() {
       try {
-
+        await this.signupUser({email: this.email, username: this.username, password: this.password})
+        await this.loginUser({email: this.email, username: this.username, password: this.password})
+        this.$router.push({name: 'Home'})
       } catch (err) {
         console.error('Error creating account: ', err)
       }

@@ -5,122 +5,33 @@
       class="glossy"
     >
       <q-toolbar>
+        <q-toolbar-title> Quasar App </q-toolbar-title>
         <q-btn
+          v-if="isLoggedIn"
           flat
           dense
           round
-          aria-label="Menu"
-          icon="menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
+          :aria-label="$t('auth.logout')"
+          icon="logout"
+          @click="logout"
         />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-btn
+          v-else
+          flat
+          dense
+          round
+          :aria-label="$t('auth.login')"
+          icon="login"
+          to="/login"
+        />
         <locale-changer />
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      class="bg-grey-2"
-    >
-      <q-list>
-        <q-item-label header>
-          Essential Links
-        </q-item-label>
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://quasar.dev"
-        >
-          <q-item-section avatar>
-            <q-icon name="school" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Docs</q-item-label>
-            <q-item-label caption>
-              quasar.dev
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://github.com/quasarframework/"
-        >
-          <q-item-section avatar>
-            <q-icon name="code" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Github</q-item-label>
-            <q-item-label caption>
-              github.com/quasarframework
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://chat.quasar.dev"
-        >
-          <q-item-section avatar>
-            <q-icon name="chat" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Discord Chat Channel</q-item-label>
-            <q-item-label caption>
-              chat.quasar.dev
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://forum.quasar.dev"
-        >
-          <q-item-section avatar>
-            <q-icon name="forum" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Forum</q-item-label>
-            <q-item-label caption>
-              forum.quasar.dev
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          tag="a"
-          target="_blank"
-          href="https://twitter.com/quasarframework"
-        >
-          <q-item-section avatar>
-            <q-icon name="rss_feed" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Twitter</q-item-label>
-            <q-item-label caption>
-              @quasarframework
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
-
     <q-page-container>
       <q-page class="flex flex-center">
         <router-view />
-        <q-btn
-          color="primary"
-          label="Get all users"
-          @click="getAllUsers"
-        />
       </q-page>
     </q-page-container>
   </q-layout>
@@ -137,27 +48,24 @@ export default {
     LocaleChanger
   },
   data: () => ({
-    leftDrawerOpen: false,
+    toastMessage: null
   }),
   computed: {
-    ...mapState('users', ['users']),
-    ...mapGetters('auth', ['isRefreshTokenValid', 'isAccessTokenValid'])
+    ...mapState('auth', ['isLoggedIn']),
+    ...mapGetters('auth', ['isAccessTokenValid', 'isRefreshTokenValid'])
   },
   async created () {
     if(this.isRefreshTokenValid){
       this.SET_REFRESH_TOKEN({token: localStorage.getItem('refresh_token')})
       await this.request_new_tokens()
-
     }
-    //TODO: check if user is logged in and redirect to login-view if not
   },
   methods: {
-    ...mapActions('users', ['loadUsers']),
-    ...mapActions('auth', ['request_new_tokens']),
+    ...mapActions('auth', ['request_new_tokens', 'logoutUser']),
     ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
-    async getAllUsers(){
-      await this.loadUsers()
-      console.log('users:',...this.users)
+    async logout(){
+      await this.logoutUser()
+      this.$router.push({name: 'Landing'})
     }
   },
 };

@@ -24,7 +24,8 @@ const loginUser = async ({ state, commit }, data) => {
 
 const logoutUser = async ({ state, commit }) => {
     try {
-        await axiosAuth.post(`/auth/logout`)
+        await axiosAuth.post(`/auth/logout/me`)
+        commit('DELETE_TOKENS')
         commit('RESET')
     } catch (err) {
         console.error('error logging out:', err)
@@ -61,35 +62,34 @@ const get_refresh_token = () => {
     return refresh_token
 }
 
+const delete_tokens = () => {
+    localStorage.removeItem('refresh_token')
+    sessionStorage.removeItem('access_token')
+}
+
 const refresh_token_valid = (state) => {
     const refresh_token = get_refresh_token()
     if(refresh_token === null){
+        state.isLoggedIn = false
         return false
     }
     const payload = jwt.decode(refresh_token)
     if(Math.floor(Date.now() / 1000) > payload.exp){
+        state.isLoggedIn = false
         return false
     }
+    state.isLoggedIn = true
     return true
 }
 
 const access_token_valid = (state) => {
-    const token = state.accessToken
-    const expiration = state.accessTokenExpires
-    if(token != undefined && expiration != undefined){
-        const now = Date.now()
-        if(expiration > now){
-            return true
-        }
-    }
-    return false
+    return state.accessToken && state.accessTokenExpires > Date.now()
 }
 
 const reset = (state) => {
-    localStorage.removeItem('refresh_token')
-    sessionStorage.removeItem('access_token')
     state.accessToken = null
     state.accessTokenExpires = null
+    state.isLoggedIn = false
 }
 
 export default {
@@ -98,10 +98,12 @@ export default {
     state: {
         accessToken: null,
         accessTokenExpires: null,
+        isLoggedIn: false,
     },
     mutations: {
       SET_REFRESH_TOKEN: set_refresh_token,
       SET_ACCESS_TOKEN: set_access_token,
+      DELETE_TOKENS: delete_tokens,
       RESET: reset
     },
     getters: {
