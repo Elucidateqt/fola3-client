@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import users from './modules/users'
 import auth from './modules/auth'
+import permissions from './modules/permissions'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
 
@@ -29,7 +30,8 @@ export default createStore({
   actions: { checkApiHealth },
   modules: {
     auth,
-    users
+    users,
+    permissions
   },
   plugins: [axiosPlugin]
 });

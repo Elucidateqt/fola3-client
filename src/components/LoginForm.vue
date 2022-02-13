@@ -121,9 +121,11 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['loginUser', 'signupUser']),
+    ...mapActions('permissions', ['loadUserPermissions']),
     async login() {
       try {
         await this.loginUser({email: this.email, password: this.password})
+        await this.loadUserPermissions()
         this.$router.push({name: 'Home'})
         
       } catch (err) {
@@ -134,8 +136,7 @@ export default {
     async register() {
       try {
         await this.signupUser({email: this.email, username: this.username, password: this.password})
-        await this.loginUser({email: this.email, username: this.username, password: this.password})
-        this.$router.push({name: 'Home'})
+        await this.login()
       } catch (err) {
         console.error('Error creating account: ', err)
       }

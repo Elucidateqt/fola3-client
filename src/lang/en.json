@@ -2,11 +2,17 @@
     "base": {
         "username": "Username"
     },
+    "nav": {
+        "projects": "Projects"
+    },
     "auth": {
         "login": "Login",
         "email": "Email",
         "password": "Password",
         "logout": "Logout",
         "signup": "Create Account"
+    },
+    "projects": {
+        "create": "Create Project"
     }
 }

@@ -6,24 +6,39 @@
     >
       <q-toolbar>
         <q-toolbar-title> Quasar App </q-toolbar-title>
-        <q-btn
+        <div 
           v-if="isLoggedIn"
-          flat
-          dense
-          round
-          :aria-label="$t('auth.logout')"
-          icon="logout"
-          @click="logout"
-        />
-        <q-btn
-          v-else
-          flat
-          dense
-          round
-          :aria-label="$t('auth.login')"
-          icon="login"
-          to="/login"
-        />
+          class="page-nav"
+        >
+          <q-btn
+            flat
+            dense
+            round
+            :aria-label="$t('nav.projects')"
+            :label="$t('nav.projects')"
+            to="/projects"
+          />
+        </div>
+        <div id="auth-buttons">
+          <q-btn
+            v-if="isLoggedIn"
+            flat
+            dense
+            round
+            :aria-label="$t('auth.logout')"
+            icon="logout"
+            @click="logout"
+          />
+          <q-btn
+            v-else
+            flat
+            dense
+            round
+            :aria-label="$t('auth.login')"
+            icon="login"
+            to="/login"
+          />
+        </div>
         <locale-changer />
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
