@@ -18,6 +18,14 @@ const loadUsers = async ({ state, commit }) => {
   }
 }
 
+const updateUserPassword = async (state, data) => {
+  try {
+    await axiosApi.put(`/users/${data.uuid}/password`, {password: data.password})
+  } catch (e) {
+    console.error("could not update password", e)
+  }
+}
+
 const addUsers = (state, data) => {
   state.users = state.users.concat(data)
 }
@@ -55,6 +63,7 @@ export default {
 
     },
     actions: {
-        loadUsers
+        loadUsers,
+        updateUserPassword
     }
   }

@@ -13,6 +13,10 @@
             "login": "Login",
             "email": "Email",
             "password": "Password",
+            "current_password": "Current password",
+            "new_password": "New Password",
+            "confirm_password": "Confirm password",
+            "update_password": "Update password",
             "logout": "Logout",
             "signup": "Create Account"
         },

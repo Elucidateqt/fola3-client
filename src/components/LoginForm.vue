@@ -35,20 +35,10 @@
           type="email"
           :label="$t('auth.email')"
         />
-        <q-input
+        <secret-input
           v-model="password"
-          filled
-          :type="hidePassword ? 'password' : 'text'"
           :label="$t('auth.password')"
-        >
-          <template #append>
-            <q-icon
-              :name="hidePassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="hidePassword = !hidePassword"
-            />
-          </template>
-        </q-input>
+        />
         <q-btn
           :label="$t('auth.login')"
           type="submit"
@@ -75,20 +65,10 @@
           outlined
           :label="$t('profile.username')"
         />
-        <q-input
+        <secret-input
           v-model="password"
-          filled
-          :type="hidePassword ? 'password' : 'text'"
           :label="$t('auth.password')"
-        >
-          <template #append>
-            <q-icon
-              :name="hidePassword ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="hidePassword = !hidePassword"
-            />
-          </template>
-        </q-input>
+        />
         <q-btn
           :label="$t('auth.signup')"
           type="submit"
@@ -102,19 +82,20 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import SecretInput from '@/components/SecretInput.vue';
 //import {axiosAuth} from "../api/index.js";
 
 export default {
   name: "LoginForm",
 
   components: {
+    SecretInput
   },
   data: () => ({
     tab: "login",
     email: null,
     username: null,
-    password: null,
-    hidePassword: true
+    password: null
   }),
   computed: {
     ...mapGetters('auth', ['isRefreshTokenValid'])

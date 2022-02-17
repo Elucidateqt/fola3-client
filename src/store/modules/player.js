@@ -13,6 +13,14 @@ const loadOwnProfile = async ( {state, commit }) => {
       console.error("could not load your user profile", err)
     }
 }
+
+const updateOwnPassword = async (state, data) => {
+  try {
+    await axiosApi.put('/users/me/password', {"password": data.password})
+  } catch (e) {
+    console.error("could not update password", e)
+  }
+}
   
 
 const setPlayerUsername = (state, username) => {
@@ -33,6 +41,14 @@ const resetPlayerData = (state) => {
   state.email = null
 }
 
+const getPlayerData = (state) => {
+  return {
+    username: state.username,
+    uuid: state.uuid,
+    email: state.email
+  }
+}
+
 
 
 export default {
@@ -50,9 +66,10 @@ export default {
       SET_PLAYER_EMAIL: setPlayerEmail
     },
     getters: {
-
+      getPlayerData
     },
     actions: {
-        loadOwnProfile
+        loadOwnProfile,
+        updateOwnPassword
     }
   }

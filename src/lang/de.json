@@ -13,6 +13,10 @@
             "login": "Anmelden",
             "email": "Email",
             "password": "Passwort",
+            "current_password": "Aktuell verwendetes passwort",
+            "new_password": "Neues Passwort",
+            "confirm_password": "Passwort bestätigen",
+            "update_password": "Passwort aktualisieren",
             "logout": "Abmelden",
             "signup": "Konto erstellen"
         },
