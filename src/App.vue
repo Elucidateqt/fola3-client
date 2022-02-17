@@ -1,30 +1,43 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpR fFf">
     <q-header
       elevated
-      class="glossy"
+      class="row nowrap"
     >
-      <q-toolbar>
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-        <div 
+      <q-toolbar class="bg-primary text-white">
+        <q-toolbar-title> My App </q-toolbar-title>
+        <q-tabs
           v-if="isLoggedIn"
-          class="page-nav"
         >
-          <q-btn
+          <q-route-tab
             flat
-            dense
-            round
+            stretch
+            :aria-label="$t('nav.home')"
+            :label="$t('nav.home')"
+            to="/home"
+          />
+          <q-separator dark vertical />
+          <q-route-tab
+            flat
+            stretch
             :aria-label="$t('nav.projects')"
             :label="$t('nav.projects')"
             to="/projects"
           />
-        </div>
-        <div id="auth-buttons">
+          <q-separator dark vertical />
+          <q-route-tab
+            flat
+            stretch
+            :aria-label="$t('nav.profile')"
+            :label="$t('nav.profile')"
+            :to="`/users/${uuid}`"
+          />
+        </q-tabs>
+        <div id="auth-buttons" class="row">
           <q-btn
             v-if="isLoggedIn"
             flat
-            dense
-            round
+            stretch
             :aria-label="$t('auth.logout')"
             icon="logout"
             @click="logout"
@@ -38,15 +51,24 @@
             icon="login"
             to="/login"
           />
+          <q-seperator dark vertical />
         </div>
         <locale-changer />
-        <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
     <q-page-container>
       <q-page class="flex flex-center">
         <router-view />
+        <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
+          <q-btn
+            round
+            color="accent"
+            :aria-label="$t('base.report_bug')"
+            icon="bug_report"
+            @click="showBugreporter = true"
+          />
+        </q-page-sticky>
       </q-page>
     </q-page-container>
   </q-layout>
@@ -63,11 +85,16 @@ export default {
     LocaleChanger
   },
   data: () => ({
-    toastMessage: null
+    toastMessage: null,
+    showBugreporter: false,
   }),
   computed: {
     ...mapState('auth', ['isLoggedIn']),
-    ...mapGetters('auth', ['isAccessTokenValid', 'isRefreshTokenValid'])
+    ...mapGetters('auth', ['isAccessTokenValid', 'isRefreshTokenValid', 'isLoggedIn']),
+    ...mapState('player', ['uuid']),
+    canReportBugs () {
+      return this.userHasPermission()('BUGREPORT:CREATE')
+    },
   },
   async created () {
     if(this.isRefreshTokenValid){
@@ -78,8 +105,11 @@ export default {
   methods: {
     ...mapActions('auth', ['request_new_tokens', 'logoutUser']),
     ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
+    ...mapGetters('permissions', ['userHasPermission']),
+    ...mapActions('permissions', ['resetPermissions']),
     async logout(){
       await this.logoutUser()
+      this.resetPermissions()
       this.$router.push({name: 'Landing'})
     }
   },

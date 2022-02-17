@@ -73,7 +73,7 @@
         <q-input
           v-model="username"
           outlined
-          :label="$t('base.username')"
+          :label="$t('profile.username')"
         />
         <q-input
           v-model="password"

@@ -1,18 +1,43 @@
 {
-    "base": {
-        "username": "Username"
+    "dict": {
+        "base": {
+            "greeting": "Hello {name}!",
+            "report_bug": "Report a Bug"
+        },
+        "nav": {
+            "projects": "Projects",
+            "home": "Home",
+            "profile": "Profile"
+        },
+        "auth": {
+            "login": "Login",
+            "email": "Email",
+            "password": "Password",
+            "logout": "Logout",
+            "signup": "Create Account"
+        },
+        "profile": {
+            "title": "{name}'s profile",
+            "username": "Username",
+            "member_since": "Joined {date}"
+        },
+        "projects": {
+            "create": "Create new project"
+        }
     },
-    "nav": {
-        "projects": "Projects"
-    },
-    "auth": {
-        "login": "Login",
-        "email": "Email",
-        "password": "Password",
-        "logout": "Logout",
-        "signup": "Create Account"
-    },
-    "projects": {
-        "create": "Create Project"
+    "dateTimeFormat": {
+              "short": {
+                "year": "numeric",
+                "month": "long",
+                "day": "numeric"
+              },
+              "long": {
+                "year": "numeric",
+                "month": "long",
+                "day": "numeric",
+                "weekday": "long",
+                "hour": "numeric",
+                "minute": "numeric"
+              }
     }
 }

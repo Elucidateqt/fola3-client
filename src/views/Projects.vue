@@ -1,8 +1,9 @@
 <template>
   <h1>This is the projects page</h1>
-  <q-page-sticky position="bottom-right" :offset="[18, 18]">
+  <div>Permissions:{{permissions}}</div>
+  <div>canCreateProject:{{canCreateProjects}}</div>
+  <q-page-sticky position="bottom-right" :offset="[18, 18]" v-if="canCreateProjects">
     <q-btn
-      v-if="canCreateProjects"
       round
       color="accent"
       :aria-label="$t('projects.create')"
@@ -19,10 +20,10 @@ export default {
   components: {
   },
   computed: {
-
-  },
-  computed: {
-
+    canCreateProjects () {
+      return this.userHasPermission()('PROJECT:CREATE')
+    },
+    ...mapState('permissions', ['permissions'])
   },
   async created () {
     await this.loadUserPermissions()
@@ -30,11 +31,8 @@ export default {
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
-    canCreateProjects () {
-      return this.userHasPermission('PROJECT:CREATE')
-    },
     createProject (){
-      console.log('create project popup', this.userHasPermission('PROJECT:CREATE'))
+      
     },
   },
 

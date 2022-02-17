@@ -70,15 +70,12 @@ const delete_tokens = () => {
 const refresh_token_valid = (state) => {
     const refresh_token = get_refresh_token()
     if(refresh_token === null){
-        state.isLoggedIn = false
         return false
     }
     const payload = jwt.decode(refresh_token)
     if(Math.floor(Date.now() / 1000) > payload.exp){
-        state.isLoggedIn = false
         return false
     }
-    state.isLoggedIn = true
     return true
 }
 
@@ -86,10 +83,13 @@ const access_token_valid = (state) => {
     return state.accessToken && state.accessTokenExpires > Date.now()
 }
 
+const is_logged_in = (state) => {
+    return state.accessToken && state.accessTokenExpires > Date.now()
+}
+
 const reset = (state) => {
     state.accessToken = null
     state.accessTokenExpires = null
-    state.isLoggedIn = false
 }
 
 export default {
@@ -98,7 +98,6 @@ export default {
     state: {
         accessToken: null,
         accessTokenExpires: null,
-        isLoggedIn: false,
     },
     mutations: {
       SET_REFRESH_TOKEN: set_refresh_token,
@@ -109,7 +108,8 @@ export default {
     getters: {
         isRefreshTokenValid: refresh_token_valid,
         getRefreshToken: get_refresh_token,
-        isAccessTokenValid: access_token_valid
+        isAccessTokenValid: access_token_valid,
+        isLoggedIn: is_logged_in
     },
     actions: {
         signupUser,

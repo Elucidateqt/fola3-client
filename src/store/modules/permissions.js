@@ -13,12 +13,16 @@ const setUserPermissions = (state, permissions) => {
     state.permissions = permissions
 }
 
-const userHasPermission = ( state , permission) => {
+const userHasPermission = ( state ) => ( permission ) => {
     return state.permissions && state.permissions.includes(permission)
 }
 
 const reset = (state) => {
     state.permissions = null
+}
+
+const resetPermissions = ({state, commit}) => {
+    commit('RESET')
 }
 
 export default {
@@ -35,6 +39,7 @@ export default {
         userHasPermission
     },
     actions: {
-        loadUserPermissions
+        loadUserPermissions,
+        resetPermissions
     }
   }

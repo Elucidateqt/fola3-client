@@ -1,12 +1,12 @@
 <template>
-  <div class="locale-changer">
-    <q-select
-      v-model="$i18n.locale"
-      :options="langs"
-      color="purple-12"
-      dense
-    />
-  </div>
+  <q-select
+    v-model="$i18n.locale"
+    :options="langs"
+    outlined
+    label-color="white"
+    label="lang"
+    class="lang-select"
+  />
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-  <h1>This is the home-route</h1>
+  <h1>{{ $t('base.greeting', {name: username}) }}</h1>
 </template>
 
 <script>
@@ -9,14 +9,16 @@ export default {
   components: {
   },
   computed: {
-    ...mapState('users', ['users'])
+    ...mapState('player', ['uuid', 'username']),
+  },
+  async created () {
+    await this.loadUserPermissions()
+    await this.loadOwnProfile()
   },
   methods: {
-    ...mapActions('users', ['loadUsers']),
-    async getAllUsers(){
-      await this.loadUsers()
-      console.log('users:',...this.users)
-    },
+    ...mapActions('profile', ['loadProfile']),
+    ...mapActions('player', ['loadOwnProfile']),
+    ...mapActions('permissions', ['loadUserPermissions'])
   }
 };
 </script>

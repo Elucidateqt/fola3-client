@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 import users from './modules/users'
+import profile from './modules/profile'
+import player from './modules/player'
 import auth from './modules/auth'
 import permissions from './modules/permissions'
 import axiosApi, {axiosAuth} from '../api/axios.js'
@@ -31,6 +33,8 @@ export default createStore({
   modules: {
     auth,
     users,
+    profile,
+    player,
     permissions
   },
   plugins: [axiosPlugin]

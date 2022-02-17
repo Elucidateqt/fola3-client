@@ -12,8 +12,12 @@ const i18n = createI18n({
   locale: 'de',
   fallbackLocale: 'en',
   messages: {
-    en: translations.en,
-    de: translations.de
+    en: translations.en.dict,
+    de: translations.de.dict
+  },
+  datetimeFormats: {
+    en: translations.en.dateTimeFormat,
+    de: translations.de.dateTimeFormat
   }
 })
 

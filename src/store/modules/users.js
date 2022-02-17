@@ -43,7 +43,7 @@ export default {
       hasMore: true,
       batchSize: 15,
       offset: 0,
-      users: [],
+      users: []
     },
     mutations: {
       ADD_USERS: addUsers,
