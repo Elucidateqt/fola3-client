@@ -61,13 +61,7 @@
       <q-page class="flex flex-center">
         <router-view />
         <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
-          <q-btn
-            round
-            color="accent"
-            :aria-label="$t('base.report_bug')"
-            icon="bug_report"
-            @click="showBugreporter = true"
-          />
+          <bug-reporter />
         </q-page-sticky>
       </q-page>
     </q-page-container>
@@ -77,12 +71,14 @@
 <script>
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import LocaleChanger from '@/components/LocaleChanger.vue'
+import BugReporter from '@/components/BugReporter.vue'
 
 export default {
   name: "LayoutDefault",
 
   components: {
-    LocaleChanger
+    LocaleChanger,
+    BugReporter
   },
   data: () => ({
     toastMessage: null,

@@ -2,7 +2,15 @@
     "dict": {
         "base": {
             "greeting": "Hello {name}!",
-            "report_bug": "Report a Bug"
+            "report_bug": "Report a Bug",
+            "submit": "Submit",
+            "cancel": "Cancel"
+        },
+        "bugreport": {
+            "title": "Report a Bug",
+            "location_question": "Where did you encounter the bug?",
+            "summary_ask": "Please summarize the bug",
+            "description_ask": "Please list the steps you took leading up to the bug"
         },
         "nav": {
             "projects": "Projects",
