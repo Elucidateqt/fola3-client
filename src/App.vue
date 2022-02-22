@@ -58,7 +58,7 @@
     </q-header>
 
     <q-page-container>
-      <q-page class="flex flex-center">
+      <q-page>
         <router-view />
         <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
           <bug-reporter />

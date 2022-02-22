@@ -34,7 +34,9 @@
             "member_since": "Joined {date}"
         },
         "projects": {
-            "create": "Create new project"
+            "create": "Create project",
+            "name": "project name",
+            "description": "project description"
         }
     },
     "dateTimeFormat": {
