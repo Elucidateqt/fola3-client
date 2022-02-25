@@ -1,7 +1,20 @@
+import store from "../store";
 import apiClient, { authClient } from "./axios";
+
+const handleErrors = (err) => {
+  if(err.response){
+    const alertConfig = {
+      type: "negative",
+      message: `errors.http.${err.response.status}`,
+      visible: true
+    }
+    store.commit("alert/SET_ALERT_CONFIG", alertConfig)
+  }
+}
 
 export default function createAxiosPlugin() {
   return (store) => {
+
     authClient.interceptors.response.use(
       (res) => {
         if(res.data){
@@ -15,16 +28,8 @@ export default function createAxiosPlugin() {
         return res
       },
       async (err) => {
-        const originalConfig = err.config
-        if(err.response){
-          if (err.response.status === 401 && !originalConfig._retry) {
-            
-          }
-    
-          if (err.response.status === 403 && err.response.data) {
-            return Promise.reject(err.response.data);
-          }
-        }
+        handleErrors(err)
+        throw new Error(err)
       }
     )
 
@@ -41,16 +46,8 @@ export default function createAxiosPlugin() {
         return res
       },
       async (err) => {
-        const originalConfig = err.config
-        if(err.response){
-          if (err.response.status === 401 && !originalConfig._retry) {
-            
-          }
-    
-          if (err.response.status === 403 && err.response.data) {
-            return Promise.reject(err.response.data);
-          }
-        }
+        handleErrors(err)
+        throw new Error(err)
       }
     )
     

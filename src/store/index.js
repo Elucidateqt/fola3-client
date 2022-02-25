@@ -6,6 +6,7 @@ import auth from './modules/auth'
 import permissions from './modules/permissions'
 import bugreports from "./modules/bugreports"
 import projects from './modules/projects'
+import alert from './modules/alert'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
 
@@ -24,6 +25,8 @@ const setApiStatus = (state, data) => {
   state.apiOnline = data
 }
 
+
+
 export default createStore({
   state: {
     apiOnline: false
@@ -39,7 +42,8 @@ export default createStore({
     player,
     permissions,
     bugreports,
-    projects
+    projects,
+    alert
   },
   plugins: [axiosPlugin]
 });

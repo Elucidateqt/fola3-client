@@ -13,16 +13,16 @@ const loadUsers = async ({ state, commit }) => {
       }
       commit('ADD_USERS', res.data.userList)*/
     }
-  } catch(e) {
-      console.error("could not load users",e)
+  } catch(err) {
+      throw new Error(err)
   }
 }
 
 const updateUserPassword = async (state, data) => {
   try {
     await axiosApi.put(`/users/${data.uuid}/password`, {password: data.password})
-  } catch (e) {
-    console.error("could not update password", e)
+  } catch (err) {
+    throw new Error(err)
   }
 }
 

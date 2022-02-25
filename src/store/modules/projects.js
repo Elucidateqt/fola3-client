@@ -12,8 +12,8 @@ const loadOwnProjects = async ({ state, commit }) => {
       }
       commit('ADD_PROJECTS', res.data.projectList)
     }
-  } catch(e) {
-      console.error("could not load users",e)
+  } catch(err) {
+      throw new Error(err)
   }
 }
 
@@ -23,9 +23,11 @@ const createProject = async ({ state, commit }, data) => {
             "name": data.name,
             "description": data.description
         })
-        commit('ADD_PROJECTS', [res.data.project])
+        if(res && res.data && res.data.project){
+          commit('ADD_PROJECTS', [res.data.project])
+        }
     } catch (err) {
-        console.error('could not create project: ', err)
+        throw new Error(err)
     }
 }
 

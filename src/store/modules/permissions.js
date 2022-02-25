@@ -5,7 +5,7 @@ const loadUserPermissions = async ({ state, commit }) => {
         const res = await axiosApi.get(`/permissions/my`)
         commit('SET_USER_PERMISSIONS', res.data.permissions)
     } catch (err) {
-        console.error('could not load permissions', err)
+        throw new Error(err)
     }
 }
 

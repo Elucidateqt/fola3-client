@@ -10,7 +10,7 @@ const loadOwnProfile = async ( {state, commit }) => {
         commit('SET_PLAYER_EMAIL', res.data.user.email)
       }
     } catch (err) {
-      console.error("could not load your user profile", err)
+      throw new Error(err)
     }
 }
 
@@ -18,7 +18,7 @@ const updateOwnPassword = async (state, data) => {
   try {
     await axiosApi.put('/users/me/password', {"password": data.password})
   } catch (e) {
-    console.error("could not update password", e)
+    throw new Error(err)
   }
 }
   

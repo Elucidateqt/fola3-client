@@ -72,6 +72,7 @@
 import { mapActions, mapState, mapGetters, mapMutations } from 'vuex'
 import LocaleChanger from '@/components/LocaleChanger.vue'
 import BugReporter from '@/components/BugReporter.vue'
+import { Notify } from 'quasar'
 
 export default {
   name: "LayoutDefault",
@@ -81,16 +82,29 @@ export default {
     BugReporter
   },
   data: () => ({
-    toastMessage: null,
     showBugreporter: false,
   }),
   computed: {
     ...mapState('auth', ['isLoggedIn']),
     ...mapGetters('auth', ['isAccessTokenValid', 'isRefreshTokenValid', 'isLoggedIn']),
     ...mapState('player', ['uuid']),
+    ...mapGetters('alert', ['alertMessage', 'alertVisible', 'alertType']),
     canReportBugs () {
       return this.userHasPermission()('BUGREPORT:CREATE')
     },
+  },
+  watch: {
+    //create new toast-popup if alertVisible in store is changed to true
+    alertVisible: function (alertVisible) {
+      if(!alertVisible){
+        return
+      }
+      Notify.create({
+        type: this.alertType,
+        message: this.alertMessage
+      })
+      this.resetAlert()
+    }
   },
   async created () {
     if(this.isRefreshTokenValid){
@@ -103,6 +117,7 @@ export default {
     ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['resetPermissions']),
+    ...mapActions('alert', ['resetAlert']),
     async logout(){
       await this.logoutUser()
       this.resetPermissions()

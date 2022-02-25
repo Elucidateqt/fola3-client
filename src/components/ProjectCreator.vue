@@ -55,14 +55,20 @@ export default {
   },
   methods: {
     ...mapActions('projects', ['createProject']),
+    ...mapActions('alert', ['setAlert']),
     async createNewProject() {
       try {
         await this.createProject({"name": this.projectName, "description": this.projectDescription})
         this.showForm = false
         this.projectName = "",
         this.projectDescription = ""
+        this.setAlert({
+          type: 'positive',
+          visible: true,
+          message: "Project created successfully",
+        })
       } catch (err) {
-        console.error('Error creating project: ', err)
+        
         
       }
     }

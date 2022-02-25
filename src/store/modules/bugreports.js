@@ -9,7 +9,7 @@ const submitBugReport = async ({ state, commit }, data) => {
             "description": data.description
         })
     } catch (err) {
-        console.error('could not submit bugreport', err)
+        throw new Error(err)
     }
 }
 

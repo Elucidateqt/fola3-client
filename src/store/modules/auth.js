@@ -9,7 +9,7 @@ const signupUser = async ({ state, commit }, data) => {
             password: data.password
         })
     } catch (err) {
-        console.error('could not sign up', err)
+        throw new Error(err)
     }
 }
 
@@ -18,7 +18,7 @@ const loginUser = async ({ state, commit }, data) => {
     await axiosAuth.post(`/auth/login`, {email: data.email, password: data.password})
     //tokens in response are caught and saved by axios interceptor
   } catch(e) {
-    console.error("could not login:",e)
+    throw new Error(err)
   }
 }
 
@@ -27,19 +27,19 @@ const logoutUser = async ({ state, commit }) => {
         await axiosAuth.post(`/auth/logout/me`)
         commit('DELETE_TOKENS')
         commit('RESET')
+        state.users = []
+        state.offset = 0
+        state.hasMore = true
     } catch (err) {
-        console.error('error logging out:', err)
+        throw new Error(err)
     }
-    state.users = []
-    state.offset = 0
-    state.hasMore = true
 }
 
 const request_new_tokens = async (state) => {
     try {
         await axiosAuth.post(`/auth/refreshToken`)
     } catch (err) {
-        console.error('error refreshing tokens', err)
+        throw new Error(err)
     }
 }
 

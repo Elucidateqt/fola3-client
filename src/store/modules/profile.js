@@ -9,8 +9,8 @@ const loadProfile = async ({ state, commit }, uuid) => {
     if(res.data.user.email){
         commit('SET_EMAIL', res.data.user.email)
     }
-  } catch(e) {
-      console.error("could not load users",e)
+  } catch(err) {
+      throw new Error(err)
   }
 }
 
