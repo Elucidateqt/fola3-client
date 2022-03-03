@@ -107,8 +107,11 @@ export default {
       try {
         await this.loginUser({email: this.email, password: this.password})
         await this.loadUserPermissions()
-        this.$router.push({name: 'Home'})
-        
+        if(this.$route.query.redirect){
+          this.$router.push(this.$route.query.redirect)
+        }else{
+          this.$router.push({name: 'Home'})
+        }
       } catch (err) {
         console.error('Error logging in: ', err)
         

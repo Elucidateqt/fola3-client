@@ -17,6 +17,27 @@ const loadOwnProjects = async ({ state, commit }) => {
   }
 }
 
+const joinProjectByInvite = async ({ state, commit }, data) => {
+  try {
+    const res = await axiosApi.post(`/projects/${data.uuid}/users/me?code=${data.inviteCode}`)
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+const loadProjectDetails = async ({ state, commit }, uuid) => {
+  try {
+    const res = await axiosApi.get(`/projects/${uuid}`)
+    commit('SET_PROJECT_DETAILS', {project: res.data.project})
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+const setProjectDetails = (state, data) => {
+  state.projectDetails = data.project
+}
+
 const createProject = async ({ state, commit }, data) => {
     try {
         const res = await axiosApi.post(`/projects/`, {
@@ -47,6 +68,7 @@ const reset = (state) => {
   state.projects = []
   state.offset = 0
   state.hasMore = true
+  state.projectDetails = null
 }
 
 export default {
@@ -56,12 +78,14 @@ export default {
       hasMore: true,
       limit: 5,
       offset: 0,
-      projects: []
+      projects: [],
+      projectDetails: null,
     },
     mutations: {
       ADD_PROJECTS: addProjects,
       INCREASE_OFFSET: increaseOffset,
       LOADING_FINISHED: loadingFinished,
+      SET_PROJECT_DETAILS: setProjectDetails,
       RESET: reset
     },
     getters: {
@@ -69,6 +93,8 @@ export default {
     },
     actions: {
         createProject,
-        loadOwnProjects
+        loadOwnProjects,
+        loadProjectDetails,
+        joinProjectByInvite
     }
   }

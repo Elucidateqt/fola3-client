@@ -2,9 +2,8 @@ import axiosApi from '../../api/axios.js'
 
 const submitBugReport = async ({ state, commit }, data) => {
     try {
-        console.log("reportdata", data)
         const res = await axiosApi.post(`/bugreports/`, {
-            "location": data.location,
+            "route": data.route,
             "summary": data.summary,
             "description": data.description
         })

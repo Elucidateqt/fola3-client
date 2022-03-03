@@ -58,6 +58,15 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "login" */ "../views/Projects.vue"),
   },
+  {
+    path: "/projects/:id",
+    name: "ProjectDetails",
+    meta: {
+      requiresAuth: true
+    },
+    component: () =>
+      import(/* webpackChunkName: "login" */ "../views/ProjectDetails.vue"),
+  },
 ];
 
 const refresh_token_valid = () => {
@@ -88,7 +97,7 @@ router.beforeEach(async (to, from, next) => {
       next({ name: from.name})
     }
   }else if (to.meta.requiresAuth && !tokenValid) {
-    next({ name: 'Login'})
+    next({ name: 'Login', query: {redirect: to.fullPath}})
   } else {
     next()
   }

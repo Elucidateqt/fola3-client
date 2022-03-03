@@ -2,14 +2,20 @@ import store from "../store";
 import apiClient, { authClient } from "./axios";
 
 const handleErrors = (err) => {
+  //assume no response as default case
+  let alertConfig = {
+    type: "negative",
+    message: `errors.http.no_response`,
+    visible: true
+  }
   if(err.response){
-    const alertConfig = {
+    alertConfig = {
       type: "negative",
       message: `errors.http.${err.response.status}`,
       visible: true
-    }
-    store.commit("alert/SET_ALERT_CONFIG", alertConfig)
+    }  
   }
+  store.commit("alert/SET_ALERT_CONFIG", alertConfig)
 }
 
 export default function createAxiosPlugin() {
@@ -54,6 +60,10 @@ export default function createAxiosPlugin() {
     
     apiClient.interceptors.request.use(
       async (config) => {
+        //public routes can skip token checks
+        if(config.url === '/health'){
+          return config
+        }
         try {
           const tokenValid = store.getters['auth/isAccessTokenValid']
           if(tokenValid){

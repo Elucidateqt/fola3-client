@@ -101,7 +101,8 @@ export default {
       }
       Notify.create({
         type: this.alertType,
-        message: this.alertMessage
+        message: this.alertMessage,
+        timeout: 1500
       })
       this.resetAlert()
     }
@@ -110,6 +111,7 @@ export default {
     if(this.isRefreshTokenValid){
       this.SET_REFRESH_TOKEN({token: localStorage.getItem('refresh_token')})
       await this.request_new_tokens()
+      await this.loadOwnProfile()
     }
   },
   methods: {
@@ -118,6 +120,7 @@ export default {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['resetPermissions']),
     ...mapActions('alert', ['resetAlert']),
+    ...mapActions('player', ['loadOwnProfile']),
     async logout(){
       await this.logoutUser()
       this.resetPermissions()

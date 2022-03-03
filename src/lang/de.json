@@ -7,10 +7,10 @@
             "cancel": "Abbrechen"
         },
         "bugreport": {
-            "title": "Report a Bug",
-            "location_question": "Where did you encounter the bug?",
-            "summary_ask": "Please summarize the bug",
-            "description_ask": "Please list the steps you took leading up to the bug"
+            "title": "Eine Fehlfunktion melden",
+            "summary_ask": "Bitte fassen Sie die Fehlfunktion zusammen:",
+            "description_ask": "Bitte zählen Sie die Schritte auf, die zur Fehlfunktion führten",
+            "thanks": "Vielen Dank für Ihre Rückmeldung"
         },
         "nav": {
             "projects": "Projekte",
@@ -36,7 +36,14 @@
         "projects": {
             "create": "Projekt erstellen",
             "name": "Projektname",
-            "description": "Beschreibung"
+            "description": "Beschreibung",
+            "confirm_creation": "Projekt erstellt"
+        },
+        "validation": {
+            "min_length": "Mindestens {min} Zeichen erforderlich.",
+            "max_length": "Maximal {max} Zeichen erlaubt.",
+            "curr_length": "{curr}/{max} Zeichen",
+            "no_special_characters": "Darf keine Sonderzeichen enthalten"
         }
     },
     "dateTimeFormat": {
