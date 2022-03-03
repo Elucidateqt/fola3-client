@@ -36,13 +36,24 @@
             "create": "Create project",
             "name": "project name",
             "description": "project description",
-            "confirm_creation": "Project created"
+            "confirm_creation": "Project created",
+            "updated_at": "Updated at {date}"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",
             "max_length": "Can't be longer than {max} characters.",
             "curr_length": "{curr}/{max} characters",
             "no_special_characters": "Must not contain any special characters"
+        },
+        "errors": {
+            "http": {
+                "no_response": "Server offline",
+                "400": "Bad Request",
+                "401": "Not logged in",
+                "403": "Unauthorized",
+                "404": "Ressource not found",
+                "500": "Something went wrong"
+            }
         }
     },
     "dateTimeFormat": {

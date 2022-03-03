@@ -37,13 +37,24 @@
             "create": "Projekt erstellen",
             "name": "Projektname",
             "description": "Beschreibung",
-            "confirm_creation": "Projekt erstellt"
+            "confirm_creation": "Projekt erstellt",
+            "updated_at": "Geändert am {date}"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",
             "max_length": "Maximal {max} Zeichen erlaubt.",
             "curr_length": "{curr}/{max} Zeichen",
             "no_special_characters": "Darf keine Sonderzeichen enthalten"
+        },
+        "errors": {
+            "http": {
+                "no_response": "Server offline",
+                "400": "Ungültige Anfrage",
+                "401": "Nicht angemeldet",
+                "403": "Unausreichende Rechte",
+                "404": "Ressurce nicht gefunden",
+                "500": "Unerwarteter Fehler"
+            }
         }
     },
     "dateTimeFormat": {

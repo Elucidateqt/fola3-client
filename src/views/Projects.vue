@@ -14,6 +14,10 @@
               <q-icon name="group" size="md" />
               <span class="text-h6">{{ project.members.length }}</span>
             </div>
+            <div class="update-timestamp">
+              <q-icon name="edit" size="md" />
+              <span class="text-subtext" :aria-label="$t('projects.updated_at', {date: $d(project.createdAt, 'short')})">{{ $d(project.createdAt, 'short') }}</span>
+            </div>
             <q-btn flat icon="more_vert" />
           </q-card-actions>
         </q-card>
