@@ -5,7 +5,7 @@ import player from './modules/player'
 import auth from './modules/auth'
 import permissions from './modules/permissions'
 import bugreports from "./modules/bugreports"
-import projects from './modules/projects'
+import boards from './modules/boards'
 import alert from './modules/alert'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
@@ -42,7 +42,7 @@ export default createStore({
     player,
     permissions,
     bugreports,
-    projects,
+    boards,
     alert
   },
   plugins: [axiosPlugin]

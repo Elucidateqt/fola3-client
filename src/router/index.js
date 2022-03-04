@@ -50,22 +50,22 @@ const routes = [
       import(/* webpackChunkName: "login" */ "../views/Profile.vue"),
   },
   {
-    path: "/projects",
-    name: "Projects",
+    path: "/boards",
+    name: "Boards",
     meta: {
       requiresAuth: true
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Projects.vue"),
+      import(/* webpackChunkName: "login" */ "../views/Boards.vue"),
   },
   {
-    path: "/projects/:id",
-    name: "ProjectDetails",
+    path: "/boards/:id",
+    name: "BoardDetails",
     meta: {
       requiresAuth: true
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/ProjectDetails.vue"),
+      import(/* webpackChunkName: "login" */ "../views/BoardDetails.vue"),
   },
 ];
 

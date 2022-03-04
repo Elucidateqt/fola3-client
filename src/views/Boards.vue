@@ -1,22 +1,22 @@
 <template>
-    <q-infinite-scroll @load="loadMoreProjects" :offset="5" class="row q-gutter-md">
-        <q-card v-for="project in projects" :key="project.uuid" class="col-xs-12 col-sm-4 col-md-2">
-            <router-link :to="`/projects/${project.uuid}`">
-              <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="project-thumbnail">
+    <q-infinite-scroll @load="loadMoreBoards" :offset="5" class="row q-gutter-md">
+        <q-card v-for="board in boards" :key="board.uuid" class="col-xs-12 col-sm-4 col-md-2">
+            <router-link :to="`/boards/${board.uuid}`">
+              <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="board-thumbnail">
               </q-img>
           <q-card-section>
-                  {{ project.name }}
+                  {{ board.name }}
           </q-card-section>
             </router-link>
           <q-separator />
           <q-card-actions align="around">
             <div class="member-count">
               <q-icon name="group" size="md" />
-              <span class="text-h6">{{ project.members.length }}</span>
+              <span class="text-h6">{{ board.members.length }}</span>
             </div>
             <div class="update-timestamp">
               <q-icon name="edit" size="md" />
-              <span class="text-subtext" :aria-label="$t('projects.updated_at', {date: $d(project.createdAt, 'short')})">{{ $d(project.createdAt, 'short') }}</span>
+              <span class="text-subtext" :aria-label="$t('boards.updated_at', {date: $d(board.createdAt, 'short')})">{{ $d(board.createdAt, 'short') }}</span>
             </div>
             <q-btn flat icon="more_vert" />
           </q-card-actions>
@@ -27,26 +27,26 @@
         </div>
       </template>
     </q-infinite-scroll>
-  <q-page-sticky position="bottom-right" :offset="[18, 18]" v-if="canCreateProjects">
-    <project-creator />
+  <q-page-sticky position="bottom-right" :offset="[18, 18]" v-if="canCreateBoards">
+    <board-creator />
   </q-page-sticky>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import ProjectCreator from '@/components/ProjectCreator.vue'
+import BoardCreator from '@/components/BoardCreator.vue'
 
 export default {
-  name: "Projects",
+  name: "Boards",
   components: {
-    ProjectCreator
+    BoardCreator
   },
   computed: {
-    canCreateProjects () {
-      return this.userHasPermission()('PROJECT:CREATE')
+    canCreateBoards () {
+      return this.userHasPermission()('BOARD:CREATE')
     },
     ...mapState('permissions', ['permissions']),
-    ...mapState('projects', ['projects', 'hasMore'])
+    ...mapState('boards', ['boards', 'hasMore'])
   },
   async created () {
     await this.loadUserPermissions()
@@ -54,9 +54,9 @@ export default {
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
-    ...mapActions('projects', ['loadOwnProjects']),
-    loadMoreProjects (index, done) {
-      this.loadOwnProjects()
+    ...mapActions('boards', ['loadOwnBoards']),
+    loadMoreBoards (index, done) {
+      this.loadOwnBoards()
       done()
     }
   },

@@ -13,7 +13,7 @@
             "thanks": "Vielen Dank für Ihre Rückmeldung"
         },
         "nav": {
-            "projects": "Projekte",
+            "boards": "Boards",
             "home": "Start",
             "profile": "Profil"
         },
@@ -33,11 +33,11 @@
             "username": "Nutzername",
             "member_since": "Mitglied seit {date}"
         },
-        "projects": {
-            "create": "Projekt erstellen",
-            "name": "Projektname",
+        "boards": {
+            "create": "Board erstellen",
+            "name": "Boardname",
             "description": "Beschreibung",
-            "confirm_creation": "Projekt erstellt",
+            "confirm_creation": "Board erstellt",
             "updated_at": "Geändert am {date}"
         },
         "validation": {

@@ -12,7 +12,7 @@
             "thanks": "Thank you for your feedback"
         },
         "nav": {
-            "projects": "Projects",
+            "boards": "Boards",
             "home": "Home",
             "profile": "Profile"
         },
@@ -32,11 +32,11 @@
             "username": "Username",
             "member_since": "Joined {date}"
         },
-        "projects": {
-            "create": "Create project",
-            "name": "project name",
-            "description": "project description",
-            "confirm_creation": "Project created",
+        "boards": {
+            "create": "Create board",
+            "name": "board name",
+            "description": "board description",
+            "confirm_creation": "Board created",
             "updated_at": "Updated at {date}"
         },
         "validation": {

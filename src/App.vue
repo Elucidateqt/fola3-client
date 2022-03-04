@@ -20,9 +20,9 @@
           <q-route-tab
             flat
             stretch
-            :aria-label="$t('nav.projects')"
-            :label="$t('nav.projects')"
-            to="/projects"
+            :aria-label="$t('nav.boards')"
+            :label="$t('nav.boards')"
+            to="/boards"
           />
           <q-separator dark vertical />
           <q-route-tab
