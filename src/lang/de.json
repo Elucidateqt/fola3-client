@@ -38,7 +38,9 @@
             "name": "Boardname",
             "description": "Beschreibung",
             "confirm_creation": "Board erstellt",
-            "updated_at": "Geändert am {date}"
+            "updated_at": "Geändert am {date}",
+            "copy_link": "Freigabelink kopieren",
+            "link_copied": "Link kopiert"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

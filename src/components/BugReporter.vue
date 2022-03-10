@@ -35,8 +35,8 @@
         <q-separator />
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.submit')" :disable="!isFormValid" color="primary" type="submit" />
-          <q-btn flat :label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
+          <q-btn flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="!isFormValid" color="primary" type="submit" />
+          <q-btn flat :label="$t('base.cancel')" :aria-label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
         </q-card-actions>
       </q-form>
     </q-card>

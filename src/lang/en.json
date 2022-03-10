@@ -37,7 +37,9 @@
             "name": "board name",
             "description": "board description",
             "confirm_creation": "Board created",
-            "updated_at": "Updated at {date}"
+            "updated_at": "Updated at {date}",
+            "copy_link": "Copy invite link",
+            "link_copied": "Link copied"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",

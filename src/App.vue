@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hhh lpR fff">
     <q-header
       elevated
       class="row nowrap"
@@ -58,12 +58,10 @@
     </q-header>
 
     <q-page-container>
-      <q-page>
-        <router-view />
-        <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
-          <bug-reporter />
-        </q-page-sticky>
-      </q-page>
+      <router-view />
+      <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
+        <bug-reporter />
+      </q-page-sticky>
     </q-page-container>
   </q-layout>
 </template>
