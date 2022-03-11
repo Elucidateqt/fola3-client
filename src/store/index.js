@@ -6,6 +6,7 @@ import auth from './modules/auth'
 import permissions from './modules/permissions'
 import bugreports from "./modules/bugreports"
 import boards from './modules/boards'
+import cards from './modules/cards'
 import alert from './modules/alert'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
@@ -43,6 +44,7 @@ export default createStore({
     permissions,
     bugreports,
     boards,
+    cards,
     alert
   },
   plugins: [axiosPlugin]

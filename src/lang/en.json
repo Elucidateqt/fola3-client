@@ -3,7 +3,8 @@
         "base": {
             "greeting": "Hello {name}!",
             "submit": "Submit",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "update": "Update"
         },
         "bugreport": {
             "title": "Report a Bug",
@@ -14,7 +15,8 @@
         "nav": {
             "boards": "Boards",
             "home": "Home",
-            "profile": "Profile"
+            "profile": "Profile",
+            "collection": "Collection"
         },
         "auth": {
             "login": "Login",

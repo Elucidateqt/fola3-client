@@ -47,7 +47,7 @@ const routes = [
       requiresAuth: true
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Profile.vue"),
+      import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
   },
   {
     path: "/boards",
@@ -56,7 +56,16 @@ const routes = [
       requiresAuth: true
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/Boards.vue"),
+      import(/* webpackChunkName: "boards" */ "../views/Boards.vue"),
+  },
+  {
+    path: "/collection",
+    name: "Collection",
+    meta: {
+      requiresAuth: true
+    },
+    component: () =>
+      import(/* webpackChunkName: "collection" */ "../views/Collection.vue"),
   },
   {
     path: "/boards/:id",
@@ -65,7 +74,7 @@ const routes = [
       requiresAuth: true
     },
     component: () =>
-      import(/* webpackChunkName: "login" */ "../views/BoardDetails.vue"),
+      import(/* webpackChunkName: "boardDetails" */ "../views/BoardDetails.vue"),
   },
 ];
 

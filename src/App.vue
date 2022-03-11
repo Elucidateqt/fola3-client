@@ -32,6 +32,13 @@
             :label="$t('nav.profile')"
             :to="`/users/${uuid}`"
           />
+          <q-route-tab
+            flat
+            stretch
+            :aria-label="$t('nav.collection')"
+            :label="$t('nav.collection')"
+            to="/collection"
+          />
         </q-tabs>
         <div id="auth-buttons" class="row">
           <q-btn

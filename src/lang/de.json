@@ -4,7 +4,8 @@
             "greeting": "Hallo {name}!",
             "report_bug": "Einen Fehler melden",
             "submit": "Senden",
-            "cancel": "Abbrechen"
+            "cancel": "Abbrechen",
+            "update": "Aktualisieren"
         },
         "bugreport": {
             "title": "Eine Fehlfunktion melden",
@@ -15,7 +16,8 @@
         "nav": {
             "boards": "Boards",
             "home": "Start",
-            "profile": "Profil"
+            "profile": "Profil",
+            "collection": "Sammlung"
         },
         "auth": {
             "login": "Anmelden",
