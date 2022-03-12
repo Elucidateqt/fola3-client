@@ -1,4 +1,5 @@
 import axiosApi from '../../api/axios.js'
+import socket from '../../socket/socketio.js'
 
 const loadOwnBoards = async ({ state, commit }) => {
   try {
@@ -14,6 +15,15 @@ const loadOwnBoards = async ({ state, commit }) => {
     }
   } catch(err) {
       throw new Error(err)
+  }
+}
+
+const emitMessage = async ({ state, commit }, data) => {
+  try {
+    console.log("data", data)
+    socket.emit("message", {"message": data.message})
+  } catch (err) {
+    throw new Error(err)
   }
 }
 
@@ -95,6 +105,7 @@ export default {
         createBoard,
         loadOwnBoards,
         loadBoardDetails,
-        joinBoardByInvite
+        joinBoardByInvite,
+        emitMessage
     }
   }

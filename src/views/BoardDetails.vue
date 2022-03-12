@@ -4,7 +4,8 @@
       <div v-if="boardDetails !== null">
         name: {{boardDetails.name}}
         code: {{boardDetails.inviteCode}}
-
+        <q-input v-model="messageInput" filled label="message" />
+        <q-btn @click="sendMessage" flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="messageInput === ''" color="primary" />
         <q-btn v-if="canCopyToClipboard" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
       </div>
       <div v-else>
@@ -20,6 +21,13 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   name: "BoardDetails",
   components: {
+  },
+    data() {
+    return {
+      // counter only uses this.initialCounter as the initial value;
+      // it is disconnected from future prop updates.
+      messageInput: '',
+    }
   },
   computed: {
     canCreateBoards () {
@@ -44,7 +52,7 @@ export default {
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
-    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite']),
+    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await navigator.clipboard.writeText(this.inviteUrl)
@@ -53,6 +61,19 @@ export default {
           visible: true,
           message: this.$i18n.t('boards.link_copied'),
       })
+    },
+    async sendMessage () {
+      try {
+        await this.emitMessage({"message": this.messageInput})
+        this.messageInput = ''
+      } catch (err) {
+        console.error(err)
+        this.setAlert({
+          type: 'negative',
+          visible: true,
+          message: "error sending message",
+        })
+      }
     }
   },
 
