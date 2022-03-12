@@ -34,10 +34,11 @@
     :description="card.descriptions['en-US']"
     :external-link="card.knowledbaseUrl"
     :image-url="card.imageUrl"
-    :card-type="card.cardType"
+    :type="card.cardType"
     :interactionSubjectLeft="card.interactionSubjectLeft"
     :interactionSubjectRight="card.interactionSubjectRight"
     :interactionDirection="card.interactionDirection"
+    mode="edit"
     />
     <template v-slot:loading>
       <div class="row justify-center q-my-md">
@@ -46,7 +47,13 @@
     </template>
   </q-infinite-scroll>
   <q-page-sticky position="bottom-right" :offset="[18, 18]">
-    
+      <q-btn
+    round
+    color="accent"
+    :aria-label="$t('card.create')"
+    icon="add"
+    @click="showCardEditor = true"
+  />
   </q-page-sticky>
   </div>
 </q-page>
@@ -61,6 +68,9 @@ export default {
   components: {
     Card
   },
+  data: () => ({
+    showCardEditor: false,
+  }),
   computed: {
     canCreateBoards () {
       return this.userHasPermission()('BOARD:CREATE')
