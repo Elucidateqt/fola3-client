@@ -1,5 +1,5 @@
 <template>
-    <q-card v-if="mode == 'view'" @click="openExternalLink" class="card">
+    <q-card @click="openExternalLink" class="card-view" :draggable="isDraggable">
         <q-card-section class="text-center">
           {{cardName}}
         </q-card-section>
@@ -17,12 +17,13 @@
         </q-card-section>
       <q-separator />
         <q-card-section class="text-center">
-          <q-icon :name="getTypeIconName(typeModel.value)" size="md" color="primary" />
+          <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
         </q-card-section>
-      <q-separator />
     </q-card>
     
-    <q-card v-else>
+
+  <q-dialog v-model="isEditMode">
+    <q-card class="edit-dialog" @click="viewMode='view'">
       <q-card-section class="text-center">
           <q-input v-model="cardName" filled label="" :rules="nameRules" />
           <q-input v-model="extUrl" filled :label="$t('card.external_link')" :rules="urlRules" />
@@ -94,7 +95,7 @@
 
       <q-card-section v-else>
           <q-input v-model="imgUrl" filled label="" :rules="urlRules" />
-          <q-img :src="imgUrl"/>
+          <q-img class="card-image" :src="imgUrl"/>
       </q-card-section>
       <q-card-section class="row justify-center"> 
 
@@ -122,6 +123,7 @@
       
 
     </q-card>
+  </q-dialog>
 </template>
 
 <script>
@@ -132,7 +134,7 @@ export default {
   components: {
     
   },
-  props: ['uuid', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode'],
+  props: ['uuid', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
   data() {
     return {
       // counter only uses this.initialCounter as the initial value;
@@ -150,8 +152,9 @@ export default {
       typeModel: {
           label:'',
           icon: this.getTypeIconName(this.type || 'interaction'),
-          value: 'interaction'
+          value: this.type || 'interaction'
       },
+      isDraggable: this.allowDrag || false,
       typeOptions: [
         {
           label:'',
@@ -239,6 +242,9 @@ export default {
       return this.cardName.length >= this.nameMinLength && this.cardName.length <= this.nameMaxLength 
       && this.cardDescription.length >= this.descriptionMinLength && this.cardDescription.length <= this.descriptionMaxLength
       && !this.containsSpecialCharacters(this.cardName) && !this.containsSpecialCharacters(this.cardDescription)
+    },
+    isEditMode: function () {
+      return this.viewMode === 'edit'
     }
   },
   methods: {
@@ -303,5 +309,18 @@ export default {
 <style scoped>
 .card:hover {
     cursor: pointer;
+}
+
+.card-view {
+    width: 200px;
+  max-width: 50vw;
+  height: 200px;
+  max-height: 40vh;
+  overflow-y: scroll;
+}
+
+.edit-dialog {
+  width: 300px;
+  max-width: 80vw;
 }
 </style>

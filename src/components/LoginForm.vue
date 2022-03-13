@@ -24,6 +24,7 @@
     <q-tab-panels
       v-model="tab"
       animated
+      swipeable
     >
       <q-tab-panel
         name="login"
