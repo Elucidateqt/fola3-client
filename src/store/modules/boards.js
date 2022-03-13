@@ -20,7 +20,6 @@ const loadOwnBoards = async ({ state, commit }) => {
 
 const emitMessage = async ({ state, commit }, data) => {
   try {
-    console.log("data", data)
     socket.emit("message", {"message": data.message})
   } catch (err) {
     throw new Error(err)

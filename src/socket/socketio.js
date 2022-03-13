@@ -1,5 +1,5 @@
 import {io} from 'socket.io-client'
-const socket = io('http://localhost:3001',{
+const socket = io(`${process.env.VUE_APP_SOCKET_URL}:${process.env.VUE_APP_SOCKET_PORT}`,{
     path: "/socket/",
     withCredentials: true,
     extraHeaders: {

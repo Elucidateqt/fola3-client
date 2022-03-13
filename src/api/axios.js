@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const authClient = axios.create({
-    baseURL: `http://localhost:3001/`,
+    baseURL: `${process.env.VUE_APP_AUTH_API_URL}:${process.env.VUE_APP_AUTH_API_PORT}/`,
     headers: {
       "Accept": "application/json",
       "timeout": 1000
@@ -9,7 +9,7 @@ const authClient = axios.create({
 });
 
 const apiClient = axios.create({
-    baseURL: `http://localhost:3001/`,
+    baseURL: `${process.env.VUE_APP_AUTH_API_URL}:${process.env.VUE_APP_AUTH_API_PORT}/`,
     headers: {
       "Accept": "application/json",
       "timeout": 1000
