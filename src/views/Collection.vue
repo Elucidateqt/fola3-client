@@ -28,7 +28,7 @@
     </q-form>
 
   <q-infinite-scroll @load="loadMoreCards" :offset="5" class="row q-gutter-md">
-    <card v-for="card in cards" :key="card.uuid" class="col-xs-12 col-sm-4 col-md-4 col-lg-2"
+    <fola-card v-for="card in cards" :key="card.uuid" class="col-xs-12 col-sm-4 col-md-4 col-lg-2"
     :name="card.names['en-US']"
     :uuid="card.uuid"
     :description="card.descriptions['en-US']"
@@ -61,12 +61,12 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import Card from '@/components/Card.vue'
+import FolaCard from '@/components/FolaCard.vue'
 
 export default {
   name: "Collection",
   components: {
-    Card
+    FolaCard
   },
   data: () => ({
     showCardEditor: false,

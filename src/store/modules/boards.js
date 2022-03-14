@@ -26,6 +26,19 @@ const emitMessage = async ({ state, commit }, data) => {
   }
 }
 
+const emitPlayInteraction = async ({ state, commit }, card) => {
+  console.log("playinteractionemit")
+  try {
+    socket.emit("playInteraction", {"card": card})
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+const addInteractionToActiveBoard = (state, card) => {
+  state.activeBoard.boardState = state.activeBoard.boardState.concat([card])
+}
+
 const joinBoardByInvite = async ({ state, commit }, data) => {
   try {
     const res = await axiosApi.post(`/boards/${data.uuid}/users/me?inv=${data.inviteCode}`)
@@ -37,14 +50,14 @@ const joinBoardByInvite = async ({ state, commit }, data) => {
 const loadBoardDetails = async ({ state, commit }, uuid) => {
   try {
     const res = await axiosApi.get(`/boards/${uuid}`)
-    commit('SET_BOARD_DETAILS', {board: res.data.board})
+    commit('SET_ACTIVE_BOARD', {board: res.data.board})
   } catch (err) {
     throw new Error(err)
   }
 }
 
-const setBoardDetails = (state, data) => {
-  state.boardDetails = data.board
+const setactiveBoard = (state, data) => {
+  state.activeBoard = data.board
 }
 
 const createBoard = async ({ state, commit }, data) => {
@@ -77,7 +90,7 @@ const reset = (state) => {
   state.boards = []
   state.offset = 0
   state.hasMore = true
-  state.boardDetails = null
+  state.activeBoard = null
 }
 
 export default {
@@ -88,13 +101,14 @@ export default {
       limit: 5,
       offset: 0,
       boards: [],
-      boardDetails: null,
+      activeBoard: null,
     },
     mutations: {
       ADD_BOARDS: addBoards,
       INCREASE_OFFSET: increaseOffset,
       LOADING_FINISHED: loadingFinished,
-      SET_BOARD_DETAILS: setBoardDetails,
+      SET_ACTIVE_BOARD: setactiveBoard,
+      ADD_INTERACTION_TO_ACTIVE_BOARD: addInteractionToActiveBoard,
       RESET: reset
     },
     getters: {
@@ -105,6 +119,7 @@ export default {
         loadOwnBoards,
         loadBoardDetails,
         joinBoardByInvite,
-        emitMessage
+        emitMessage,
+        emitPlayInteraction
     }
   }

@@ -1,5 +1,5 @@
 <template>
-    <q-card @click="openExternalLink" class="card-view" :draggable="isDraggable">
+    <q-card @click="openExternalLink" class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getCurrentConfig)">
         <q-card-section class="text-center">
           {{cardName}}
         </q-card-section>
@@ -94,7 +94,7 @@
 
 
       <q-card-section v-else>
-          <q-input v-model="imgUrl" filled label="" :rules="urlRules" />
+          <q-input v-model="editorImgUrl" filled label="" :rules="urlRules" />
           <q-img class="card-image" :src="imgUrl"/>
       </q-card-section>
       <q-card-section class="row justify-center"> 
@@ -106,7 +106,8 @@
         stack-label
         label=""
         class="col-6"
-      >
+        emit-value
+        @updated="handleTypeSelection"      >
         <template v-slot:selected>
           <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
         </template>
@@ -127,9 +128,8 @@
 </template>
 
 <script>
-
 export default {
-  name: "Card",
+  name: "FolaCard",
 
   components: {
     
@@ -141,13 +141,19 @@ export default {
       // it is disconnected from future prop updates.
       cardUuid: this.uuid,
       cardName: this.name,
+      editorCardName: this.name,
       nameMinLength: 10,
       nameMaxLength: 128,
       descriptionMinLength: 10,
       descriptionMaxLength: 256,
       cardDescription: this.description,
+      editorCardDescription: this.description,
       extUrl: this.externalLink,
+      editorExtUrl: this.externalLink,
       imgUrl: this.imageUrl,
+      editorImgUrl: this.imageUrl,
+      cardType: this.type || 'interaction',
+      editorCardType: this.type,
       viewMode: this.mode || 'view',
       typeModel: {
           label:'',
@@ -224,6 +230,19 @@ export default {
     }
   },
   computed: {
+    getCurrentConfig: function () {
+      return {
+        "uuid": this.uuid,
+        "name": this.cardName,
+        "description": this.cardDescription,
+        "knowledbaseUrl": this.externalLink,
+        "imageUrl": this.imgUrl,
+        "cardType": this.type,
+        "interactionSubjectLeft": this.interactionSubjectLeft,
+        "interactionSubjectRight": this.interactionSubjectRight,
+        "interactionDirection": this.interactionDirection
+      }
+    },
     descriptionRules: function () {
       return [
       val => (val !== null && val !== '') || '  ',
@@ -252,6 +271,25 @@ export default {
       if(this.externalLink){
           window.open(this.externalLink , '_blank')
       }
+    },
+    handleTypeSelection: function (val){
+      console.log("selected", val)
+      this.editorCardType = val
+    },
+    handleDragStart: function (event, card) {
+            event.dataTransfer.dropEffect = 'move'
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('uuid', card.uuid)
+      event.dataTransfer.setData('name', card.name)
+      event.dataTransfer.setData('description', card.description),
+              event.dataTransfer.setData('knowledgebaseUrl', card.knowledbaseUrl),
+              event.dataTransfer.setData('imageUrl', card.imageUrl),
+              event.dataTransfer.setData('cardType', card.cardType),
+              event.dataTransfer.setData('interactionSubjectLeft', card.interactionSubjectLeft),
+              event.dataTransfer.setData('interactionSubjectRight', card.interactionSubjectRight),
+              event.dataTransfer.setData('interactionDirection', card.interactionDirection)
+      console.log("dragstart", event)
+      console.log(card)
     },
     containsSpecialCharacters: function (val){
       return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)

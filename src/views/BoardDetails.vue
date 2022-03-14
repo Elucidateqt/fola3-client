@@ -1,15 +1,36 @@
 <template>
   <q-page>
     <div class="q-pa-md row items-start q-gutter-md">
-      <div v-if="boardDetails !== null">
-        name: {{boardDetails.name}}
-        code: {{boardDetails.inviteCode}}
-        {{boardDetails}}
+      <div v-if="activeBoard !== null">
+        name: {{activeBoard.name}}
+        code: {{activeBoard.inviteCode}}
+        {{activeBoard}}
         
         <q-input v-model="messageInput" filled label="message" />
         <q-btn @click="sendMessage" flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="messageInput === ''" color="primary" />
         <q-btn v-if="canCopyToClipboard" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
-        <div style="height: 600px; width: 600px; background-color: grey;" @drop="handleCardDrop" @dragover="handleBoardDragOver"></div>
+        <div style="height: 80vh; width: 90vw; background-color: grey;" class="row" @drop="handleCardDrop($event)" @dragover.prevent @dragenter.prevent>
+          <div v-for="(column, index) in boardState" :key="`board_comumn_${index}`" class="col self-center">
+            <div class="q-pa-md row items-start q-gutter-md">
+              <fola-card 
+                v-for="interactionCard in column" 
+                :key="interactionCard.uuid" 
+
+                :name="interactionCard.name"
+                :uuid="interactionCard.uuid"
+                :description="interactionCard.description"
+                :external-link="interactionCard.knowledbaseUrl"
+                :image-url="interactionCard.imageUrl"
+                :type="interactionCard.cardType"
+                :interactionSubjectLeft="interactionCard.interactionSubjectLeft"
+                :interactionSubjectRight="interactionCard.interactionSubjectRight"
+                :interactionDirection="interactionCard.interactionDirection"
+                mode="view"
+                allow-drag="false"
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <div v-else>
         No board
@@ -32,11 +53,13 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import PlayerCardContainer from '@/components/PlayerCardContainer.vue'
+import FolaCard from '@/components/FolaCard.vue'
 
 export default {
   name: "BoardDetails",
   components: {
-    PlayerCardContainer
+    PlayerCardContainer,
+    FolaCard
   },
     data() {
     return {
@@ -44,6 +67,7 @@ export default {
       // it is disconnected from future prop updates.
       messageInput: '',
       showPlayerHands: false,
+      boardState: [],
       players: [
         {
           uuid: "a6173138-3c4e-4d00-949d-759416a9fe94",
@@ -152,13 +176,13 @@ export default {
       return this.userHasPermission()('BOARD:CREATE')
     },
     canCopyToClipboard () {
-      return this.boardDetails.inviteCode && navigator.clipboard
+      return this.activeBoard.inviteCode && navigator.clipboard
     },
     inviteUrl () {
-      return `${window.location.origin}/boards/${this.boardDetails.uuid}?inv=${this.boardDetails.inviteCode}`
+      return `${window.location.origin}/boards/${this.activeBoard.uuid}?inv=${this.activeBoard.inviteCode}`
     },
     ...mapState('permissions', ['permissions']),
-    ...mapState('boards', ['boardDetails'])
+    ...mapState('boards', ['activeBoard'])
   },
   async created () {
     if(this.$route.query.inv){
@@ -172,7 +196,7 @@ export default {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
     ...mapActions('player', ['loadOwnProfile']),
-    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage']),
+    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await navigator.clipboard.writeText(this.inviteUrl)
@@ -201,10 +225,25 @@ export default {
       }
     },
     handleBoardDragOver (e) {
-        console.log(e)
+    
     },
-    handleCardDrop () {
-
+    handleCardDrop (e) {
+      const card = {
+        "uuid" : e.dataTransfer.getData('uuid'),
+        "name":  e.dataTransfer.getData('name'),
+        "description":  e.dataTransfer.getData('description'),
+        "knowledbaseUrl":  e.dataTransfer.getData('knowledgebaseUrl'),
+        "imageUrl":  e.dataTransfer.getData('imageUrl'),
+        "cardType":  e.dataTransfer.getData('cardType'),
+        "interactionSubjectLeft":  e.dataTransfer.getData('interactionSubjectLeft'),
+        "interactionSubjectRight":  e.dataTransfer.getData('interactionSubjectRight'),
+        "interactionDirection":  e.dataTransfer.getData('interactionDirection')
+      }
+      if(card.cardType === "interaction"){
+        this.emitPlayInteraction(card)
+        this.boardState.push([card])
+      }
+  console.log('data received', card)
     }
   },
 

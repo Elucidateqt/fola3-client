@@ -28,5 +28,9 @@ export default function createSocketIOPlugin() {
           }
           store.commit("alert/SET_ALERT_CONFIG", alertConfig)
     })
+
+    socket.on('playInteraction', (data) => {
+      store.commit("boards/ADD_INTERACTION_TO_ACTIVE_BOARD", data.card)
+  })
   }
 }
