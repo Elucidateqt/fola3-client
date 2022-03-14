@@ -135,6 +135,7 @@ export default {
     
   },
   props: ['uuid', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
+  emits: ['dragstart'],
   data() {
     return {
       // counter only uses this.initialCounter as the initial value;

@@ -36,7 +36,11 @@ const emitPlayInteraction = async ({ state, commit }, card) => {
 }
 
 const addInteractionToActiveBoard = (state, card) => {
-  state.activeBoard.boardState = state.activeBoard.boardState.concat([card])
+  if(state.activeBoard.boardsState === null){
+    state.activeBoard.boardState = [[card]]
+  }else{
+    state.activeBoard.boardState = state.activeBoard.boardState.concat([[card]])
+  }
 }
 
 const joinBoardByInvite = async ({ state, commit }, data) => {
