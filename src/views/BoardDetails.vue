@@ -10,7 +10,8 @@
         <q-btn @click="sendMessage" flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="messageInput === ''" color="primary" />
         <q-btn v-if="canCopyToClipboard" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
         <div style="height: 80vh; width: 90vw; background-color: grey;" class="row" @drop="handleCardDrop($event)" @dragover.prevent @dragenter.prevent>
-          <div v-for="(column, index) in activeBoard.boardState" :key="`board_comumn_${index}`" class="col self-center">
+          <div class="text-white">{{activeBoardState}}</div>
+          <div v-for="(column, index) in activeBoardState" :key="`board_comumn_${index}`" class="col self-center">
             <div class="q-pa-md row items-start q-gutter-md">
               <fola-card 
                 v-for="interactionCard in column" 
@@ -36,17 +37,16 @@
         No board
       </div>
     </div>
-          <q-page-sticky position="bottom" :offset="[0, 20]">
-            <q-avatar size="5em" @click="showPlayerHands = !showPlayerHands"> 
-            <q-img src="@/assets/logo-transparent.svg" />
-            </q-avatar>
-             <div class="row">
-                <q-slide-transition>
-        <player-card-container :players="activeBoard.members" v-if="showPlayerHands" class="player-card-container" />
-    </q-slide-transition>
-             </div>
-          </q-page-sticky>
-
+    <q-page-sticky position="bottom" :offset="[0, 20]">
+      <q-avatar size="5em" @click="showPlayerHands = !showPlayerHands"> 
+        <q-img src="@/assets/logo-transparent.svg" />
+      </q-avatar>
+      <div class="row">
+        <q-slide-transition>
+          <player-card-container v-if="showPlayerHands" class="player-card-container" />
+        </q-slide-transition>
+      </div>
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -79,7 +79,7 @@ export default {
       return `${window.location.origin}/boards/${this.activeBoard.uuid}?inv=${this.activeBoard.inviteCode}`
     },
     ...mapState('permissions', ['permissions']),
-    ...mapState('boards', ['activeBoard'])
+    ...mapState('boards', ['activeBoard', 'activeBoardState'])
   },
   async created () {
     if(this.$route.query.inv){
@@ -93,7 +93,7 @@ export default {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
     ...mapActions('player', ['loadOwnProfile']),
-    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction']),
+    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitRemoveCard']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await navigator.clipboard.writeText(this.inviteUrl)
@@ -125,21 +125,13 @@ export default {
     
     },
     handleCardDrop (e) {
-      const card = {
-        "uuid" : e.dataTransfer.getData('uuid'),
-        "name":  e.dataTransfer.getData('name'),
-        "description":  e.dataTransfer.getData('description'),
-        "knowledbaseUrl":  e.dataTransfer.getData('knowledgebaseUrl'),
-        "imageUrl":  e.dataTransfer.getData('imageUrl'),
-        "cardType":  e.dataTransfer.getData('cardType'),
-        "interactionSubjectLeft":  e.dataTransfer.getData('interactionSubjectLeft'),
-        "interactionSubjectRight":  e.dataTransfer.getData('interactionSubjectRight'),
-        "interactionDirection":  e.dataTransfer.getData('interactionDirection')
-      }
+      const card = JSON.parse(e.dataTransfer.getData('card'))
+      const origin = JSON.parse(e.dataTransfer.getData('cardOrigin'))
+      this.activeDrag = card
       if(card.cardType === "interaction"){
         this.emitPlayInteraction(card)
+        this.emitRemoveCard({cardId: card.uuid, location: origin })
       }
-  console.log('data received', card)
     }
   },
 

@@ -10,17 +10,18 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab v-for="player in playerConfigs" :key="player.uuid" :name="player.uuid" :label="player.username" />
+        <q-tab v-for="player in activeBoardPlayers" :key="`hand_tab_${player.uuid}`" :name="player.uuid" :label="player.username" />
       </q-tabs>
 
       <q-separator />
 
       <q-tab-panels v-model="tab" animated swipeable>
-        <q-tab-panel v-for="player in playerConfigs" :key="player.uuid" :name="player.uuid">
+        <q-tab-panel v-for="player in activeBoardPlayers" :key="`hand_panel_${player.uuid}`" :name="player.uuid">
           <q-scroll-area class="player-card-container">
+            {{activeBoardHands}}
             <div class="q-pa-md row items-start q-gutter-md">
               <fola-card 
-                v-for="card in player.cards" 
+                v-for="card of activeBoardHands[player.uuid]" 
                 :key="card.uuid" 
 
                 :name="card.name"
@@ -34,7 +35,7 @@
                 :interactionDirection="card.interactionDirection"
                 mode="view"
                 allow-drag="true"
-                @dragstart="handleDragStart($event, card)"
+                @dragstart="handleDragStart($event, player.uuid)"
               />
             </div>
           </q-scroll-area>
@@ -55,33 +56,27 @@ export default defineComponent( {
   components: {
       FolaCard
   },
-  props: {
-      players: {
-          type: Array,
-          required: true
-      }
-  },
   data () {
       return {
           tab: this.uuid,
-          playerConfigs: this.players,
-
       }
   },
   computed: {
     ...mapState('player', ['username', 'uuid']),
-    bearerUsername: function () {
-        return this.username
-    }
+    ...mapState('boards', ['activeBoardPlayers', 'activeBoardHands'])
   },
   async created () {
       this.tab = this.uuid
   },
   methods: {
     ...mapActions('permissions', ['loadUserPermissions']),
-    handleDragStart: function (event, card) {
-      console.log("dragstart", event)
-      console.log(card)
+    handleDragStart: function (event, playerId) {
+      const origin = {
+        playerId: playerId,
+        container: "hand"
+      }
+      const originString = JSON.stringify(origin)
+      event.dataTransfer.setData('cardOrigin', originString)
     },
   },
 

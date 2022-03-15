@@ -274,23 +274,13 @@ export default {
       }
     },
     handleTypeSelection: function (val){
-      console.log("selected", val)
       this.editorCardType = val
     },
     handleDragStart: function (event, card) {
-            event.dataTransfer.dropEffect = 'move'
+      event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('uuid', card.uuid)
-      event.dataTransfer.setData('name', card.name)
-      event.dataTransfer.setData('description', card.description),
-              event.dataTransfer.setData('knowledgebaseUrl', card.knowledbaseUrl),
-              event.dataTransfer.setData('imageUrl', card.imageUrl),
-              event.dataTransfer.setData('cardType', card.cardType),
-              event.dataTransfer.setData('interactionSubjectLeft', card.interactionSubjectLeft),
-              event.dataTransfer.setData('interactionSubjectRight', card.interactionSubjectRight),
-              event.dataTransfer.setData('interactionDirection', card.interactionDirection)
-      console.log("dragstart", event)
-      console.log(card)
+      event.dataTransfer.setData('card', JSON.stringify(card))
+      this.$emit("dragstart", event)
     },
     containsSpecialCharacters: function (val){
       return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)

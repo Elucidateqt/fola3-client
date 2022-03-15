@@ -31,6 +31,18 @@ export default function createSocketIOPlugin() {
 
     socket.on('playInteraction', (data) => {
       store.commit("boards/ADD_INTERACTION_TO_ACTIVE_BOARD", data.card)
-  })
+    })
+
+    socket.on('removeCard', (data) => {
+      switch (data.location.container) {
+        case "hand":
+          store.commit("boards/REMOVE_CARD_FROM_PLAYER_HAND", {"cardId": data.cardId, "playerId": data.location.playerId})
+          break;
+        case "board":
+          store.commit("boards")
+        default:
+          break;
+      }
+    })
   }
 }

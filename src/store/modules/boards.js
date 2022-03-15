@@ -27,7 +27,6 @@ const emitMessage = async ({ state, commit }, data) => {
 }
 
 const emitPlayInteraction = async ({ state, commit }, card) => {
-  console.log("playinteractionemit")
   try {
     socket.emit("playInteraction", {"card": card})
   } catch (err) {
@@ -35,12 +34,28 @@ const emitPlayInteraction = async ({ state, commit }, card) => {
   }
 }
 
-const addInteractionToActiveBoard = (state, card) => {
-  if(state.activeBoard.boardsState === null){
-    state.activeBoard.boardState = [[card]]
-  }else{
-    state.activeBoard.boardState = state.activeBoard.boardState.concat([[card]])
+const emitRemoveCard = async ({ state, commit }, data) => {
+  try {
+    socket.emit("removeCard", {cardId: data.cardId, location: data.location})
+  } catch (err) {
+    throw new Error(err)
   }
+}
+
+const addInteractionToActiveBoard = (state, card) => {
+  state.activeBoardState.push([card])
+}
+
+const removeCardFromPlayerHand = (state, data) => {
+  const index = state.activeBoardHands[data.playerId].map(card => card.uuid).indexOf(data.cardId)
+  state.activeBoardHands[data.playerId].splice(index, 1)
+}
+
+const getActiveBoardPlayers = (state) => {
+  if(state.activeBoard && state.activeBoard.members){
+    return state.activeBoard.members
+  }
+  return []
 }
 
 const joinBoardByInvite = async ({ state, commit }, data) => {
@@ -62,6 +77,10 @@ const loadBoardDetails = async ({ state, commit }, uuid) => {
 
 const setactiveBoard = (state, data) => {
   state.activeBoard = data.board
+  data.board.members.forEach(member => {
+    state.activeBoardPlayers[member.uuid] = {"uuid": member.uuid, "username": member.username}
+    state.activeBoardHands[member.uuid] = member.cards
+  });
 }
 
 const createBoard = async ({ state, commit }, data) => {
@@ -105,7 +124,10 @@ export default {
       limit: 5,
       offset: 0,
       boards: [],
-      activeBoard: null,
+      activeBoard: {},
+      activeBoardState: [],
+      activeBoardPlayers: {},
+      activeBoardHands: {},
     },
     mutations: {
       ADD_BOARDS: addBoards,
@@ -113,10 +135,11 @@ export default {
       LOADING_FINISHED: loadingFinished,
       SET_ACTIVE_BOARD: setactiveBoard,
       ADD_INTERACTION_TO_ACTIVE_BOARD: addInteractionToActiveBoard,
+      REMOVE_CARD_FROM_PLAYER_HAND: removeCardFromPlayerHand,
       RESET: reset
     },
     getters: {
-
+      activeBoardMembers : getActiveBoardPlayers
     },
     actions: {
         createBoard,
@@ -124,6 +147,7 @@ export default {
         loadBoardDetails,
         joinBoardByInvite,
         emitMessage,
-        emitPlayInteraction
+        emitPlayInteraction,
+        emitRemoveCard
     }
   }
