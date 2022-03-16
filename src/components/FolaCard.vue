@@ -1,130 +1,169 @@
 <template>
-    <q-card @click="openExternalLink" class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getCurrentConfig)">
-        <q-card-section class="text-center">
-          {{cardName}}
-        </q-card-section>
-      <q-separator />
-      <q-card-section v-if="typeModel.value === 'interaction'" class="row justify-around">
-        <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
-        <q-icon class="col-4" :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
-        <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
-      </q-card-section>
-      <q-card-section v-else>
-        <q-img :src="imgUrl" />
-      </q-card-section>
-      <q-card-section>
-          {{ cardDescription }}
-        </q-card-section>
-      <q-separator />
-        <q-card-section class="text-center">
-          <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
-        </q-card-section>
-    </q-card>
+<div>
+  <div  v-for="plugin in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
+<q-chip square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+  </div>
+  <q-card class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
+    <q-card-section class="text-center">
+      {{cardName}}
+    </q-card-section>
+    <q-separator />
+    <q-card-section v-if="typeModel.value === 'interaction'" class="row justify-around">
+      <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
+      <q-icon class="col-4" :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
+      <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
+    </q-card-section>
+    <q-card-section v-else>
+      <q-img :src="imgUrl" />
+    </q-card-section>
+    <q-card-section>
+      {{ cardDescription }}
+    </q-card-section>
+    <q-separator />
+    <q-card-section class="text-center">
+      <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
+    </q-card-section>
+    <q-menu touch-position>
+      <q-list style="min-width: 100px">
+        <q-item clickable @click="openExternalLink"  v-close-popup>
+          <q-item-section>{{$t('nav.visit_link')}}</q-item-section>
+        </q-item>
+        <q-item clickable @click="viewMode = 'edit';editFormVisible = true" v-close-popup>
+          <q-item-section>{{$t('base.edit')}}</q-item-section>
+        </q-item>
+        <q-item clickable @click="this.$emit('deleteCard', uuid)" v-close-popup>
+          <q-item-section>{{$t('base.delete')}}</q-item-section>
+        </q-item>
+      </q-list>
+    </q-menu>
+  </q-card>
+    <div  v-for="plugin in addonsBot" :key="plugin.uuid" class="row items-start q-gutter-xs">
+<q-chip square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+  </div>
     
 
-  <q-dialog v-model="isEditMode">
-    <q-card class="edit-dialog" @click="viewMode='view'">
-      <q-card-section class="text-center">
-          <q-input v-model="cardName" filled label="" :rules="nameRules" />
-          <q-input v-model="extUrl" filled :label="$t('card.external_link')" :rules="urlRules" />
-      </q-card-section>
-      <q-card-section v-if="typeModel.value === 'interaction'" class="row justify-center">
+  <q-dialog v-model="editFormVisible">
+    <q-card class="edit-dialog">
+      <q-form ref="reportForm" @submit.prevent="submitCardForm">
+        <q-card-section class="text-center">
+          <q-input v-model="editorCardName" filled label="" :rules="nameRules" />
+          <span class="text-start">
+            {{$t('validation.curr_length', {"curr": editorCardName.length, "max": nameMaxLength})}}
+          </span>
+          <q-input v-model="editorExtUrl" filled :label="$t('card.external_link')" />
+        </q-card-section>
+        <q-card-section v-if="typeModel.value === 'interaction'" class="row justify-center">
+          <q-select
+            filled
+            v-model="subjectLeftModel"
+            :options="interactionSubjectOptions"
+            stack-label
+            label=""
+            class="col-4"
+          >
+            <template v-slot:selected>
+              <q-icon :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <q-icon :name="scope.opt.icon" color="primary" />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
-      <q-select
-        filled
-        v-model="subjectLeftModel"
-        :options="interactionSubjectOptions"
-        stack-label
-        label=""
-        class="col-4"
-      >
-        <template v-slot:selected>
-          <q-icon :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section avatar>
-              <q-icon :name="scope.opt.icon" color="primary" />
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+          <q-select
+            filled
+            v-model="interactionDirectionModel"
+            :options="interactionDirectionOptions"
+            stack-label
+            label=""
+            class="col-4"
+          >
+            <template v-slot:selected>
+              <q-icon :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <q-icon :name="scope.opt.icon" color="primary" />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
 
-      <q-select
-        filled
-        v-model="interactionDirectionModel"
-        :options="interactionDirectionOptions"
-        stack-label
-        label=""
-        class="col-4"
-      >
-        <template v-slot:selected>
-          <q-icon :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section avatar>
-              <q-icon :name="scope.opt.icon" color="primary" />
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-
-      <q-select
-        filled
-        v-model="subjectRightModel"
-        :options="interactionSubjectOptions"
-        stack-label
-        label=""
-        class="col-4"
-      >
-        <template v-slot:selected>
-          <q-icon :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section avatar>
-              <q-icon :name="scope.opt.icon" color="primary" />
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
-
-      </q-card-section>
+          <q-select
+            filled
+            v-model="subjectRightModel"
+            :options="interactionSubjectOptions"
+            stack-label
+            label=""
+            class="col-4"
+          >
+            <template v-slot:selected>
+              <q-icon :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <q-icon :name="scope.opt.icon" color="primary" />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-card-section>
 
 
-      <q-card-section v-else>
-          <q-input v-model="editorImgUrl" filled label="" :rules="urlRules" />
+        <q-card-section v-else>
+          <q-input v-model="editorImgUrl" filled label="" />
           <q-img class="card-image" :src="imgUrl"/>
-      </q-card-section>
-      <q-card-section class="row justify-center"> 
+        </q-card-section>
 
-      <q-select
-        filled
-        v-model="typeModel"
-        :options="typeOptions"
-        stack-label
-        label=""
-        class="col-6"
-        emit-value
-        @updated="handleTypeSelection"      >
-        <template v-slot:selected>
-          <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
-        </template>
-        <template v-slot:option="scope">
-          <q-item v-bind="scope.itemProps">
-            <q-item-section avatar>
-              <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+        <q-separator />
 
-      </q-card-section>
-      
+        
+        <q-card-section class="scroll">
+          <q-input v-model="editorCardDescription" filled type="textarea" :rules="descriptionRules"/>
+          <span>
+            {{$t('validation.curr_length', {"curr": editorCardDescription.length, "max": descriptionMaxLength})}}
+          </span>
+        </q-card-section>
 
+        <q-separator />
+
+        <q-card-section class="row justify-center"> 
+          <q-select
+            filled
+            v-model="typeModel"
+            :options="typeOptions"
+            stack-label
+            label=""
+            class="col-6"
+             >
+            <template v-slot:selected>
+              <q-icon :name="getTypeIconName(typeModel.value)" size="md" :color="getTypeColor(typeModel.value)" />
+            </template>
+            <template v-slot:option="scope">
+              <q-item v-bind="scope.itemProps">
+                <q-item-section avatar>
+                  <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="around">
+          <q-btn flat :label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :aria-label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :disable="!isFormValid" color="primary" type="submit" v-close-popup />
+          <q-btn flat :label="$t('base.cancel')" :aria-label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
+        </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
+</div>
 </template>
 
 <script>
@@ -134,13 +173,14 @@ export default {
   components: {
     
   },
-  props: ['uuid', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
-  emits: ['dragstart'],
+  props: ['uuid', 'addonsTop', 'addonsBot', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
+  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted'],
   data() {
     return {
-      // counter only uses this.initialCounter as the initial value;
-      // it is disconnected from future prop updates.
+      activeDrag: null,
       cardUuid: this.uuid,
+      pluginsTop: this.type === 'interaction' ? this.addonsTop : [],
+      pluginsBot: this.type === 'interaction' ? this.addonsBot : [],
       cardName: this.name,
       editorCardName: this.name,
       nameMinLength: 10,
@@ -154,8 +194,8 @@ export default {
       imgUrl: this.imageUrl,
       editorImgUrl: this.imageUrl,
       cardType: this.type || 'interaction',
-      editorCardType: this.type,
       viewMode: this.mode || 'view',
+      editFormVisible: this.mode === 'edit' || this.mode === 'create',
       typeModel: {
           label:'',
           icon: this.getTypeIconName(this.type || 'interaction'),
@@ -231,7 +271,7 @@ export default {
     }
   },
   computed: {
-    getCurrentConfig: function () {
+    getViewConfig: function () {
       return {
         "uuid": this.uuid,
         "name": this.cardName,
@@ -241,14 +281,29 @@ export default {
         "cardType": this.type,
         "interactionSubjectLeft": this.interactionSubjectLeft,
         "interactionSubjectRight": this.interactionSubjectRight,
-        "interactionDirection": this.interactionDirection
+        "interactionDirection": this.interactionDirection,
+        "addonsTop": this.pluginsTop,
+        "addonsBot": this.pluginsBot
+      }
+    },
+    getEditConfig: function () {
+      return {
+        "uuid": this.uuid,
+        "name": this.editorCardName,
+        "description": this.editorCardDescription,
+        "knowledbaseUrl": this.editorExtUrl,
+        "imageUrl": this.editorImgUrl,
+        "cardType": this.typeModel.value,
+        "interactionSubjectLeft": this.subjectLeftModel.value,
+        "interactionSubjectRight": this.subjectRightModel.value,
+        "interactionDirection": this.interactionDirectionModel.value
       }
     },
     descriptionRules: function () {
       return [
       val => (val !== null && val !== '') || '  ',
-      val => (val.length >= this.descriptionMin) || this.$i18n.t('validation.min_length', {"min": this.descriptionMinLength}),
-      val => (val.length <= this.descriptionMax) || this.$i18n.t('validation.max_length', {"max": this.descriptionMaxLength  }),
+      val => (val.length >= this.descriptionMinLength) || this.$i18n.t('validation.min_length', {"min": this.descriptionMinLength}),
+      val => (val.length <= this.descriptionMaxLength) || this.$i18n.t('validation.max_length', {"max": this.descriptionMaxLength  }),
       val => !this.containsSpecialCharacters(val) || this.$i18n.t('validation.no_special_characters')
     ]},
     nameRules: function () {
@@ -259,12 +314,9 @@ export default {
       val => !this.containsSpecialCharacters(val) || this.$i18n.t('validation.no_special_characters')
     ]},
     isFormValid: function () {
-      return this.cardName.length >= this.nameMinLength && this.cardName.length <= this.nameMaxLength 
-      && this.cardDescription.length >= this.descriptionMinLength && this.cardDescription.length <= this.descriptionMaxLength
-      && !this.containsSpecialCharacters(this.cardName) && !this.containsSpecialCharacters(this.cardDescription)
-    },
-    isEditMode: function () {
-      return this.viewMode === 'edit'
+      return this.editorCardName.length >= this.nameMinLength && this.editorCardName.length <= this.nameMaxLength 
+      && this.editorCardDescription.length >= this.descriptionMinLength && this.editorCardDescription.length <= this.descriptionMaxLength
+      && !this.containsSpecialCharacters(this.editorCardName) && !this.containsSpecialCharacters(this.editorCardDescription)
     }
   },
   methods: {
@@ -273,14 +325,25 @@ export default {
           window.open(this.externalLink , '_blank')
       }
     },
-    handleTypeSelection: function (val){
-      this.editorCardType = val
-    },
     handleDragStart: function (event, card) {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.setData('card', JSON.stringify(card))
       this.$emit("dragstart", event)
+    },
+    handleDragEnter: function (event) {
+      const card = JSON.parse(e.dataTransfer.getData('card'))
+      this.activeDrag = card
+    },
+    submitCardForm: function (event, val) {
+      const config = this.getEditConfig
+      if(this.viewMode === 'edit'){
+        this.$emit('cardEditSubmitted', config)
+      }else{
+        this.$emit('cardCreateSubmitted', config)
+      }
+      this.viewMode = 'view'
+      this.editFormVisible = false
     },
     containsSpecialCharacters: function (val){
       return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)
@@ -341,11 +404,16 @@ export default {
 }
 
 .card-view {
-    width: 200px;
+  width: 200px;
   max-width: 50vw;
   height: 200px;
   max-height: 40vh;
   overflow-y: scroll;
+}
+
+.plugin-chip {
+  width: 200px;
+  max-width: 50vw;
 }
 
 .edit-dialog {

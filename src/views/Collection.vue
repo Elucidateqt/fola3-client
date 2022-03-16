@@ -50,7 +50,7 @@
       <q-btn
     round
     color="accent"
-    :aria-label="$t('card.create')"
+    :aria-label="$t('base.create')"
     icon="add"
     @click="showCardEditor = true"
   />

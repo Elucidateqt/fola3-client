@@ -5,7 +5,11 @@
             "report_bug": "Einen Fehler melden",
             "submit": "Senden",
             "cancel": "Abbrechen",
-            "update": "Aktualisieren"
+            "create": "Erstellen",
+            "update": "Aktualisieren",
+            "delete": "Löschen",
+            "edit": "Bearbeiten",
+            "save": "Speichern"
         },
         "bugreport": {
             "title": "Eine Fehlfunktion melden",
@@ -17,7 +21,8 @@
             "boards": "Boards",
             "home": "Start",
             "profile": "Profil",
-            "collection": "Sammlung"
+            "collection": "Sammlung",
+            "visit_link": "Link besuchen"
         },
         "auth": {
             "login": "Anmelden",
@@ -43,6 +48,9 @@
             "updated_at": "Geändert am {date}",
             "copy_link": "Freigabelink kopieren",
             "link_copied": "Link kopiert"
+        },
+        "card": {
+            "external_link": "Externer Link"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

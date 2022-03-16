@@ -34,6 +34,23 @@ const emitPlayInteraction = async ({ state, commit }, card) => {
   }
 }
 
+const emitAddCard = async ({ state, commit }, data) => {
+  try {
+    socket.emit("addCard", {card: data.card, location: data.location})
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+const emitUpdateCard = async ({ state, commit }, data) => {
+  console.log("emitting update card", data)
+  try {
+    socket.emit("updateCard", {card: data.card, location: data.location})
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
 const emitRemoveCard = async ({ state, commit }, data) => {
   try {
     socket.emit("removeCard", {cardId: data.cardId, location: data.location})
@@ -46,9 +63,34 @@ const addInteractionToActiveBoard = (state, card) => {
   state.activeBoardState.push([card])
 }
 
+const removeCardFromBoard = (state, data) => {
+  console.log("removing card from board", data)
+  state.activeBoardState[data.column].splice(data.index, 1)
+  if(state.activeBoardState[data.column].length === 0){
+    state.activeBoardState.splice(data.column, 1)
+  }
+}
+
+
+const addCardToPlayerHand = (state, data) => {
+  state.activeBoardHands[data.playerId].push(data.card)
+}
+
+
 const removeCardFromPlayerHand = (state, data) => {
   const index = state.activeBoardHands[data.playerId].map(card => card.uuid).indexOf(data.cardId)
   state.activeBoardHands[data.playerId].splice(index, 1)
+}
+
+
+const updateCardInPlayerHand = (state, data) => {
+  console.log("updating card in hand", data)
+  state.activeBoardHands[data.playerId][data.index] = data.card
+}
+
+const updateCardOnBoard = (state, data) => {
+  console.log("updating card on board", data)
+  state.activeBoardState[data.column][data.index] = data.card
 }
 
 const getActiveBoardPlayers = (state) => {
@@ -126,6 +168,7 @@ export default {
       boards: [],
       activeBoard: {},
       activeBoardState: [],
+      activeAddonCards: {},
       activeBoardPlayers: {},
       activeBoardHands: {},
     },
@@ -135,7 +178,11 @@ export default {
       LOADING_FINISHED: loadingFinished,
       SET_ACTIVE_BOARD: setactiveBoard,
       ADD_INTERACTION_TO_ACTIVE_BOARD: addInteractionToActiveBoard,
+      REMOVE_CARD_FROM_BOARD: removeCardFromBoard,
+      ADD_CARD_TO_PLAYER_HAND: addCardToPlayerHand,
       REMOVE_CARD_FROM_PLAYER_HAND: removeCardFromPlayerHand,
+      UPDATE_CARD_IN_PLAYER_HAND: updateCardInPlayerHand,
+      UPDATE_CARD_ON_BOARD: updateCardOnBoard,
       RESET: reset
     },
     getters: {
@@ -148,6 +195,8 @@ export default {
         joinBoardByInvite,
         emitMessage,
         emitPlayInteraction,
+        emitAddCard,
+        emitUpdateCard,
         emitRemoveCard
     }
   }

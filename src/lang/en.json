@@ -4,7 +4,11 @@
             "greeting": "Hello {name}!",
             "submit": "Submit",
             "cancel": "Cancel",
-            "update": "Update"
+            "create": "Create",
+            "update": "Update",
+            "delete": "Delete",
+            "edit": "Edit",
+            "save": "Save"
         },
         "bugreport": {
             "title": "Report a Bug",
@@ -16,7 +20,8 @@
             "boards": "Boards",
             "home": "Home",
             "profile": "Profile",
-            "collection": "Collection"
+            "collection": "Collection",
+            "visit_link": "Link besuchen"
         },
         "auth": {
             "login": "Login",
@@ -42,6 +47,9 @@
             "updated_at": "Updated at {date}",
             "copy_link": "Copy invite link",
             "link_copied": "Link copied"
+        },
+        "card": {
+            "external_link": "External Link"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",
