@@ -1,11 +1,11 @@
 <template>
 <div>
-  <div  v-for="plugin in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
-<q-chip square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+  <div  v-for="(plugin, index) in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
+<q-chip square removable @remove="handlePluginRemove($event, 'addonsTop', index)" text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
   </div>
   <q-card class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
     <q-card-section class="text-center">
-      {{cardName}}
+      {{name}}
     </q-card-section>
     <q-separator />
     <q-card-section v-if="typeModel.value === 'interaction'" class="row justify-around">
@@ -14,10 +14,10 @@
       <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
     </q-card-section>
     <q-card-section v-else>
-      <q-img :src="imgUrl" />
+      <q-img :src="imageUrl" />
     </q-card-section>
     <q-card-section>
-      {{ cardDescription }}
+      {{ description }}
     </q-card-section>
     <q-separator />
     <q-card-section class="text-center">
@@ -25,6 +25,12 @@
     </q-card-section>
     <q-menu touch-position>
       <q-list style="min-width: 100px">
+        <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {card: this.getViewConfig})"  v-close-popup>
+          <q-item-section>{{$t('card.pick_up')}}</q-item-section>
+                  <q-item-section avatar>
+          <q-icon color="primary" name="pan_tool" />
+        </q-item-section>
+        </q-item>
         <q-item clickable @click="openExternalLink"  v-close-popup>
           <q-item-section>{{$t('nav.visit_link')}}</q-item-section>
         </q-item>
@@ -37,8 +43,8 @@
       </q-list>
     </q-menu>
   </q-card>
-    <div  v-for="plugin in addonsBot" :key="plugin.uuid" class="row items-start q-gutter-xs">
-<q-chip square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+    <div  v-for="(plugin, index) in addonsBot" :key="plugin.uuid" class="row items-start q-gutter-xs">
+<q-chip removable @remove="handlePluginRemove($event, 'addonsBot', index)" square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
   </div>
     
 
@@ -117,7 +123,7 @@
 
         <q-card-section v-else>
           <q-input v-model="editorImgUrl" filled label="" />
-          <q-img class="card-image" :src="imgUrl"/>
+          <q-img class="card-image" :src="editorImgUrl"/>
         </q-card-section>
 
         <q-separator />
@@ -173,9 +179,10 @@ export default {
   components: {
     
   },
-  props: ['uuid', 'addonsTop', 'addonsBot', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
-  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted'],
+  props: ['uuid', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
+  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'deleteCard', 'pickUpCard'],
   data() {
+    //TODO: use properties directly in view mode and internal edit models in edit mode template
     return {
       activeDrag: null,
       cardUuid: this.uuid,
@@ -344,6 +351,25 @@ export default {
       }
       this.viewMode = 'view'
       this.editFormVisible = false
+    },
+    getAddonConfig: function (container, index) {
+      return {
+        "uuid": this[container][index].uuid,
+        "name": this[container][index].name,
+        "description": this[container][index].description,
+        "knowledbaseUrl": this[container][index].knowledbaseUrl,
+        "imageUrl": this[container][index].imageUrl,
+        "cardType": this[container][index].cardType,
+        "interactionSubjectLeft": this[container][index].interactionSubjectLeft,
+        "interactionSubjectRight": this[container][index].interactionSubjectRight,
+        "interactionDirection": this[container][index].interactionDirection
+      }
+    },
+    handlePluginRemove: function (event, container, index ){
+      const config = this.getViewConfig
+      const plugin = this.getAddonConfig(container, index)
+      config[container].splice(index, 1)
+      this.$emit("addonRemoved", {"addon": plugin, "newConfig": config, "origin": container})
     },
     containsSpecialCharacters: function (val){
       return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)

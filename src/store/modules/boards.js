@@ -43,7 +43,6 @@ const emitAddCard = async ({ state, commit }, data) => {
 }
 
 const emitUpdateCard = async ({ state, commit }, data) => {
-  console.log("emitting update card", data)
   try {
     socket.emit("updateCard", {card: data.card, location: data.location})
   } catch (err) {
@@ -64,7 +63,6 @@ const addInteractionToActiveBoard = (state, card) => {
 }
 
 const removeCardFromBoard = (state, data) => {
-  console.log("removing card from board", data)
   state.activeBoardState[data.column].splice(data.index, 1)
   if(state.activeBoardState[data.column].length === 0){
     state.activeBoardState.splice(data.column, 1)
@@ -84,12 +82,10 @@ const removeCardFromPlayerHand = (state, data) => {
 
 
 const updateCardInPlayerHand = (state, data) => {
-  console.log("updating card in hand", data)
   state.activeBoardHands[data.playerId][data.index] = data.card
 }
 
 const updateCardOnBoard = (state, data) => {
-  console.log("updating card on board", data)
   state.activeBoardState[data.column][data.index] = data.card
 }
 

@@ -5,7 +5,7 @@
       class="row nowrap"
     >
       <q-toolbar class="bg-primary text-white">
-        <q-toolbar-title> My App </q-toolbar-title>
+        <q-toolbar-title> FOLA³ </q-toolbar-title>
         <q-tabs
           v-if="isLoggedIn"
         >

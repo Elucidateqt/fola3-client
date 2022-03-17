@@ -18,7 +18,6 @@
       <q-tab-panels v-model="tab" animated swipeable>
         <q-tab-panel v-for="player in activeBoardPlayers" :key="`hand_panel_${player.uuid}`" :name="player.uuid" @drop.prevent="handleCardDrop">
           <q-scroll-area class="player-card-container">
-            {{activeBoardHands[player.uuid]}}
             <div class="q-pa-md row items-start q-gutter-md">
               <fola-card 
                 v-for="(card, index) in activeBoardHands[player.uuid]" 
@@ -78,9 +77,10 @@ export default defineComponent( {
   components: {
       FolaCard
   },
+  props: ['selectedHand'],
   data () {
       return {
-          tab: this.uuid,
+          tab: this.selectedHand,
           activeDrag: null,
           cardCreatorVisible: false,
           dummyAddons: [
@@ -110,25 +110,19 @@ export default defineComponent( {
       this.emitUpdateCard({card: data.card, location: {container: "hand", playerId: data.player, index: data.index} })
     },
     handleCardDrop (e, uuid) {
-      console.log("dropEvent")
       const card = JSON.parse(e.dataTransfer.getData('card'))
       const origin = JSON.parse(e.dataTransfer.getData('cardOrigin'))
-      this.activeDrag = card
-      console.log("card received", this.activeDrag)
-        console.log("card received", card)
-        this.emitAddCard({card: card, target: {container: "hand", playerId: uuid}})
-        this.emitRemoveCard({cardId: card.uuid, location: origin })
+      this.activeDrag = null
+      this.emitAddCard({card: card, target: {container: "hand", playerId: uuid}})
+      this.emitRemoveCard({cardId: card.uuid, location: origin })
     },
     handleCardCreation (e, playerId) {
-      console.log("handleCardCreation", e)
       this.emitAddCard({"card": e, location: {container: "hand", playerId: playerId}})
       this.cardCreatorVisible = false
-      console.log("card created",e)
     },
     //TODO: handle deletions using splice instead of filter and remove card
     handleCardDelete (e, playerId, cardIndex, card) {
       this.emitRemoveCard({cardId: card.uuid, location: {playerId: playerId, container: "hand", index: cardIndex}})
-      console.log("card deleted")
     }
   },
 

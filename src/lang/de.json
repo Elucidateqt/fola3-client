@@ -50,7 +50,8 @@
             "link_copied": "Link kopiert"
         },
         "card": {
-            "external_link": "Externer Link"
+            "external_link": "Externer Link",
+            "pick_up": "Aufheben"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

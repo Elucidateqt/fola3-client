@@ -34,7 +34,6 @@ export default function createSocketIOPlugin() {
     })
 
     socket.on('addCard', (data) => {
-      console.log("updateCardReceived")
       switch (data.location.container) {
         case "hand":
           store.commit("boards/ADD_CARD_TO_PLAYER_HAND", {"card": data.card, "playerId": data.location.playerId})
@@ -53,7 +52,6 @@ export default function createSocketIOPlugin() {
           store.commit("boards/REMOVE_CARD_FROM_PLAYER_HAND", {"cardId": data.cardId, "playerId": data.location.playerId})
           break;
         case "board":
-          console.log("remove card received by socket", data)
           store.commit("boards/REMOVE_CARD_FROM_BOARD", {"column": data.location.column, "index": data.location.index})
         default:
           break;
@@ -61,7 +59,6 @@ export default function createSocketIOPlugin() {
     })
 
     socket.on('updateCard', (data) => {
-      console.log("updateCardReceived", data)
       switch (data.location.container) {
         case "hand":
           store.commit("boards/UPDATE_CARD_IN_PLAYER_HAND", {"card": data.card, "playerId": data.location.playerId, "index": data.location.index})

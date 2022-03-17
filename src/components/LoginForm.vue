@@ -111,7 +111,7 @@ export default {
         if(this.$route.query.redirect){
           this.$router.push(this.$route.query.redirect)
         }else{
-          this.$router.push({name: 'Home'})
+          this.$router.push({name: 'Boards'})
         }
       } catch (err) {
         console.error('Error logging in: ', err)
