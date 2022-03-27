@@ -58,7 +58,7 @@
             icon="login"
             to="/login"
           />
-          <q-seperator dark vertical />
+          <q-separator dark vertical />
         </div>
         <locale-changer />
       </q-toolbar>

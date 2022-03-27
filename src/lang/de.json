@@ -51,7 +51,8 @@
         },
         "card": {
             "external_link": "Externer Link",
-            "pick_up": "Aufheben"
+            "pick_up": "Aufheben",
+            "change_cardset": "Kartenset ändern"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

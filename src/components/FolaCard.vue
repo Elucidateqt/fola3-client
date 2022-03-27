@@ -1,10 +1,11 @@
 <template>
 <div>
   <div  v-for="(plugin, index) in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
-<q-chip square removable @remove="handlePluginRemove($event, 'addonsTop', index)" text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+    <q-chip square removable @remove="handlePluginRemove($event, 'addonsTop', index)" text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
   </div>
   <q-card class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
     <q-card-section class="text-center">
+      {{setOptions}}
       {{name}}
     </q-card-section>
     <q-separator />
@@ -37,8 +38,26 @@
         <q-item clickable @click="viewMode = 'edit';editFormVisible = true" v-close-popup>
           <q-item-section>{{$t('base.edit')}}</q-item-section>
         </q-item>
-        <q-item clickable @click="this.$emit('deleteCard', uuid)" v-close-popup>
+        <q-item clickable @click="this.$emit('cardDeleted', uuid)" v-close-popup>
           <q-item-section>{{$t('base.delete')}}</q-item-section>
+        </q-item>
+        <q-item clickable v-if="setOptions && setOptions.length > 0">
+        <q-item-section>{{$t('card.change_cardset')}}</q-item-section>
+            <q-item-section side>
+              <q-icon name="keyboard_arrow_right" />
+            </q-item-section>
+            <q-menu anchor="top end" self="top start">
+              <q-item v-for="set in setOptions" :key="set.value">
+                <q-item-section clickable @click="$emit('setChanged', {'newSet': set.value})">
+                  {{ set.label }}
+                </q-item-section>
+                <q-item-section side>
+                  <q-avatar>
+                    <q-img :src="set['checked-icon']" />
+                  </q-avatar>
+                </q-item-section>
+              </q-item>
+            </q-menu>
         </q-item>
       </q-list>
     </q-menu>
@@ -48,7 +67,7 @@
   </div>
     
 
-  <q-dialog v-model="editFormVisible">
+  <q-dialog v-model="editFormVisible" @hide="$emit('editorClosed')">
     <q-card class="edit-dialog">
       <q-form ref="reportForm" @submit.prevent="submitCardForm">
         <q-card-section class="text-center">
@@ -179,8 +198,8 @@ export default {
   components: {
     
   },
-  props: ['uuid', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag'],
-  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'deleteCard', 'pickUpCard'],
+  props: ['uuid', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions'],
+  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated'],
   data() {
     //TODO: use properties directly in view mode and internal edit models in edit mode template
     return {

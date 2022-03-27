@@ -50,7 +50,8 @@
         },
         "card": {
             "external_link": "External Link",
-            "pick_up": "Pick up"
+            "pick_up": "Pick up",
+            "change_cardset": "change cardset"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",
