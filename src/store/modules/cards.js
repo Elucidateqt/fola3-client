@@ -21,20 +21,8 @@ const loadCards = async ({ state, commit }, data) => {
   }
 }
 
-const loadCardDetails = async ({ state, commit }, uuid) => {
-  try {
-    const res = await axiosApi.get(`/cards/${uuid}`)
-    commit('SET_CARD_DETAILS', {board: res.data.card})
-  } catch (err) {
-    throw new Error(err)
-  }
-}
-
-const setCardDetails = (state, data) => {
-  state.cardDetails = data.card
-}
-
 const createCard = async ({ state, commit }, data) => {
+  console.log("creating card with data", data)
     try {
         const res = await axiosApi.post(`/cards/`, {
           "name": data.card.name,
@@ -47,6 +35,7 @@ const createCard = async ({ state, commit }, data) => {
           "interactionDirection": data.card.interactionDirection
 
         })
+        state.cards.unshift(res.data.card)
     } catch (err) {
         throw new Error(err)
     }
@@ -96,7 +85,6 @@ const reset = (state) => {
   state.cards = []
   state.offset = 0
   state.hasMore = true
-  state.cardDetails = null
 }
 
 export default {
@@ -107,14 +95,12 @@ export default {
       limit: 5,
       offset: 0,
       cards: [],
-      cardDetails: null,
     },
     mutations: {
       ADD_CARDS: addCards,
       REMOVE_CARDS: removeCards,
       INCREASE_OFFSET: increaseOffset,
       LOADING_FINISHED: loadingFinished,
-      SET_CARD_DETAILS: setCardDetails,
       RESET: reset
     },
     getters: {
@@ -125,7 +111,6 @@ export default {
         loadCards,
         updateCard,
         deleteCard,
-        loadCardDetails: loadCardDetails,
         resetCards: resetCards
     }
   }

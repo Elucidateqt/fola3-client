@@ -7,7 +7,7 @@
         <q-btn v-if="canCopyToClipboard" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
         <div class="text-center">Inv: {{activeBoard.inviteCode}}</div>
         <div style="height: 80vh; width: 90vw; background-color: grey;" class="row" @drop="handleCardDrop($event)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
-          <div v-for="(column, index) in activeBoardState" :key="`board_comumn_${index}`" class="self-center">
+          <div v-for="(column, index) in activeBoardState" :key="`board_column_${index}`" class="self-center">
             <div class=" row items-start q-pa-xl">
               <fola-card 
                 v-for="(interactionCard, cardIndex) in column" 

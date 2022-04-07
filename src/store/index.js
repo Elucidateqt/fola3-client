@@ -8,6 +8,7 @@ import bugreports from "./modules/bugreports"
 import boards from './modules/boards'
 import cardsets from './modules/cardsets'
 import cards from './modules/cards'
+import decks from './modules/decks'
 import alert from './modules/alert'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
@@ -49,6 +50,7 @@ export default createStore({
     boards,
     cardsets,
     cards,
+    decks,
     alert
   },
   plugins: [axiosPlugin, socketIOPlugin]

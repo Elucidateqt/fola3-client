@@ -51,7 +51,13 @@
         "card": {
             "external_link": "External Link",
             "pick_up": "Pick up",
-            "change_cardset": "change cardset"
+            "change_cardset": "change cardset",
+            "no_cards": "No cards found"
+        },
+        "deck": {
+            "no_decks": "No decks found.",
+            "new_deck": "New Deck",
+            "delete": "Delete Deck"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",

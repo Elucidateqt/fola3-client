@@ -1,9 +1,10 @@
 <template>
 <q-page padding class="row justify-center">
-  <div class="col-xs-8">
+  <div class="col-xs-8" @dragover.prevent @drop="handleCardDrop">
     <q-form class="row">
           <q-option-group
       v-model="selectedSets"
+      @update:model-value="handleSetSelection"
       :options="getCheckboxOptions"
       color="primary"
       type="checkbox"
@@ -12,8 +13,11 @@
     </q-form>
 
 
-  <q-infinite-scroll @load="loadMoreCards" :offset="50" class="row q-gutter-md">
-    <fola-card v-for="card in cards" :key="card.uuid" class="col-xs-12 col-sm-4 col-md-4 col-lg-2"
+  <q-infinite-scroll @load="loadMoreCards" class="row q-gutter-xl">
+    <fola-card v-for="card in cards" :key="card.uuid" :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(card.uuid)}]"
+    :data-card-id="card.uuid"
+    :ref="`card-${card.uuid}`"
+    :allow-drag="isCardInCurrentDeck(card.uuid) === false ? true : false"
     :name="card.name"
     :uuid="card.uuid"
     :description="card.description"
@@ -45,6 +49,32 @@
   />
   </q-page-sticky>
   </div>
+
+
+
+     <q-drawer
+        v-model="deckManagerVisible"
+        side="right"
+        show-if-above
+        behavior="desktop"
+        :width="deckManagerWidth"
+        elevated
+        bordered
+      >
+        <deck-manager />
+      </q-drawer>
+        
+        <q-page-sticky position="right">
+      <q-btn
+    round
+    color="accent"
+    :aria-label="$t('base.create')"
+    :icon="deckManagerVisible === true ? 'arrow_forward_ios' : 'arrow_back_ios'"
+    @click="deckManagerVisible = !deckManagerVisible"
+  />
+  </q-page-sticky>
+
+
   <fola-card v-if="cardCreatorVisible" v-show="false"
                 class="card-creator"
                 name="new cardname"
@@ -60,31 +90,40 @@
 </template>
 
 <script>
+import { scroll } from 'quasar'
+const { getScrollTarget, setVerticalScrollPosition } = scroll
 import { mapState, mapGetters, mapActions } from 'vuex'
 import FolaCard from '@/components/FolaCard.vue'
+import DeckManager from '@/components/DeckManager.vue'
 
 export default {
   name: "Collection",
   components: {
-    FolaCard
+    FolaCard,
+    DeckManager,
   },
   data: () => ({
     cardCreatorVisible: false,
+    deckManagerVisible: true,
     selectedSets: []
   }),
-  watch: {
+  /*watch: {
     selectedSets(newSelection, oldSelection) {
       this.resetCards()
     }
-  },
+  },*/
   computed: {
     canCreateBoards () {
       return this.userHasPermission()('BOARD:CREATE')
     },
     ...mapState('permissions', ['permissions']),
     ...mapState('cards', ['cards']),
-    ...mapState('cardsets', ['ownSets']),
-    ...mapGetters('cardsets', ['getCheckboxOptions'])
+    ...mapGetters('cardsets', ['getCheckboxOptions', 'getBearerSets']),
+    ...mapState('decks', ['ownDecks']),
+    ...mapGetters('decks', ['isCardInCurrentDeck']),
+    deckManagerWidth () {
+      return Math.min(Number(screen.availWidth/3), 300)
+    }
   },
   async created () {
     await this.loadUserPermissions()
@@ -95,20 +134,24 @@ export default {
     }
     this.selectedSets[0] = this.getCheckboxOptions[0].value
   },
+  beforeUnmount(){
+    this.resetCardSets()
+  },
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
-    ...mapActions('cardsets', ['loadOwnCardSets', 'loadPublicCardSets', 'loadWIPCardSets']),
+    ...mapActions('cardsets', ['loadOwnCardSets', 'loadPublicCardSets', 'loadWIPCardSets', 'getSetWithCard', 'resetCardSets']),
     ...mapActions('cards', ['loadCards', 'resetCards', 'createCard', 'deleteCard', 'updateCard']),
+    ...mapActions('decks', ['loadOwnDecks', 'removeCardFromCurrentDeck']),
     loadMoreCards (index, done) {
       if(this.selectedSets.length > 0){
         this.loadCards({"setIds": this.selectedSets})
       }
       done()
     },
-    handleCardCreation(card){
+    async handleCardCreation(card){
 
-      this.createCard({card: {
+      await this.createCard({card: {
         "name": card.name,
         "description": card.description,
         "knowledbaseUrl": card.knowledbaseUrl,
@@ -118,10 +161,20 @@ export default {
         "interactionSubjectRight": card.interactionSubjectRight,
         "interactionDirection": card.interactionDirection
       }})
-      this.selectedSets = [this.ownSets[0].uuid]
+      const el = document.querySelector(`[data-card-id="${this.cards[0].uuid}"`)
+      console.log("scrolltarget", el)
+      this.scrollToElement(el)
     },
-      handleSetChange(data) {
+      async handleSetChange(data) {
+        console.log("set of card: ", await this.getSetWithCard(data))
     console.log("handlesetchange", data)
+    },
+    handleSetSelection(selection) {
+      this.resetCards()
+      if(selection.length > 0){
+        this.loadCards({"setIds": selection})
+      }
+      console.log("value", selection)
     },
     handleCardUpdate(data) {
       this.updateCard({
@@ -138,7 +191,17 @@ export default {
     },
     handleCardDeletion(data){
       this.deleteCard({"uuid": data})
-    }
+    },
+    handleCardDrop(e){
+      const card = JSON.parse(e.dataTransfer.getData('card'))
+      this.removeCardFromCurrentDeck(card.uuid)
+    },
+    scrollToElement (el) {
+      const target = getScrollTarget(el)
+      const offset = el.offsetTop
+      const duration = 300
+      setVerticalScrollPosition(target, offset, duration)
+}
   },
 
 };
@@ -147,5 +210,8 @@ export default {
 a {
   text-decoration: none;
   color: inherit;
+}
+.faded {
+  opacity: 0.4;
 }
 </style>

@@ -3,9 +3,9 @@
   <div  v-for="(plugin, index) in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
     <q-chip square removable @remove="handlePluginRemove($event, 'addonsTop', index)" text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
   </div>
-  <q-card class="card-view" :draggable="isDraggable" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
+  <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
     <q-card-section class="text-center">
-      {{setOptions}}
+      
       {{name}}
     </q-card-section>
     <q-separator />
@@ -48,7 +48,7 @@
             </q-item-section>
             <q-menu anchor="top end" self="top start">
               <q-item v-for="set in setOptions" :key="set.value">
-                <q-item-section clickable @click="$emit('setChanged', {'newSet': set.value})">
+                <q-item-section clickable @click="$emit('setChanged', {'newSet': set.value, 'cardId': uuid})">
                   {{ set.label }}
                 </q-item-section>
                 <q-item-section side>
@@ -451,9 +451,6 @@ export default {
 .card-view {
   width: 200px;
   max-width: 50vw;
-  height: 200px;
-  max-height: 40vh;
-  overflow-y: scroll;
 }
 
 .plugin-chip {
