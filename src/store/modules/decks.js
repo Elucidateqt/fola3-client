@@ -120,7 +120,11 @@ const reset = (state) => {
   state.ownDecks = []
   state.publicDecks = []
   state.wipDecks = []
-  currentDeck = null
+  state.currentDeck = null
+}
+
+const resetDecks = ({state, commit}) => {
+  commit("RESET")
 }
 
 
@@ -156,6 +160,7 @@ export default {
         addCardToCurrentDeck,
         removeCardFromCurrentDeck,
         saveCurrentDeck,
-        deleteCurrentDeck
+        deleteCurrentDeck,
+        resetDecks
     }
   }

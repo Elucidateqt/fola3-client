@@ -70,6 +70,7 @@ export default {
     },
     actions: {
         loadOwnProfile,
-        updateOwnPassword
+        updateOwnPassword,
+        resetPlayerData
     }
   }

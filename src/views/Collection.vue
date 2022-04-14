@@ -16,7 +16,10 @@
   <q-infinite-scroll @load="loadMoreCards" class="row q-gutter-xl">
     <fola-card v-for="card in cards" :key="card.uuid" :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(card.uuid)}]"
     :data-card-id="card.uuid"
-    :ref="`card-${card.uuid}`"
+    :cardset="card.cardset"
+    :allow-set-change="canChangeCardsetOfCard"
+    :allow-delete="canDeleteCard(card)"
+    :allow-edit="canEditCard(card)"
     :allow-drag="isCardInCurrentDeck(card.uuid) === false ? true : false"
     :name="card.name"
     :uuid="card.uuid"
@@ -29,9 +32,10 @@
     :interactionDirection="card.interactionDirection"
     mode="view"
     :setOptions="getCheckboxOptions"
-    @set-changed="handleSetChange($event)"
+    @set-changed="handleSetChange($event, card)"
     @card-deleted="handleCardDeletion($event)"
     @card-edit-submitted="handleCardUpdate($event)"
+    @dragstart="handleDragStart($event, card)"
     />
     <template v-slot:loading>
       <div class="row justify-center q-my-md">
@@ -79,8 +83,6 @@
                 class="card-creator"
                 name="new cardname"
                 description="new Description"
-                external-link="djaodjioawjiood"
-                image-url="cardimage"
                 type="LET"
                 interactionSubjectLeft="teacher"
                 interactionSubjectRight="student"
@@ -98,6 +100,7 @@ import DeckManager from '@/components/DeckManager.vue'
 
 export default {
   name: "Collection",
+  emits: ['dragstart'],
   components: {
     FolaCard,
     DeckManager,
@@ -107,19 +110,19 @@ export default {
     deckManagerVisible: true,
     selectedSets: []
   }),
-  /*watch: {
-    selectedSets(newSelection, oldSelection) {
-      this.resetCards()
-    }
-  },*/
   computed: {
-    canCreateBoards () {
-      return this.userHasPermission()('BOARD:CREATE')
+    canCreateCards () {
+      return this.userHasPermission()('API:CARDS:CREATE')
+    },
+    canChangeCardsetOfCard () {
+      return this.userHasPermission()('API:CARDS:MANAGE')
     },
     ...mapState('permissions', ['permissions']),
     ...mapState('cards', ['cards']),
     ...mapGetters('cardsets', ['getCheckboxOptions', 'getBearerSets']),
+    ...mapState('cardsets', ['cardsets']),
     ...mapState('decks', ['ownDecks']),
+    ...mapState('player', ['uuid']),
     ...mapGetters('decks', ['isCardInCurrentDeck']),
     deckManagerWidth () {
       return Math.min(Number(screen.availWidth/3), 300)
@@ -129,13 +132,14 @@ export default {
     await this.loadUserPermissions()
     await this.loadOwnCardSets()
     await this.loadPublicCardSets()
-    if(this.userHasPermission("API:CARDSETS:MANAGE")){
+    if(this.userHasPermission()("API:CARDSETS:MANAGE")){
       await this.loadWIPCardSets()
     }
     this.selectedSets[0] = this.getCheckboxOptions[0].value
   },
   beforeUnmount(){
     this.resetCardSets()
+    this.resetCards()
   },
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
@@ -150,7 +154,8 @@ export default {
       done()
     },
     async handleCardCreation(card){
-
+      const el = document.querySelector(`[data-card-id="${this.cards[0].uuid}"`)
+      this.scrollToElement(el)
       await this.createCard({card: {
         "name": card.name,
         "description": card.description,
@@ -161,27 +166,33 @@ export default {
         "interactionSubjectRight": card.interactionSubjectRight,
         "interactionDirection": card.interactionDirection
       }})
-      const el = document.querySelector(`[data-card-id="${this.cards[0].uuid}"`)
-      console.log("scrolltarget", el)
-      this.scrollToElement(el)
     },
-      async handleSetChange(data) {
-        console.log("set of card: ", await this.getSetWithCard(data))
-    console.log("handlesetchange", data)
+    async handleSetChange(event, card) {
+        await this.updateCard({
+        "uuid": card.uuid,
+        "cardset": event.newSet,
+        "name": card.name,
+        "description": card.description,
+        "knowledbaseUrl": card.knowledbaseUrl,
+        "imageUrl": card.imageUrl,
+        "type": card.cardType,
+        "interactionSubjectLeft": card.interactionSubjectLeft,
+        "interactionSubjectRight": card.interactionSubjectRight,
+        "interactionDirection": card.interactionDirection
+      })
     },
     handleSetSelection(selection) {
       this.resetCards()
       if(selection.length > 0){
         this.loadCards({"setIds": selection})
       }
-      console.log("value", selection)
     },
     handleCardUpdate(data) {
       this.updateCard({
         "uuid": data.uuid,
         "name": data.name,
         "description": data.description,
-        "knowledbaseUrl": data.knowledbaseUrl,
+        "knowledbaseUrl": data.externalUrl,
         "imageUrl": data.imageUrl,
         "type": data.cardType,
         "interactionSubjectLeft": data.interactionSubjectLeft,
@@ -192,7 +203,21 @@ export default {
     handleCardDeletion(data){
       this.deleteCard({"uuid": data})
     },
+    handleDragStart: function (event, card) {
+      event.dataTransfer.dropEffect = 'move'
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('card', JSON.stringify(card))
+      event.dataTransfer.setData('origin', JSON.stringify({
+        owner: this.uuid,
+        container: "collection"
+      }))
+      this.$emit("dragstart", event)
+    },
     handleCardDrop(e){
+      const origin = JSON.parse(e.dataTransfer.getData('origin'))
+      if(origin.container !== 'deck'){
+        return
+      }
       const card = JSON.parse(e.dataTransfer.getData('card'))
       this.removeCardFromCurrentDeck(card.uuid)
     },
@@ -201,7 +226,13 @@ export default {
       const offset = el.offsetTop
       const duration = 300
       setVerticalScrollPosition(target, offset, duration)
-}
+    },
+    canDeleteCard (card) {
+      return this.getBearerSets.some(set => set.uuid === card.cardset) || this.userHasPermission()('API:CARDS:MANAGE')
+    },
+    canEditCard (card) {
+      return this.getBearerSets.some(set => set.uuid === card.cardset) || this.userHasPermission()('API:CARDS:MANAGE')
+    },
   },
 
 };

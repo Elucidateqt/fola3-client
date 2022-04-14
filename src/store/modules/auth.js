@@ -27,9 +27,6 @@ const logoutUser = async ({ state, commit }) => {
         await axiosAuth.post(`/auth/logout/me`)
         commit('DELETE_TOKENS')
         commit('RESET')
-        state.users = []
-        state.offset = 0
-        state.hasMore = true
     } catch (err) {
         throw new Error(err)
     }
@@ -92,6 +89,12 @@ const reset = (state) => {
     state.accessTokenExpires = null
 }
 
+const resetAuth = (state) => {
+    commit('RESET')
+    localStorage.removeItem('refresh_token')
+    sessionStorage.removeItem('access_token')
+}
+
 export default {
     namespaced: true,
     
@@ -115,6 +118,7 @@ export default {
         signupUser,
         loginUser,
         logoutUser,
-        request_new_tokens
+        request_new_tokens,
+        resetAuth,
     }
   }

@@ -125,10 +125,11 @@ export default {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['resetPermissions']),
     ...mapActions('alert', ['resetAlert']),
-    ...mapActions('player', ['loadOwnProfile']),
+    ...mapActions('player', ['loadOwnProfile', 'resetPlayerData']),
     async logout(){
       await this.logoutUser()
       this.resetPermissions()
+      this.resetPlayerData()
       this.$router.push({name: 'Landing'})
     }
   },

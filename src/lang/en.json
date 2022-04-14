@@ -63,7 +63,9 @@
             "min_length": "Must be at least {min} characters long.",
             "max_length": "Can't be longer than {max} characters.",
             "curr_length": "{curr}/{max} characters",
-            "no_special_characters": "Must not contain any special characters"
+            "no_special_characters": "Must not contain any special characters",
+            "no_image": "No image",
+            "invalid_url": "Invalid URL"
         },
         "errors": {
             "http": {

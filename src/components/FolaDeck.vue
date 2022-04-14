@@ -117,6 +117,10 @@ export default {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.setData('card', JSON.stringify(card))
+      event.dataTransfer.setData('origin', JSON.stringify({
+        deckId: this.deck.uuid,
+        container: "deck"
+      }))
       this.$emit("dragstart", event)
     },
     handleNameUpdate: function (newVal) {

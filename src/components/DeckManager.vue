@@ -55,12 +55,15 @@ export default {
   async created () {
     await this.loadOwnDecks()
   },
+  beforeUnmount(){
+    this.resetDecks()
+  },
   methods: {
     ...mapGetters('permissions', ['userHasPermission']),
     ...mapActions('permissions', ['loadUserPermissions']),
     ...mapActions('cardsets', ['loadOwnCardSets', 'loadPublicCardSets', 'loadWIPCardSets']),
     ...mapActions('cards', ['loadCards', 'resetCards', 'createCard', 'deleteCard', 'updateCard']),
-    ...mapActions('decks', ['loadOwnDecks', 'createOwnDeck', 'setCurrentDeck']),
+    ...mapActions('decks', ['loadOwnDecks', 'createOwnDeck', 'setCurrentDeck', 'resetDecks']),
     loadMoreCards (index, done) {
       console.log("loading cards", this.selectedSets.length)
       if(this.selectedSets.length > 0){

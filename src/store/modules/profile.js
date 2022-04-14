@@ -30,6 +30,10 @@ const setCreationDate = (state, date) => {
   state.createdAt = date
 }
 
+const resetProfile = (state, commit) => {
+  commit('RESET')
+}
+
 const reset = (state) => {
   state.username = null
   state.uuid = null
@@ -60,5 +64,6 @@ export default {
     },
     actions: {
         loadProfile,
+        resetProfile
     }
   }

@@ -58,16 +58,6 @@ const getBearerSets = (state, commit, rootState) => {
   return state.cardsets.filter(set => set.owner === rootState.player.uuid)
 }
 
-const getSetWithCard = async ({state, commit}, data) => {
-  let setId
-  state.cardsets.forEach(set => {
-    if(set.cards.includes(data.cardId)){
-      setId = set.uuid
-    }
-  })
-  return setId
-}
-
 const reset = (state) => {
   state.cardsets = []
 }
@@ -99,7 +89,6 @@ export default {
         loadOwnCardSets,
         loadPublicCardSets,
         loadWIPCardSets,
-        getSetWithCard,
         resetCardSets
     }
   }

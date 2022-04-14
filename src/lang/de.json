@@ -64,7 +64,9 @@
             "min_length": "Mindestens {min} Zeichen erforderlich.",
             "max_length": "Maximal {max} Zeichen erlaubt.",
             "curr_length": "{curr}/{max} Zeichen",
-            "no_special_characters": "Darf keine Sonderzeichen enthalten"
+            "no_special_characters": "Darf keine Sonderzeichen enthalten",
+            "no_image": "Kein Bild",
+            "invalid_url": "Ungültige URL"
         },
         "errors": {
             "http": {
