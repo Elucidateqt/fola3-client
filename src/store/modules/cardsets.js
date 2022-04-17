@@ -32,18 +32,6 @@ const addCardsets = (state, sets) => {
   state.cardsets = state.cardsets.concat(sets)
 }
 
-const setOwnSets = (state, sets) => {
-  state.ownSets = sets
-}
-
-const setPublicSets = (state, sets) => {
-  state.publicSets = sets
-}
-
-const setWIPSets = (state, sets) => {
-  state.wipSets = sets
-}
-
 const getCheckboxOptions = (state) => {
   const options = []
   state.cardsets.forEach(set => options.push({
@@ -57,6 +45,39 @@ const getCheckboxOptions = (state) => {
 const getBearerSets = (state, commit, rootState) => {
   return state.cardsets.filter(set => set.owner === rootState.player.uuid)
 }
+
+const getPublicSets = (state) => {
+  return state.cardsets.filter(set => set.owner === 'public')
+}
+
+const createCardset = async ({ state, commit }, data) => {
+  try {
+    const res = await axiosApi.post(`/cardsets`, data.set)
+    state.cardsets.unshift(res.data.cardset)
+  } catch(err) {
+      throw new Error(err)
+  }
+}
+
+const updateCardset = async ({ state, commit }, data) => {
+  try {
+    const res = await axiosApi.post(`/cardsets/${data.set.uuid}`, data.set)
+    const index = state.cardsets.map(set => set.uuid).indexOf(res.data.cardset.uuid)
+    state.cardsets[index] = res.data.cardset
+  } catch(err) {
+      throw new Error(err)
+  }
+}
+
+const deleteCardset = async ({ state, commit }, data) => {
+  try {
+    const res = await axiosApi.delete(`/cardsets/${data.set.uuid}`)
+    state.cardsets = state.cardsets.filter(set => set.uuid !== data.set.uuid)
+  } catch(err) {
+      throw new Error(err)
+  }
+}
+
 
 const reset = (state) => {
   state.cardsets = []
@@ -77,18 +98,19 @@ export default {
     mutations: {
       RESET: reset,
       ADD_CARDSETS: addCardsets,
-      SET_OWN_SETS: setOwnSets,
-      SET_PUBLIC_SETS: setPublicSets,
-      SET_WIP_SETS: setWIPSets,
     },
     getters: {
       getCheckboxOptions,
       getBearerSets,
+      getPublicSets
     },
     actions: {
         loadOwnCardSets,
         loadPublicCardSets,
         loadWIPCardSets,
+        createCardset,
+        updateCardset,
+        deleteCardset,
         resetCardSets
     }
   }

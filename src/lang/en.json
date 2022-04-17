@@ -8,7 +8,8 @@
             "update": "Update",
             "delete": "Delete",
             "edit": "Edit",
-            "save": "Save"
+            "save": "Save",
+            "last_changed": "Last change: {date}"
         },
         "bugreport": {
             "title": "Report a Bug",
@@ -54,6 +55,15 @@
             "change_cardset": "change cardset",
             "no_cards": "No cards found"
         },
+        "cardset": {
+            "new_set": "New Set",
+            "name": "Set-name",
+            "delete_set": "Delete cardset",
+            "icon_url": "Icon URL",
+            "public_visible": "Public?",
+            "confirm_update": "Cardset updated." ,
+            "confirm_deletion": "Cardset deleted."
+        },
         "deck": {
             "no_decks": "No decks found.",
             "new_deck": "New Deck",
@@ -74,8 +84,9 @@
                 "401": "Not logged in",
                 "403": "Unauthorized",
                 "404": "Ressource not found",
-                "500": "Something went wrong"
-            }
+                "500": "Internal Server Error"
+            },
+            "default": "Something went wrong."
         }
     },
     "dateTimeFormat": {

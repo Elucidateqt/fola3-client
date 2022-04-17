@@ -1,6 +1,6 @@
 <template>
 <q-page padding class="row justify-center">
-  <div class="col-xs-8" @dragover.prevent @drop="handleCardDrop">
+  <div class="col-xs-8 collection-container" @dragover.prevent @drop="handleCardDrop">
     <q-form class="row">
           <q-option-group
       v-model="selectedSets"
@@ -10,6 +10,7 @@
       type="checkbox"
       inline
     />
+    <q-icon v-if="canManageSets" name="settings" size="sm" class="grey q-pl-md" @click="cardsetManagerVisible = true" style="cursor: pointer" />
     </q-form>
 
 
@@ -88,6 +89,9 @@
                 interactionSubjectRight="student"
                 interactionDirection="rightToLeft"
                 mode="create" allow-drag="false" @card-create-submitted="handleCardCreation($event)" @editor-closed="cardCreatorVisible = false" />
+  <q-dialog v-model="cardsetManagerVisible">
+    <cardset-manager />
+  </q-dialog>
 </q-page>
 </template>
 
@@ -97,6 +101,7 @@ const { getScrollTarget, setVerticalScrollPosition } = scroll
 import { mapState, mapGetters, mapActions } from 'vuex'
 import FolaCard from '@/components/FolaCard.vue'
 import DeckManager from '@/components/DeckManager.vue'
+import CardsetManager from '@/components/CardsetManager.vue'
 
 export default {
   name: "Collection",
@@ -104,10 +109,12 @@ export default {
   components: {
     FolaCard,
     DeckManager,
+    CardsetManager
   },
   data: () => ({
     cardCreatorVisible: false,
     deckManagerVisible: true,
+    cardsetManagerVisible: false,
     selectedSets: []
   }),
   computed: {
@@ -116,6 +123,9 @@ export default {
     },
     canChangeCardsetOfCard () {
       return this.userHasPermission()('API:CARDS:MANAGE')
+    },
+    canManageSets () {
+      return this.userHasPermission()('API:CARDSETS:MANAGE')
     },
     ...mapState('permissions', ['permissions']),
     ...mapState('cards', ['cards']),
@@ -154,7 +164,8 @@ export default {
       done()
     },
     async handleCardCreation(card){
-      const el = document.querySelector(`[data-card-id="${this.cards[0].uuid}"`)
+      const el = document.querySelector(".collection-container")
+      
       this.scrollToElement(el)
       await this.createCard({card: {
         "name": card.name,

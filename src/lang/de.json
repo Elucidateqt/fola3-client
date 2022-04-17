@@ -9,7 +9,8 @@
             "update": "Aktualisieren",
             "delete": "Löschen",
             "edit": "Bearbeiten",
-            "save": "Speichern"
+            "save": "Speichern",
+            "last_changed": "Letzte Änderung: {date}"
         },
         "bugreport": {
             "title": "Eine Fehlfunktion melden",
@@ -55,6 +56,15 @@
             "change_cardset": "Kartenset ändern",
             "no_cards": "Keine Karten"
         },
+        "cardset": {
+            "new_set": "Neues Set",
+            "name": "Setname",
+            "delete_set": "Kartenset löschen",
+            "icon_url": "Bild-URL",
+            "public_visible": "Öffentlich sichtbar?",
+            "confirm_update": "Kartenset aktualisiert.",
+            "confirm_deletion": "Kartenset gelöscht."
+        },
         "deck": {
             "no_decks": "Keine Decks gefunden",
             "new_deck": "Neues Deck",
@@ -76,7 +86,8 @@
                 "403": "Unausreichende Rechte",
                 "404": "Ressurce nicht gefunden",
                 "500": "Unerwarteter Fehler"
-            }
+            },
+            "default:": "Ein unerwarteter Fehler ist aufgetreten"
         }
     },
     "dateTimeFormat": {
