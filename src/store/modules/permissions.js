@@ -1,20 +1,12 @@
 import axiosApi from '../../api/axios.js'
 
-const loadUserPermissions = async ({ state, commit }) => {
+const loadAllPermissions = async ({state, commit}) => {
     try {
-        const res = await axiosApi.get(`/permissions/my`)
+        const res = await axiosApi.get(`/permissions/`)
         commit('SET_USER_PERMISSIONS', res.data.permissions)
     } catch (err) {
         throw new Error(err)
     }
-}
-
-const setUserPermissions = (state, permissions) => {
-    state.permissions = permissions
-}
-
-const userHasPermission = ( state ) => ( permission ) => {
-    return state.permissions && state.permissions.includes(permission)
 }
 
 const reset = (state) => {
@@ -33,13 +25,11 @@ export default {
     },
     mutations: {
       RESET: reset,
-      SET_USER_PERMISSIONS: setUserPermissions
     },
     getters: {
-        userHasPermission
     },
     actions: {
-        loadUserPermissions,
-        resetPermissions
+        resetPermissions,
+        loadAllPermissions
     }
   }

@@ -17,7 +17,17 @@
         <div class="update-timestamp">
           <span class="text-subtext" :aria-label="$t('boards.updated_at', {date: $d(board.createdAt, 'short')})">{{ $d(board.createdAt, 'short') }}</span>
         </div>
-        <q-btn flat icon="more_vert" />
+        <q-btn flat icon="more_vert">
+          <q-menu>
+            <q-list style="min-width: 100px">
+              <q-item clickable @click="deleteBoard(board)">
+                <q-item-section>
+                  <q-item-label>{{ $t('base.delete') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
       </q-card-actions>
     </q-card>
     <template v-slot:loading>
@@ -44,17 +54,17 @@ export default {
   },
   computed: {
     canCreateBoards () {
-      return this.userHasPermission()('BOARD:CREATE')
+      return this.userHasPermission()('API:BOARD:CREATE')
     },
-    ...mapState('permissions', ['permissions']),
+    ...mapState('player', ['permissions']),
     ...mapState('boards', ['boards', 'hasMore'])
   },
   async created () {
-    await this.loadUserPermissions()
+    await this.loadOwnPermissions()
   },
   methods: {
-    ...mapGetters('permissions', ['userHasPermission']),
-    ...mapActions('permissions', ['loadUserPermissions']),
+    ...mapGetters('player', ['userHasPermission']),
+    ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('boards', ['loadOwnBoards']),
     loadMoreBoards (index, done) {
       this.loadOwnBoards()

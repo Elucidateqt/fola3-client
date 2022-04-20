@@ -95,7 +95,7 @@ export default {
     ...mapState('player', ['uuid']),
     ...mapGetters('alert', ['alertMessage', 'alertVisible', 'alertType']),
     canReportBugs () {
-      return this.userHasPermission()('BUGREPORT:CREATE')
+      return this.userHasPermission()('API:BUGREPORT:CREATE')
     },
   },
   watch: {
@@ -122,13 +122,11 @@ export default {
   methods: {
     ...mapActions('auth', ['request_new_tokens', 'logoutUser']),
     ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
-    ...mapGetters('permissions', ['userHasPermission']),
-    ...mapActions('permissions', ['resetPermissions']),
+    ...mapGetters('player', ['userHasPermission']),
     ...mapActions('alert', ['resetAlert']),
     ...mapActions('player', ['loadOwnProfile', 'resetPlayerData']),
     async logout(){
       await this.logoutUser()
-      this.resetPermissions()
       this.resetPlayerData()
       this.$router.push({name: 'Landing'})
     }

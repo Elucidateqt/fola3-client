@@ -72,7 +72,7 @@ export default {
   }},
   computed: {
     canCreateBoards () {
-      return this.userHasPermission()('BOARD:CREATE')
+      return this.userHasPermission()('API:BOARD:CREATE')
     },
     canCopyToClipboard () {
       return this.activeBoard.inviteCode && navigator.clipboard
@@ -80,7 +80,7 @@ export default {
     inviteUrl () {
       return `${window.location.origin}/boards/${this.activeBoard.uuid}?inv=${this.activeBoard.inviteCode}`
     },
-    ...mapState('permissions', ['permissions']),
+    ...mapState('player', ['permissions']),
     ...mapState('boards', ['activeBoard', 'activeBoardState', 'activeAddonCards']),
     ...mapState('player', ['uuid'])
   },
@@ -90,11 +90,11 @@ export default {
     }
     await this.loadOwnProfile()
     await this.loadBoardDetails(this.$route.params.id)
-    await this.loadUserPermissions()
+    await this.loadOwnPermissions()
   },
   methods: {
-    ...mapGetters('permissions', ['userHasPermission']),
-    ...mapActions('permissions', ['loadUserPermissions']),
+    ...mapGetters('player', ['userHasPermission']),
+    ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('player', ['loadOwnProfile', 'uuid']),
     ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard']),
     ...mapActions('alert', ['setAlert']),

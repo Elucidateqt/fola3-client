@@ -38,7 +38,12 @@
         "profile": {
             "title": "{name}'s profile",
             "username": "Username",
-            "member_since": "Joined {date}"
+            "member_since": "Joined {date}",
+            "confirm_update": "User updated"
+        },
+        "roles": {
+            "title": "Roles",
+            "confirm_update": "Role updated"
         },
         "boards": {
             "create": "Create board",

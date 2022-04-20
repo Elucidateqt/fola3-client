@@ -78,7 +78,6 @@ const removeCardFromCurrentDeck = ({state, commit}, uuid) => {
 }
 
 const setCurrentDeckName = ({state, commit}, name) => {
-  console.log("updating deck name", name)
   state.currentDeck.name = name
 }
 

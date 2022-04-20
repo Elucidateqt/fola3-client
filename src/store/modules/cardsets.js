@@ -1,7 +1,6 @@
 import axiosApi from '../../api/axios.js'
 
 const loadOwnCardSets = async ({ state, commit, rootState }) => {
-  console.log("profileId", rootState.player.uuid)
   try {
     const res = await axiosApi.get(`/cardsets/my`)
     commit('ADD_CARDSETS', res.data.cardsets)

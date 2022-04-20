@@ -127,7 +127,7 @@ export default {
     canManageSets () {
       return this.userHasPermission()('API:CARDSETS:MANAGE')
     },
-    ...mapState('permissions', ['permissions']),
+    ...mapState('player', ['permissions']),
     ...mapState('cards', ['cards']),
     ...mapGetters('cardsets', ['getCheckboxOptions', 'getBearerSets']),
     ...mapState('cardsets', ['cardsets']),
@@ -139,7 +139,7 @@ export default {
     }
   },
   async created () {
-    await this.loadUserPermissions()
+    await this.loadOwnPermissions()
     await this.loadOwnCardSets()
     await this.loadPublicCardSets()
     if(this.userHasPermission()("API:CARDSETS:MANAGE")){
@@ -152,8 +152,8 @@ export default {
     this.resetCards()
   },
   methods: {
-    ...mapGetters('permissions', ['userHasPermission']),
-    ...mapActions('permissions', ['loadUserPermissions']),
+    ...mapGetters('player', ['userHasPermission']),
+    ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('cardsets', ['loadOwnCardSets', 'loadPublicCardSets', 'loadWIPCardSets', 'getSetWithCard', 'resetCardSets']),
     ...mapActions('cards', ['loadCards', 'resetCards', 'createCard', 'deleteCard', 'updateCard']),
     ...mapActions('decks', ['loadOwnDecks', 'removeCardFromCurrentDeck']),

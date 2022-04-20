@@ -22,7 +22,6 @@ const loadCards = async ({ state, commit }, data) => {
 }
 
 const createCard = async ({ state, commit }, data) => {
-  console.log("creating card with data", data)
     try {
         const res = await axiosApi.post(`/cards/`, {
           "name": data.card.name,

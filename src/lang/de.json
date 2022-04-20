@@ -39,7 +39,12 @@
         "profile": {
             "title": "{name}s Profil",
             "username": "Nutzername",
-            "member_since": "Mitglied seit {date}"
+            "member_since": "Mitglied seit {date}",
+            "confirm_update": "Nutzer aktualisiert."
+        },
+        "roles": {
+            "title": "Nutzerrollen",
+            "confirm_update": "Rolle aktualisiert"
         },
         "boards": {
             "create": "Board erstellen",

@@ -12,13 +12,13 @@ export default {
     ...mapState('player', ['uuid', 'username']),
   },
   async created () {
-    await this.loadUserPermissions()
+    await this.loadOwnPermissions()
     await this.loadOwnProfile()
   },
   methods: {
     ...mapActions('profile', ['loadProfile']),
     ...mapActions('player', ['loadOwnProfile']),
-    ...mapActions('permissions', ['loadUserPermissions'])
+    ...mapActions('player', ['loadOwnPermissions'])
   }
 };
 </script>

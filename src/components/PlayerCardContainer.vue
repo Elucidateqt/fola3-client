@@ -96,7 +96,7 @@ export default defineComponent( {
       this.tab = this.uuid
   },
   methods: {
-    ...mapActions('permissions', ['loadUserPermissions']),
+    ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('boards', ['emitRemoveCard', 'emitUpdateCard', 'emitAddCard']),
     handleDragStart: function (event, playerId) {
       const origin = {
