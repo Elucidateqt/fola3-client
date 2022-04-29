@@ -13,10 +13,8 @@ import decks from './modules/decks'
 import alert from './modules/alert'
 import axiosApi, {axiosAuth} from '../api/axios.js'
 import createAxiosPlugin from '../api'
-import createSocketIOPlugin from "../socket";
 
 const axiosPlugin = createAxiosPlugin()
-const socketIOPlugin = createSocketIOPlugin()
 
 const checkApiHealth = async ({ commit }) => {
   try {
@@ -55,5 +53,5 @@ export default createStore({
     decks,
     alert
   },
-  plugins: [axiosPlugin, socketIOPlugin]
+  plugins: [axiosPlugin]
 });

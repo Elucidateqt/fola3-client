@@ -71,6 +71,7 @@ export default {
       selectedHand: this.uuid
   }},
   computed: {
+    ...mapState('auth', ['accessToken']),
     canCreateBoards () {
       return this.userHasPermission()('API:BOARD:CREATE')
     },
@@ -90,6 +91,7 @@ export default {
     }
     await this.loadOwnProfile()
     await this.loadOwnPermissions()
+    this.connectSocket({token: this.accessToken})
     this.emitJoinBoard({boardId: this.$route.params.id})
   },
   beforeUnmount(){
@@ -100,7 +102,7 @@ export default {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('player', ['loadOwnProfile', 'uuid']),
-    ...mapActions('activeBoard', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition']),
+    ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await copyToClipboard(this.inviteUrl)

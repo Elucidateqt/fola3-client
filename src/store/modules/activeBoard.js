@@ -1,5 +1,96 @@
 import axiosApi from '../../api/axios.js'
-import socket from '../../socket/socketio.js'
+import {io} from 'socket.io-client'
+let socket = null
+
+const connectSocket = (context, data) => {
+  socket = io(`${process.env.VUE_APP_SOCKET_URL}:${process.env.VUE_APP_SOCKET_PORT}`,{
+    path: "/socket/",
+    withCredentials: true,
+    query: data.token
+})
+  initializeSocketListeners(context)
+}
+
+const handleErrors = (message) => {
+  //assume no response as default case
+  let alertConfig = {
+    type: "negative",
+    message: message,
+    visible: true
+  }
+  store.commit("alert/SET_ALERT_CONFIG", alertConfig, {root: true})
+}
+
+const  initializeSocketListeners = (store) => {
+
+    socket.on('exception', (data) => {
+      handleErrors(data.message)
+    })
+    socket.on('message', (data) => {
+        let alertConfig = {
+            type: "info",
+            message: data.message,
+            visible: true
+          }
+          store.commit("alert/SET_ALERT_CONFIG", alertConfig, {root: true})
+    })
+
+    socket.on('setBoard', (data) => {
+      console.log("received setBoard with cards", data.board.cards)
+      store.commit("SET_ACTIVE_BOARD", data.board)
+    })
+
+    socket.on('playerJoined', (data) => {
+      store.commit("activeBoard/ADD_PLAYER", data.user)
+    })
+
+    socket.on('playerLeft', (data) => {
+      store.commit('REMOVE_PLAYER', data.userId)
+    })
+
+    socket.on('cardsCreated', (data) => {
+      store.commit("CREATE_CARDS", {"cards": data.newCards, "playerId": data.location.playerId})
+    })
+
+    socket.on('interactionPlayed', (data) => {
+      store.dispatch('playInteraction', data)
+    })
+
+    socket.on('interactionPickedUp', (data) => {
+      store.dispatch('pickUpInteraction', data)
+    })
+
+    socket.on('cardAttached', (data) => {
+      store.dispatch('attachCard', data)
+    })
+
+    socket.on('cardDetached', (data) => {
+      store.dispatch('detachCard', data)
+    })
+
+
+    socket.on('cardAdded', (data) => {
+      switch (data.location.container) {
+        case "hand":
+          store.commit("ADD_CARD_TO_PLAYER_HAND", {"card": data.card, "playerId": data.location.playerId})
+          break;
+        case "board":
+          store.commit("UPDATE_CARD_ON_BOARD", {"card": data.card, "location": data.location})
+          break;
+        default:
+          break;
+      }
+    })
+
+    socket.on('cardDeleted', (data) => {
+      store.dispatch('deleteCard', data)
+    })
+
+    socket.on('cardUpdated', (data) => {
+      store.dispatch('updateCard', data)
+    })
+}
+
 
 
 const emitJoinBoard = async ({ state, commit, rootState }, data) => {
@@ -227,17 +318,17 @@ const attachAddonToCard = (state, data) => {
   const addon = state.cards[data.addonId]
   switch (addon.cardType) {
     case 'LET':
-      if(hostCard.addonsTop === undefined){
+      if(!hostCard.hasOwnProperty('addonsTop')){
         hostCard.addonsTop = [addon.uuid]
       }else{
         hostCard.addonsTop.push(addon.uuid)
       }
       break;
     case 'what':
-      if(hostCard.addonsBot === undefined){
-        hostCard.addonsBot = [data.cardId]
+      if(!hostCard.hasOwnProperty('addonsBot')){
+        hostCard.addonsBot = [addon.uuid]
       }else{
-        hostCard.addonsBot.push(data.cardId)
+        hostCard.addonsBot.push(addon.uuid)
       }
       break;
   }
@@ -270,6 +361,7 @@ const deleteCard = ({state, commit}, data) => {
 }
 
 const attachCard = ({state, commit}, data) => {
+  console.log("attach card received ", data)
   switch (data.cardOrigin.container) {
     case 'hand':
       commit('REMOVE_CARD_FROM_PLAYER_HAND', {playerId: data.cardOrigin.playerId, cardId: data.cardId})
@@ -297,11 +389,13 @@ const joinBoardByInvite = async ({ state, commit }, data) => {
 }
 
 const setActiveBoard = (state, board) => {
+  console.log("setactiveboard called", board)
     state.uuid = board.uuid
     state.name = board.name
     state.description = board.description
     state.inviteCode = board.inviteCode
     board.cards.forEach(card => {
+      console.log("adding card to store", card)
       state.cards[card.uuid] = card
     })
     state.boardState = board.boardState
@@ -366,6 +460,7 @@ export default {
 
     },
     actions: {
+        connectSocket,
         joinBoardByInvite,
         emitMessage,
         emitPlayInteraction,
