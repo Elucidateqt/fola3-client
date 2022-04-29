@@ -6,6 +6,7 @@ import auth from './modules/auth'
 import permissions from './modules/permissions'
 import bugreports from "./modules/bugreports"
 import boards from './modules/boards'
+import activeBoard from "./modules/activeBoard";
 import cardsets from './modules/cardsets'
 import cards from './modules/cards'
 import decks from './modules/decks'
@@ -48,6 +49,7 @@ export default createStore({
     permissions,
     bugreports,
     boards,
+    activeBoard,
     cardsets,
     cards,
     decks,

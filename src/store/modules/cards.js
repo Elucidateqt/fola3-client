@@ -21,12 +21,21 @@ const loadCards = async ({ state, commit }, data) => {
   }
 }
 
+const loadCardByUuid = async ({ state, commit }, data) => {
+  try {
+      let res = await axiosApi.get(`/cards/${data.cardId}`)
+      commit('ADD_CARDS', [res.data.card])
+  } catch(err) {
+      throw new Error(err)
+  }
+}
+
 const createCard = async ({ state, commit }, data) => {
     try {
         const res = await axiosApi.post(`/cards/`, {
           "name": data.card.name,
           "description": data.card.description,
-          "knowledbaseUrl": data.card.knowledbaseUrl,
+          "externalLink": data.card.externalLink,
           "imageUrl": data.card.imageUrl,
           "type": data.card.type,
           "interactionSubjectLeft": data.card.interactionSubjectLeft,
@@ -34,16 +43,23 @@ const createCard = async ({ state, commit }, data) => {
           "interactionDirection": data.card.interactionDirection
 
         })
-        state.cards.unshift(res.data.card)
+        commit('ADD_CARDS', [res.data.card])
     } catch (err) {
         throw new Error(err)
     }
 }
 
-const deleteCard = async ({ state, commit }, data) => {
+const deleteCard = async ({ state, commit, rootState }, data) => {
   try {
       const res = await axiosApi.delete(`/cards/${data.uuid}`)
+      rootState.decks.ownDecks.forEach(deck => {
+        deck.cards = deck.cards.filter(cardId => cardId !== data.uuid)
+      })
+      if(rootState.decks.currentDeck){
+        rootState.decks.currentDeck.cards = rootState.decks.currentDeck.cards.filter(uuid => uuid !== data.uuid)
+      }
       commit("REMOVE_CARDS", [data.uuid])
+      
   } catch (err) {
       throw new Error(err)
   }
@@ -52,20 +68,19 @@ const deleteCard = async ({ state, commit }, data) => {
 const updateCard = async ({ state, commit }, data) => {
   try {
       const res = await axiosApi.put(`/cards/${data.uuid}`, data)
-      const cardIndex = state.cards.map(card => card.uuid).indexOf(data.uuid)
-      state.cards[cardIndex] = res.data.card
+      state.cards[res.data.card.uuid] = res.data.card
 
   } catch (err) {
       throw new Error(err)
   }
 }
 
-const addCards = (state, data) => {
-  state.cards = state.cards.concat(data)
+const addCards = (state, cards) => {
+  cards.forEach(card => state.cards[card.uuid] = card)
 }
 
-const removeCards = (state, data) => {
-  state.cards = state.cards.filter(card => !data.includes(card.uuid))
+const removeCards = (state, cardIds) => {
+  cardIds.forEach(uuid => delete state.cards[uuid])
 }
 
 const increaseOffset = (state) => {
@@ -76,12 +91,28 @@ const loadingFinished = (state) => {
   state.hasMore = false
 }
 
-const resetCards = ({state, commit}) => {
-  commit('RESET')
+const resetPagination = (state) => {
+  state.hasMore = true
+  state.offset = 0
+}
+
+const resetCards = ({state, commit, rootState}, options) => {
+  const keepDeckCards = (options && options.keepDeckCards) || false
+  if(keepDeckCards === true){
+    let cardIds = Object.keys(state.cards)
+    rootState.decks.ownDecks.forEach(deck => {
+      cardIds = cardIds.filter(id => !deck.cards.includes(id))
+    })
+    commit('REMOVE_CARDS', cardIds)
+    commit('RESET_PAGINATION')
+  }else{
+    commit('RESET')
+  }
 }
 
 const reset = (state) => {
-  state.cards = []
+
+  state.cards = {}
   state.offset = 0
   state.hasMore = true
 }
@@ -93,13 +124,14 @@ export default {
       hasMore: true,
       limit: 5,
       offset: 0,
-      cards: [],
+      cards: {},
     },
     mutations: {
       ADD_CARDS: addCards,
       REMOVE_CARDS: removeCards,
       INCREASE_OFFSET: increaseOffset,
       LOADING_FINISHED: loadingFinished,
+      RESET_PAGINATION: resetPagination,
       RESET: reset
     },
     getters: {
@@ -108,6 +140,7 @@ export default {
     actions: {
         createCard,
         loadCards,
+        loadCardByUuid,
         updateCard,
         deleteCard,
         resetCards: resetCards

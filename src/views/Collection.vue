@@ -15,28 +15,28 @@
 
 
   <q-infinite-scroll @load="loadMoreCards" class="row q-gutter-xl">
-    <fola-card v-for="card in cards" :key="card.uuid" :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(card.uuid)}]"
-    :data-card-id="card.uuid"
-    :cardset="card.cardset"
+    <fola-card v-for="cardId in filteredCards" :key="cardId" :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(cardId)}]"
+    :data-card-id="cardId"
+    :cardset="cards[cardId].cardset"
     :allow-set-change="canChangeCardsetOfCard"
-    :allow-delete="canDeleteCard(card)"
-    :allow-edit="canEditCard(card)"
-    :allow-drag="isCardInCurrentDeck(card.uuid) === false ? true : false"
-    :name="card.name"
-    :uuid="card.uuid"
-    :description="card.description"
-    :external-link="card.knowledbaseUrl"
-    :image-url="card.imageUrl"
-    :type="card.cardType"
-    :interactionSubjectLeft="card.interactionSubjectLeft"
-    :interactionSubjectRight="card.interactionSubjectRight"
-    :interactionDirection="card.interactionDirection"
+    :allow-delete="canDeleteCard(cards[cardId])"
+    :allow-edit="canEditCard(cards[cardId])"
+    :allow-drag="isCardInCurrentDeck(cardId) === false ? true : false"
+    :name="cards[cardId].name"
+    :uuid="cards[cardId].uuid"
+    :description="cards[cardId].description"
+    :external-link="cards[cardId].externalLink"
+    :image-url="cards[cardId].imageUrl"
+    :type="cards[cardId].cardType"
+    :interactionSubjectLeft="cards[cardId].interactionSubjectLeft"
+    :interactionSubjectRight="cards[cardId].interactionSubjectRight"
+    :interactionDirection="cards[cardId].interactionDirection"
     mode="view"
     :setOptions="getCheckboxOptions"
-    @set-changed="handleSetChange($event, card)"
+    @set-changed="handleSetChange($event, cards[cardId])"
     @card-deleted="handleCardDeletion($event)"
     @card-edit-submitted="handleCardUpdate($event)"
-    @dragstart="handleDragStart($event, card)"
+    @dragstart="handleDragStart($event, cardId)"
     />
     <template v-slot:loading>
       <div class="row justify-center q-my-md">
@@ -60,7 +60,6 @@
      <q-drawer
         v-model="deckManagerVisible"
         side="right"
-        show-if-above
         behavior="desktop"
         :width="deckManagerWidth"
         elevated
@@ -73,7 +72,7 @@
       <q-btn
     round
     color="accent"
-    :aria-label="$t('base.create')"
+    :aria-label="deckManagerVisible === true ? $t('deck.hide_deckmanager') : $t('deck.show_deckmanager')"
     :icon="deckManagerVisible === true ? 'arrow_forward_ios' : 'arrow_back_ios'"
     @click="deckManagerVisible = !deckManagerVisible"
   />
@@ -118,6 +117,18 @@ export default {
     selectedSets: []
   }),
   computed: {
+    filteredCards () {
+      let whitelist = []
+      if(this.currentDeck){
+        whitelist.concat(this.currentDeck.cards)
+      }
+      Object.values(this.cards).forEach(card => {
+        if(this.selectedSets.includes(card.cardset)){
+          whitelist.push(card.uuid)
+        }
+      })
+      return whitelist
+    },
     canCreateCards () {
       return this.userHasPermission()('API:CARDS:CREATE')
     },
@@ -131,7 +142,7 @@ export default {
     ...mapState('cards', ['cards']),
     ...mapGetters('cardsets', ['getCheckboxOptions', 'getBearerSets']),
     ...mapState('cardsets', ['cardsets']),
-    ...mapState('decks', ['ownDecks']),
+    ...mapState('decks', ['ownDecks', 'currentDeck']),
     ...mapState('player', ['uuid']),
     ...mapGetters('decks', ['isCardInCurrentDeck']),
     deckManagerWidth () {
@@ -150,13 +161,14 @@ export default {
   beforeUnmount(){
     this.resetCardSets()
     this.resetCards()
+    this.resetDecks()
   },
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('cardsets', ['loadOwnCardSets', 'loadPublicCardSets', 'loadWIPCardSets', 'getSetWithCard', 'resetCardSets']),
     ...mapActions('cards', ['loadCards', 'resetCards', 'createCard', 'deleteCard', 'updateCard']),
-    ...mapActions('decks', ['loadOwnDecks', 'removeCardFromCurrentDeck']),
+    ...mapActions('decks', ['loadOwnDecks', 'removeCardFromCurrentDeck', 'resetDecks']),
     loadMoreCards (index, done) {
       if(this.selectedSets.length > 0){
         this.loadCards({"setIds": this.selectedSets})
@@ -170,7 +182,7 @@ export default {
       await this.createCard({card: {
         "name": card.name,
         "description": card.description,
-        "knowledbaseUrl": card.knowledbaseUrl,
+        "externalLink": card.externalLink,
         "imageUrl": card.imageUrl,
         "type": card.cardType,
         "interactionSubjectLeft": card.interactionSubjectLeft,
@@ -181,19 +193,11 @@ export default {
     async handleSetChange(event, card) {
         await this.updateCard({
         "uuid": card.uuid,
-        "cardset": event.newSet,
-        "name": card.name,
-        "description": card.description,
-        "knowledbaseUrl": card.knowledbaseUrl,
-        "imageUrl": card.imageUrl,
-        "type": card.cardType,
-        "interactionSubjectLeft": card.interactionSubjectLeft,
-        "interactionSubjectRight": card.interactionSubjectRight,
-        "interactionDirection": card.interactionDirection
+        "cardset": event.newSet
       })
     },
     handleSetSelection(selection) {
-      this.resetCards()
+      this.resetCards({keepDeckCards: true})
       if(selection.length > 0){
         this.loadCards({"setIds": selection})
       }
@@ -203,7 +207,7 @@ export default {
         "uuid": data.uuid,
         "name": data.name,
         "description": data.description,
-        "knowledbaseUrl": data.externalUrl,
+        "externalLink": data.externalUrl,
         "imageUrl": data.imageUrl,
         "type": data.cardType,
         "interactionSubjectLeft": data.interactionSubjectLeft,
@@ -214,10 +218,9 @@ export default {
     handleCardDeletion(data){
       this.deleteCard({"uuid": data})
     },
-    handleDragStart: function (event, card) {
+    handleDragStart: function (event) {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('card', JSON.stringify(card))
       event.dataTransfer.setData('origin', JSON.stringify({
         owner: this.uuid,
         container: "collection"
@@ -229,8 +232,8 @@ export default {
       if(origin.container !== 'deck'){
         return
       }
-      const card = JSON.parse(e.dataTransfer.getData('card'))
-      this.removeCardFromCurrentDeck(card.uuid)
+      const cardId = JSON.parse(e.dataTransfer.getData('cardId'))
+      this.removeCardFromCurrentDeck(cardId)
     },
     scrollToElement (el) {
       const target = getScrollTarget(el)

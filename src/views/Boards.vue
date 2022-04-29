@@ -6,7 +6,7 @@
       <router-link :to="`/boards/${board.uuid}`">
         <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="board-thumbnail" />
         <q-card-section>
-          {{ board.name }}
+          {{ formatBoardName(board.name) }}
         </q-card-section>
       </router-link>
       <q-separator />
@@ -62,13 +62,19 @@ export default {
   async created () {
     await this.loadOwnPermissions()
   },
+  beforeUnmount() {
+    this.resetBoards()
+  },
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
-    ...mapActions('boards', ['loadOwnBoards']),
+    ...mapActions('boards', ['loadOwnBoards', 'resetBoards']),
     loadMoreBoards (index, done) {
       this.loadOwnBoards()
       done()
+    },
+    formatBoardName (name) {
+      return (name.length < 15) ? name : `${name.substring(0,12)}...`
     }
   },
 

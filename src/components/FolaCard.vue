@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-for="(plugin, index) in addonsTop" :key="plugin.uuid" class="row items-start q-gutter-xs">
-      <q-chip square removable @remove="handlePluginRemove($event, 'addonsTop', index)" text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+    <div v-for="(cardId) in addonsTop" :key="cardId" class="row items-start q-gutter-xs">
+      <q-chip square removable @remove="handlePluginRemove($event, cardId)" text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip col-12" :icon="getTypeIconName(cards[cardId].cardType)" @dragstart="handleDragStart($event, cardId)">{{cards[cardId].name}}</q-chip>
     </div>
-    <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, getViewConfig)" @dragleave="activeDrag = null">
+    <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, uuid)" @dragleave="activeDrag = null">
       <q-card-section class="text-center">
         {{ name }}
       </q-card-section>
@@ -28,11 +28,11 @@
       </q-card-section>
       <q-menu touch-position>
         <q-list style="min-width: 100px">
-          <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {card: this.getViewConfig})"  v-close-popup>
-            <q-item-section>{{$t('card.pick_up')}}</q-item-section>
+          <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {cardId: uuid})"  v-close-popup>
             <q-item-section avatar>
               <q-icon color="primary" name="pan_tool" />
             </q-item-section>
+            <q-item-section>{{$t('card.pick_up')}}</q-item-section>
           </q-item>
           <q-item clickable :disable="!isValidUrl(externalLink)" @click="openExternalLink"  v-close-popup>
             <q-item-section side>
@@ -79,8 +79,8 @@
         </q-list>
       </q-menu>
     </q-card>
-    <div v-for="(plugin, index) in addonsBot" :key="plugin.uuid" class="row items-start q-gutter-xs">
-      <q-chip removable @remove="handlePluginRemove($event, 'addonsBot', index)" square text-color="white" :color="getTypeColor(plugin.cardType)" class="plugin-chip col-12" :icon="getTypeIconName(plugin.cardType)" draggable @dragstart="handleDragStart($event, plugin)">{{plugin.name}}</q-chip>
+    <div v-for="(cardId) in addonsBot" :key="cardId" class="row items-start q-gutter-xs">
+      <q-chip removable @remove="handlePluginRemove($event, cardId)" square text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip col-12" :icon="getTypeIconName(cards[cardId].cardType)" @dragstart="handleDragStart($event, cardId)">{{cards[cardId].name}}</q-chip>
     </div>
     
 
@@ -209,6 +209,7 @@
 </template>
 
 <script>
+import {mapActions, mapState} from 'vuex'
 export default {
   name: "FolaCard",
 
@@ -218,7 +219,6 @@ export default {
   props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions'],
   emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated'],
   data() {
-    //TODO: use properties directly in view mode and internal edit models in edit mode template
     return {
       activeDrag: null,
       cardUuid: this.uuid,
@@ -314,19 +314,20 @@ export default {
     }
   },
   computed: {
+    ...mapState('activeBoard', ['cards']),
     getViewConfig: function () {
       return {
         "uuid": this.uuid,
-        "name": this.cardName,
+        "name": this.name,
         "description": this.cardDescription,
-        "knowledbaseUrl": this.externalLink,
+        "externalLink": this.externalLink,
         "imageUrl": this.imgUrl,
         "cardType": this.type,
         "interactionSubjectLeft": this.interactionSubjectLeft,
         "interactionSubjectRight": this.interactionSubjectRight,
         "interactionDirection": this.interactionDirection,
-        "addonsTop": this.pluginsTop,
-        "addonsBot": this.pluginsBot
+        "addonsTop": this.addonsTop,
+        "addonsBot": this.addonsBot
       }
     },
     getEditConfig: function () {
@@ -334,7 +335,7 @@ export default {
         "uuid": this.uuid,
         "name": this.editorCardName,
         "description": this.editorCardDescription,
-        ...this.isValidUrl(this.editorExtUrl) && { "externalUrl": this.editorExtUrl },
+        ...this.isValidUrl(this.editorExtUrl) && { "externalLink": this.editorExtUrl },
         ...this.isImageUrl(this.editorImgUrl) && { "imageUrl": this.editorImgUrl },
         "cardType": this.editorTypeModel.value,
         "interactionSubjectLeft": this.subjectLeftModel.value,
@@ -378,20 +379,17 @@ export default {
     }
   },
   methods: {
+    ...mapActions('activeBoard', ['getCardByUuid']),
     openExternalLink: function (val){
       if(this.externalLink){
           window.open(this.externalLink , '_blank')
       }
     },
-    handleDragStart: function (event, card) {
+    handleDragStart: function (event, cardId) {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('card', JSON.stringify(card))
+      event.dataTransfer.setData('cardId', cardId)
       this.$emit("dragstart", event)
-    },
-    handleDragEnter: function (event) {
-      const card = JSON.parse(e.dataTransfer.getData('card'))
-      this.activeDrag = card
     },
     submitCardForm: function (event, val) {
       const config = this.getEditConfig
@@ -403,24 +401,9 @@ export default {
       this.viewMode = 'view'
       this.editFormVisible = false
     },
-    getAddonConfig: function (container, index) {
-      return {
-        "uuid": this[container][index].uuid,
-        "name": this[container][index].name,
-        "description": this[container][index].description,
-        "knowledbaseUrl": this[container][index].knowledbaseUrl,
-        "imageUrl": this[container][index].imageUrl,
-        "cardType": this[container][index].cardType,
-        "interactionSubjectLeft": this[container][index].interactionSubjectLeft,
-        "interactionSubjectRight": this[container][index].interactionSubjectRight,
-        "interactionDirection": this[container][index].interactionDirection
-      }
-    },
-    handlePluginRemove: function (event, container, index ){
-      const config = this.getViewConfig
-      const plugin = this.getAddonConfig(container, index)
-      config[container].splice(index, 1)
-      this.$emit("addonRemoved", {"addon": plugin, "newConfig": config, "origin": container})
+
+    handlePluginRemove: function (event, cardId ){
+      this.$emit("addonRemoved", {"hostCardId": this.uuid, "addonId": cardId})
     },
     containsSpecialCharacters: function (val){
       return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)

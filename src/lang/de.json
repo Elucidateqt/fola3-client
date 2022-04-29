@@ -59,7 +59,8 @@
             "external_link": "Externer Link",
             "pick_up": "Aufheben",
             "change_cardset": "Kartenset ändern",
-            "no_cards": "Keine Karten"
+            "no_cards": "Keine Karten",
+            "create_card": "Karte erstellen"
         },
         "cardset": {
             "new_set": "Neues Set",
@@ -73,7 +74,11 @@
         "deck": {
             "no_decks": "Keine Decks gefunden",
             "new_deck": "Neues Deck",
-            "delete": "Deck Löschen"
+            "import_deck": "Deck importieren",
+            "delete": "Deck Löschen",
+            "ask_selection": "Bitte wählen Sie ein Deck aus",
+            "show_deckmanager": "Deckmanager einblenden",
+            "hide_deckmanager": "Deckmanager ausblenden"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

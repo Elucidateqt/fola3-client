@@ -1,5 +1,5 @@
 <template>
-<q-card v-if="mode === 'view'" class="q-pa-md deck-view" @click="$emit('deck-selected')">
+<q-card v-if="mode === 'view'" :class="['q-pa-md', 'deck-view', {'selected': isSelectedDeck(deck.uuid)}]" @click="$emit('deck-selected')">
 <q-card-section class="text-center">
   {{deck.name}}
 </q-card-section>
@@ -16,11 +16,11 @@
         <q-separator />
 
         <q-card-section class="scroll" style="max-height: 78vh">
-          <div class="text-center" v-if="cardList.length === 0">
+          <div class="text-center" v-if="currentDeck.cards.length === 0">
             {{$t('card.no_cards')}}
           </div>
-          <div class="row">
-            <q-chip square v-for="card in cardList" :key="card.uuid" draggable="true" @dragstart="handleDragStart($event, card)" text-color="white" :color="getTypeColor(card.cardType)" class="col-12" :icon="getTypeIconName(card.cardType)">{{card.name}}</q-chip>
+          <div v-else class="row">
+            <q-chip square v-for="cardId in currentDeck.cards" :key="cardId" draggable="true" @dragstart="handleDragStart($event, cardId)" text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="col-12" :icon="getTypeIconName(cards[cardId].cardType)">{{cards[cardId].name}}</q-chip>
             </div>
         </q-card-section>
 
@@ -54,6 +54,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('decks', ['isSelectedDeck']),
+    ...mapState('decks', ['currentDeck']),
+    ...mapState('cards', ['cards']),
     nameRules: function () {
       return [
       val => (val !== null && val !== '') || '  ',
@@ -97,9 +100,9 @@ export default {
       }
     },
     handleCardDrop (e) {
-      const newCard = JSON.parse(e.dataTransfer.getData('card'))
-      if(!this.cardList.some(card => card.uuid === newCard.uuid)){
-        this.addCardToCurrentDeck(newCard)
+      const cardId = e.dataTransfer.getData('cardId')
+      if(!this.currentDeck.cards.includes(cardId)){
+        this.addCardToCurrentDeck(cardId)
       }
     },
     async handleFormSubmit() {
@@ -113,10 +116,10 @@ export default {
         
       }
     },
-    handleDragStart: function (event, card) {
+    handleDragStart: function (event, cardId) {
       event.dataTransfer.dropEffect = 'move'
       event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('card', JSON.stringify(card))
+      event.dataTransfer.setData('cardId', JSON.stringify(cardId))
       event.dataTransfer.setData('origin', JSON.stringify({
         deckId: this.deck.uuid,
         container: "deck"
@@ -133,5 +136,10 @@ export default {
 <style scoped>
 .deck-view {
   cursor: pointer;
+}
+
+.selected {
+  background-color: rgb(2, 123, 227);
+  color: white;
 }
 </style>

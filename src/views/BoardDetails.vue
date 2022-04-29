@@ -1,56 +1,59 @@
 <template>
   <q-page>
     <div class="q-pa-md row items-start q-gutter-md">
-      <div v-if="activeBoard !== null">
+      <div v-if="boardId !== null">
         <q-input v-model="messageInput" filled label="message" />
         <q-btn @click="sendMessage" flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="messageInput === ''" color="primary" />
-        <q-btn v-if="canCopyToClipboard" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
-        <div class="text-center">Inv: {{activeBoard.inviteCode}}</div>
-        <div style="height: 80vh; width: 90vw; background-color: grey;" class="row" @drop="handleCardDrop($event)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
-          <div v-for="(column, index) in activeBoardState" :key="`board_column_${index}`" class="self-center">
+        <q-btn v-if="inviteCode" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
+        <div class="text-center">Inv: {{inviteCode}}</div>
+        <q-card class="row no-wrap" style="width: 90vw; height: 80vh; background-color: grey; overflow-x: auto;" @drop="handleCardDrop($event, boardState.length ,0)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
+          <div v-for="(column, index) in boardState" :key="`board_column_${index}`" class="self-center">
             <div class=" row items-start q-pa-xl">
               <fola-card 
-                v-for="(interactionCard, cardIndex) in column" 
-                :key="interactionCard.uuid" 
-
-                :name="interactionCard.name"
-                :uuid="interactionCard.uuid"
-                :description="interactionCard.description"
-                :external-link="interactionCard.knowledbaseUrl"
-                :image-url="interactionCard.imageUrl"
-                :type="interactionCard.cardType"
-                :interactionSubjectLeft="interactionCard.interactionSubjectLeft"
-                :interactionSubjectRight="interactionCard.interactionSubjectRight"
-                :interactionDirection="interactionCard.interactionDirection"
-                :addons-top="interactionCard.addonsTop"
-                :addons-bot="interactionCard.addonsBot"
+                v-for="(cardId, cardIndex) in column" 
+                :key="cardId" 
+                :allow-edit="true"
+                :name="cards[cardId].name"
+                :uuid="cards[cardId].uuid"
+                :description="cards[cardId].description"
+                :external-link="cards[cardId].externalLink"
+                :image-url="cards[cardId].imageUrl"
+                :type="cards[cardId].cardType"
+                :interactionSubjectLeft="cards[cardId].interactionSubjectLeft"
+                :interactionSubjectRight="cards[cardId].interactionSubjectRight"
+                :interactionDirection="cards[cardId].interactionDirection"
+                :addons-top="cards[cardId].addonsTop"
+                :addons-bot="cards[cardId].addonsBot"
                 mode="view"
                 allow-drag="true"
                 :allow-pick-up="true"
                 @dragstart="handleDragStart($event, index, cardIndex)"
-                @drop="handleAddonDrop($event, index, cardIndex, interactionCard)"
-                @addon-removed="handleAddonRemove($event, index, cardIndex)"
+                @drop="handleAddonDrop($event, cardId)"
+                @addon-removed="handleAddonRemove($event, cardId)"
                 @pick-up-card="handlePickUpInteraction($event, index, cardIndex)"
               />
             </div>
-          </div>
-          <div v-if="activeDrag != null" class="card-dropzone self-center" @drop="alert('hi')"></div>
         </div>
+        </q-card>
       </div>
       <div v-else>
         No board
       </div>
     </div>
-    <q-page-sticky position="bottom" :offset="showPlayerHands === true ? [0,80] : [0, 20]">
-      <q-avatar size="5em" @click="showPlayerHands = !showPlayerHands"> 
-        <q-img src="@/assets/logo-transparent.svg" />
-      </q-avatar>
+    <q-dialog seamless v-model="showPlayerHands" full-width position="bottom">
+      <q-card>
+        <player-card-container v-if="showPlayerHands" :selected-hand="selectedHand"/>
+      </q-card>
+    </q-dialog>
+    <q-page-sticky position="bottom">
+      <q-icon color="primary" size="5em" name="pan_tool" @click="showPlayerHands = !showPlayerHands" />
     </q-page-sticky>
-      <player-card-container v-if="showPlayerHands" :selected-hand="selectedHand" class="player-card-container"/>
+
   </q-page>
 </template>
 
 <script>
+import { copyToClipboard } from 'quasar'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import PlayerCardContainer from '@/components/PlayerCardContainer.vue'
 import FolaCard from '@/components/FolaCard.vue'
@@ -61,27 +64,24 @@ export default {
     PlayerCardContainer,
     FolaCard
   },
-    data() {
+  data() {
     return {
-      // counter only uses this.initialCounter as the initial value;
-      // it is disconnected from future prop updates.
       messageInput: '',
       showPlayerHands: false,
-      activeDrag: null,
       selectedHand: this.uuid
   }},
   computed: {
     canCreateBoards () {
       return this.userHasPermission()('API:BOARD:CREATE')
     },
-    canCopyToClipboard () {
-      return this.activeBoard.inviteCode && navigator.clipboard
-    },
     inviteUrl () {
-      return `${window.location.origin}/boards/${this.activeBoard.uuid}?inv=${this.activeBoard.inviteCode}`
+      return `${window.location.origin}/boards/${this.boardId}?inv=${this.inviteCode}`
     },
     ...mapState('player', ['permissions']),
-    ...mapState('boards', ['activeBoard', 'activeBoardState', 'activeAddonCards']),
+    ...mapState('activeBoard', ['name', 'description', 'inviteCode', 'boardState', 'cards']),
+    ...mapState('activeBoard', {
+      boardId: state => state.uuid
+    }),
     ...mapState('player', ['uuid'])
   },
   async created () {
@@ -89,17 +89,21 @@ export default {
         await this.joinBoardByInvite({uuid: this.$route.params.id, inviteCode: this.$route.query.inv})
     }
     await this.loadOwnProfile()
-    await this.loadBoardDetails(this.$route.params.id)
     await this.loadOwnPermissions()
+    this.emitJoinBoard({boardId: this.$route.params.id})
+  },
+  beforeUnmount(){
+    this.emitLeaveBoard()
+    this.resetBoard()
   },
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('player', ['loadOwnProfile', 'uuid']),
-    ...mapActions('boards', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard']),
+    ...mapActions('activeBoard', ['loadBoardDetails', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
-      await navigator.clipboard.writeText(this.inviteUrl)
+      await copyToClipboard(this.inviteUrl)
       this.setAlert({
           type: 'positive',
           visible: true,
@@ -133,54 +137,35 @@ export default {
         index: index,
         container: "board"
       }
-      this.activeDrag = JSON.parse(e.dataTransfer.getData('card'))
       const originString = JSON.stringify(origin)
       event.dataTransfer.setData('cardOrigin', originString)
     },
     handleDragEnter (e) {
       this.showPlayerHands = false
     },
-    handleCardDrop (e) {
-      const card = JSON.parse(e.dataTransfer.getData('card'))
+    handleCardDrop (e, column, index) {
+      const cardId = e.dataTransfer.getData('cardId')
       const origin = JSON.parse(e.dataTransfer.getData('cardOrigin'))
-      if(card.cardType === "interaction"){
-        this.emitPlayInteraction(card)
-        this.emitRemoveCard({cardId: card.uuid, location: origin })
+      if(this.cards[cardId].cardType === "interaction"){
+        this.emitPlayInteraction({cardId: cardId, origin: origin, column: column, index: index})
       }
-      this.activeDrag = null
     },
-    handleAddonDrop (e, column, index, interaction) {
-      const card = JSON.parse(e.dataTransfer.getData('card'))
+    async handleAddonDrop (e, targetId) {
       const origin = JSON.parse(e.dataTransfer.getData('cardOrigin'))
-      switch (card.cardType) {
-        case 'LET':
-          interaction.addonsTop.push(card) 
-          break;
-        case 'what':
-          interaction.addonsBot.push(card)
-        default:
-          return
+      if(origin.container === 'board'){
+        return
       }
-      this.emitUpdateCard({card: interaction, location: {container: "board", "column": column, "index": index}})
-      this.emitRemoveCard({cardId: card.uuid, location: origin })
+      const cardId = e.dataTransfer.getData('cardId')
+      this.emitAttachCard({cardOrigin: origin, cardId: cardId, target: targetId})
     },
     handleAddonRemove(event, column, index) {
-      this.emitUpdateCard({card: event.newConfig, location: {container: "board", "column": column, "index": index}})
-      this.emitAddCard({card: event.addon, location: {container: "hand", playerId: this.uuid}})
+      this.emitDetachCard({addonId: event.addonId, hostCardId: event.hostCardId})
       this.showPlayerHands = true
       this.selectedHand = this.uuid
     },
     handlePickUpInteraction(event, column, index){
-      //TODO: fix duplicate addition of what-cards to player hands
-      const interaction = event.card
-      interaction.addonsTop.forEach(card => this.emitAddCard({card: card, location: {container: "hand", playerId: this.uuid}}))
-      interaction.addonsBot.forEach(card => this.emitAddCard({card: card, location: {container: "hand", playerId: this.uuid}}))
-      interaction.addonsTop = []
-      interaction.addonsBot = []
-      this.emitAddCard({card: interaction, location: {container: "hand", playerId: this.uuid}})
-      this.emitRemoveCard({cardId: interaction.uuid, location: {container: "board", column: column, index: index} })
-      this.showPlayerHands = true
-      this.selectedHand = this.uuid
+      const cardId = event.cardId
+      this.emitPickUpInteraction({cardId: cardId, column: column})
     }
   },
 

@@ -3,6 +3,10 @@ import axiosApi from '../../api/axios.js'
 const loadOwnDecks = async ({ state, commit }) => {
   try {
     const res = await axiosApi.get(`/decks/my`)
+    res.data.decks.forEach(deck => {
+      commit('cards/ADD_CARDS', deck.cards, {root: true})
+      deck.cards = deck.cards.map(card => card.uuid)
+    })
     commit('SET_OWN_DECKS', res.data.decks)
   } catch(err) {
       throw new Error(err)
@@ -60,21 +64,25 @@ const setWIPDecks = (state, decks) => {
   state.wipDecks = decks
 }
 
-const setCurrentDeck = ({state, commit}, index) => {
-  state.currentDeck = Object.assign({},state.ownDecks[index])
+const setCurrentDeck = async ({state, commit, rootState, dispatch}, index) => {
+  const selectedDeck = state.ownDecks[index]
+  state.currentDeck = Object.assign({}, selectedDeck)
+}
+
+const resetCurrentDeck = ({state, commit}) => {
+  state.currentDeck = null
 }
 
 const getAllDecks = (state) => {
   return state.ownDecks.concat(state.publicDecks).concat(state.wipDecks)
 }
 
-const addCardToCurrentDeck = ({state, commit}, card) => {
-  state.currentDeck.cards.push(card)
+const addCardToCurrentDeck = ({state, commit}, cardId) => {
+  state.currentDeck.cards.push(cardId)
 }
 
 const removeCardFromCurrentDeck = ({state, commit}, uuid) => {
-  const index = state.currentDeck.cards.map(card => card.uuid).indexOf(uuid)
-  state.currentDeck.cards.splice(index, 1)
+  state.currentDeck.cards = state.currentDeck.cards.filter(cardId => cardId !== uuid)
 }
 
 const setCurrentDeckName = ({state, commit}, name) => {
@@ -85,8 +93,15 @@ const isCardInCurrentDeck = (state) => (uuid) => {
   if(state.currentDeck === null){
     return false
   }
-  let isCardInDeck = state.currentDeck.cards.some(card => card.uuid === uuid) ? true : false
+  let isCardInDeck = state.currentDeck.cards.includes(uuid)
   return isCardInDeck
+}
+
+const isSelectedDeck = (state) => (uuid) => {
+  if(state.currentDeck === null){
+    return false
+  }
+  return state.currentDeck.uuid === uuid
 }
 
 const saveCurrentDeck = async ({state, commit}) => {
@@ -94,7 +109,7 @@ const saveCurrentDeck = async ({state, commit}) => {
     const res = await axiosApi.put(`/decks/${state.currentDeck.uuid}`, {
       "name": state.currentDeck.name,
       "owner": state.currentDeck.owner,
-      "cards": state.currentDeck.cards.map(card => card.uuid)
+      "cards": state.currentDeck.cards
     })
     const index = state.ownDecks.map(deck => deck.uuid).indexOf(state.currentDeck.uuid)
     commit('SET_DECK', {'index': index, 'deck': state.currentDeck})
@@ -147,7 +162,8 @@ export default {
     },
     getters: {
       getAllDecks,
-      isCardInCurrentDeck
+      isCardInCurrentDeck,
+      isSelectedDeck,
     },
     actions: {
         createOwnDeck,
@@ -160,6 +176,7 @@ export default {
         removeCardFromCurrentDeck,
         saveCurrentDeck,
         deleteCurrentDeck,
+        resetCurrentDeck,
         resetDecks
     }
   }

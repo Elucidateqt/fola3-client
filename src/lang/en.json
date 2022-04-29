@@ -58,7 +58,8 @@
             "external_link": "External Link",
             "pick_up": "Pick up",
             "change_cardset": "change cardset",
-            "no_cards": "No cards found"
+            "no_cards": "No cards found",
+            "create_card": "Create Card"
         },
         "cardset": {
             "new_set": "New Set",
@@ -72,7 +73,11 @@
         "deck": {
             "no_decks": "No decks found.",
             "new_deck": "New Deck",
-            "delete": "Delete Deck"
+            "import_deck": "Import Deck",
+            "delete": "Delete Deck",
+            "ask_selection": "Please select a deck",
+            "show_deckmanager": "Show deck manager",
+            "hide_deckmanager": "Hide deck manager"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",

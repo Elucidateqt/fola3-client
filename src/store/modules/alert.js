@@ -2,6 +2,7 @@ const setAlertConfig = (state, data) => {
     state.message = data.message,
     state.type = data.type
     state.visible = data.visible
+    state.position = data.position
   }
   
   const setAlert = ({state, commit}, data) => {
@@ -37,6 +38,7 @@ export default {
         message : "",
         type: "info",
         visible: false,
+        position: 'bottom'
     },
     mutations: {
         SET_ALERT_CONFIG: setAlertConfig,
