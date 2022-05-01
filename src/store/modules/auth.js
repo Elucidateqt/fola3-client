@@ -17,7 +17,7 @@ const loginUser = async ({ state, commit }, data) => {
   try {
     await axiosAuth.post(`/auth/login`, {email: data.email, password: data.password})
     //tokens in response are caught and saved by axios interceptor
-  } catch(e) {
+  } catch(err) {
     throw new Error(err)
   }
 }
