@@ -95,14 +95,15 @@ export default {
     this.emitJoinBoard({boardId: this.$route.params.id})
   },
   beforeUnmount(){
-    this.emitLeaveBoard()
+    //this.emitLeaveBoard()
+    this.disconnectSocket()
     this.resetBoard()
   },
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('player', ['loadOwnProfile', 'uuid']),
-    ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition']),
+    ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition', 'disconnectSocket']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await copyToClipboard(this.inviteUrl)

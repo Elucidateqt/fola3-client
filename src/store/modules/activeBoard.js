@@ -6,9 +6,13 @@ const connectSocket = (context, data) => {
   socket = io(`${process.env.VUE_APP_SOCKET_URL}:${process.env.VUE_APP_SOCKET_PORT}`,{
     path: "/socket/",
     withCredentials: true,
-    query: data.token
+    query: {token: data.token}
 })
   initializeSocketListeners(context)
+}
+
+const disconnectSocket = (context)  => {
+  socket.disconnect()
 }
 
 const handleErrors = (message) => {
@@ -204,7 +208,8 @@ const emitImportCurrentDeck = async ({state, commit, rootState}) => {
 }
 
 const addPlayer = async (state, player, rootState) => {
-    state.players[player.uuid] = {"uuid": player.uuid, "username": player.username}
+  console.log("setting player with data", player)
+    state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline}
     state.playerHands[player.uuid] = player.cards
 }
 
@@ -402,7 +407,7 @@ const setActiveBoard = (state, board) => {
     state.players = {}
     state.playerHands = {}
     board.members.forEach(player => {
-      state.players[player.uuid] = {"uuid": player.uuid, "username": player.username}
+      state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline}
       state.playerHands[player.uuid] = player.cards
     });
 }
@@ -461,6 +466,7 @@ export default {
     },
     actions: {
         connectSocket,
+        disconnectSocket,
         joinBoardByInvite,
         emitMessage,
         emitPlayInteraction,
