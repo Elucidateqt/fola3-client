@@ -45,11 +45,11 @@ const  initializeSocketListeners = (store) => {
     })
 
     socket.on('playerJoined', (data) => {
-      store.commit("activeBoard/ADD_PLAYER", data.user)
+      store.commit("SET_PLAYER_ONLINE", {playerId: data.user})
     })
 
     socket.on('playerLeft', (data) => {
-      store.commit('REMOVE_PLAYER', data.userId)
+      store.commit('SET_PLAYER_OFFLINE', {playerId: data.userId})
     })
 
     socket.on('cardsCreated', (data) => {
@@ -208,9 +208,20 @@ const emitImportCurrentDeck = async ({state, commit, rootState}) => {
 }
 
 const addPlayer = async (state, player, rootState) => {
-  console.log("setting player with data", player)
     state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline}
     state.playerHands[player.uuid] = player.cards
+}
+
+const setPlayerOnline = (state, data) => {
+  state.players[data.playerId].isOnline = true
+}
+
+const setPlayerOffline = (state, data) => {
+  state.players[data.playerId].isOnline = false
+}
+
+const getOnlinePlayers = (state) => {
+  return Object.values(state.players).filter(player => player.isOnline === true)
 }
 
 const removePlayer = async (state, userId) => {
@@ -394,13 +405,11 @@ const joinBoardByInvite = async ({ state, commit }, data) => {
 }
 
 const setActiveBoard = (state, board) => {
-  console.log("setactiveboard called", board)
     state.uuid = board.uuid
     state.name = board.name
     state.description = board.description
     state.inviteCode = board.inviteCode
     board.cards.forEach(card => {
-      console.log("adding card to store", card)
       state.cards[card.uuid] = card
     })
     state.boardState = board.boardState
@@ -450,6 +459,8 @@ export default {
       SET_CARD: setCard,
       ADD_PLAYER: addPlayer,
       REMOVE_PLAYER: removePlayer,
+      SET_PLAYER_ONLINE: setPlayerOnline,
+      SET_PLAYER_OFFLINE: setPlayerOffline,
       CREATE_CARDS: createCards,
       PLAY_INTERACTION: playInteraction,
       ADD_CARD_TO_BOARD: addCardToBoard,
@@ -462,7 +473,7 @@ export default {
       RESET: reset
     },
     getters: {
-
+      onlinePlayers: getOnlinePlayers
     },
     actions: {
         connectSocket,

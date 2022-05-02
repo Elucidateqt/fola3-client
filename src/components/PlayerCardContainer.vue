@@ -9,13 +9,13 @@
         align="justify"
         narrow-indicator
       >
-        <q-tab v-for="player in players" :key="`hand_tab_${player.uuid}`" :name="player.uuid" :label="player.username" />
+        <q-tab v-for="player in onlinePlayers" :key="`hand_tab_${player.uuid}`" :name="player.uuid" :label="player.username" />
       </q-tabs>
 
       <q-separator />
 
     <q-tab-panels v-model="tab" animated swipeable>
-      <q-tab-panel v-for="player in players" :key="`hand_panel_${player.uuid}`" :name="player.uuid" @drop.prevent="handleCardDrop">
+      <q-tab-panel v-for="player in onlinePlayers" :key="`hand_panel_${player.uuid}`" :name="player.uuid" @drop.prevent="handleCardDrop">
         <q-scroll-area class="player-card-container">
           <div class="q-pa-md row items-start q-gutter-md">
             <fola-card 
@@ -107,6 +107,7 @@ export default defineComponent( {
   computed: {
     ...mapState('player', ['username', 'uuid']),
     ...mapState('activeBoard', ['players', 'playerHands', 'cards']),
+    ...mapGetters('activeBoard', ['onlinePlayers']),
     ...mapState('decks', ['ownDecks', 'currentDeck']),
     ...mapGetters('decks', ['isSelectedDeck'])
   },
