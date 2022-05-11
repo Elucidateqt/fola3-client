@@ -60,11 +60,14 @@
         },
         "card": {
             "external_link": "Externer Link",
+            "image_url": "Bild-URL",
             "pick_up": "Aufheben",
             "change_cardset": "Kartenset ändern",
             "no_cards": "Keine Karten",
             "create_card": "Karte erstellen",
-            "delete_card_confirm": "Karte '{cardname}' löschen?"
+            "delete_card_confirm": "Karte '{cardname}' löschen?",
+            "copy_to_collection": "In Sammlung kopieren",
+            "confirm_copy": "Karte erfolgreich kopiert."
         },
         "cardset": {
             "new_set": "Neues Set",

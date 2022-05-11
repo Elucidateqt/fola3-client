@@ -59,11 +59,14 @@
         },
         "card": {
             "external_link": "External Link",
+            "image_url": "Image-URL",
             "pick_up": "Pick up",
-            "change_cardset": "change cardset",
+            "change_cardset": "Change cardset",
             "no_cards": "No cards found",
             "create_card": "Create Card",
-            "delete_card_confirm": "Delete card '{cardname}'?"
+            "delete_card_confirm": "Delete card '{cardname}'?",
+            "copy_to_collection": "Copy to collection",
+            "confirm_copy": "Card copied successfully."
         },
         "cardset": {
             "new_set": "New Set",

@@ -40,6 +40,12 @@
             </q-item-section>
             <q-item-section>{{$t('nav.visit_link')}}</q-item-section>
           </q-item>
+          <q-item clickable @click="createCopyInCollection"  v-close-popup>
+            <q-item-section side>
+              <q-icon name="drive_file_move" />
+            </q-item-section>
+            <q-item-section>{{$t('card.copy_to_collection')}}</q-item-section>
+          </q-item>
           <q-item clickable v-if="allowEdit" @click="viewMode = 'edit';editFormVisible = true" v-close-popup>
             <q-item-section side>
               <q-icon name="edit" />
@@ -158,7 +164,7 @@
 
 
           <q-card-section v-else>
-            <q-input v-model="editorImgUrl" filled label="" :rules="imageUrlRules" />
+            <q-input v-model="editorImgUrl" filled :label="$t('card.image_url')" :rules="imageUrlRules" />
             <q-img v-if="isImageUrl(editorImgUrl)" class="card-image" :src="editorImgUrl" :ratio="4/3" />
           </q-card-section>
 
@@ -330,13 +336,14 @@ export default {
   computed: {
     ...mapState('activeBoard', ['cards']),
     getViewConfig: function () {
+
       return {
         "uuid": this.uuid,
         "name": this.name,
         "description": this.cardDescription,
-        "externalLink": this.externalLink,
-        "imageUrl": this.imgUrl,
-        "cardType": this.type,
+        ...this.isValidUrl(this.externalLink) && { "externalLink": this.externalLink },
+        ...this.isImageUrl(this.imageUrl) && { "imageUrl": this.imageUrl },
+        "type": this.type,
         "interactionSubjectLeft": this.interactionSubjectLeft,
         "interactionSubjectRight": this.interactionSubjectRight,
         "interactionDirection": this.interactionDirection,
@@ -394,10 +401,21 @@ export default {
   },
   methods: {
     ...mapActions('activeBoard', ['getCardByUuid']),
+    ...mapActions('cards', ['createCard']),
+    ...mapActions('alert', ['setAlert']),
     openExternalLink: function (val){
       if(this.externalLink){
           window.open(this.externalLink , '_blank')
       }
+    },
+    createCopyInCollection: async function () {
+      const config = this.getViewConfig
+      await this.createCard({card: config})
+      this.setAlert({
+        type: 'positive',
+        visible: true,
+        message: this.$i18n.t('card.confirm_copy'),
+      })
     },
     handleDragStart: function (event, cardId) {
       event.dataTransfer.dropEffect = 'move'
