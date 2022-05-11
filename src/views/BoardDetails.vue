@@ -156,7 +156,7 @@ export default {
     handleCardDrop (e, column, index) {
       const cardId = e.dataTransfer.getData('cardId')
       const origin = JSON.parse(e.dataTransfer.getData('cardOrigin'))
-      if(this.cards[cardId].cardType === "interaction"){
+      if(this.cards[cardId].cardType === "interaction" && origin.container === 'hand'){
         this.emitPlayInteraction({cardId: cardId, origin: origin, column: column, index: index})
       }
     },
