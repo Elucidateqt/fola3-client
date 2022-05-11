@@ -53,14 +53,18 @@
             "confirm_creation": "Board erstellt",
             "updated_at": "Geändert am {date}",
             "copy_link": "Freigabelink kopieren",
-            "link_copied": "Link kopiert"
+            "link_copied": "Link kopiert",
+            "leave_board": "Board verlassen",
+            "leave_board_confirm": "Board '{boardname}' verlassen?",
+            "delete_board_confirm": "Board '{boardname}' löschen?"
         },
         "card": {
             "external_link": "Externer Link",
             "pick_up": "Aufheben",
             "change_cardset": "Kartenset ändern",
             "no_cards": "Keine Karten",
-            "create_card": "Karte erstellen"
+            "create_card": "Karte erstellen",
+            "delete_card_confirm": "Karte '{cardname}' löschen?"
         },
         "cardset": {
             "new_set": "Neues Set",
@@ -69,7 +73,8 @@
             "icon_url": "Bild-URL",
             "public_visible": "Öffentlich sichtbar?",
             "confirm_update": "Kartenset aktualisiert.",
-            "confirm_deletion": "Kartenset gelöscht."
+            "confirm_deletion": "Kartenset gelöscht.",
+            "delete_set_confirm": "Kartenset '{setname}' löschen?"
         },
         "deck": {
             "no_decks": "Keine Decks gefunden",
@@ -78,7 +83,8 @@
             "delete": "Deck Löschen",
             "ask_selection": "Bitte wählen Sie ein Deck aus",
             "show_deckmanager": "Deckmanager einblenden",
-            "hide_deckmanager": "Deckmanager ausblenden"
+            "hide_deckmanager": "Deckmanager ausblenden",
+            "delete_deck_confirm": "Deck '{deckname}' löschen?"
         },
         "validation": {
             "min_length": "Mindestens {min} Zeichen erforderlich.",

@@ -28,10 +28,22 @@
 
         <q-card-actions align="around">
           <q-btn flat :label="$t('base.save')" :aria-label="$t('base.save')" :disable="!canSave" color="primary" type="submit" />
-          <q-btn flat @click="deleteCurrentDeck" color="red" :label="$t('deck.delete')" />
+          <q-btn flat @click="deleteDialogVisible = true" color="red" :label="$t('deck.delete')" />
         </q-card-actions>
       </q-form>
     </q-card>
+    <q-dialog v-model="deleteDialogVisible" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm text-h6">{{$t('deck.delete_deck_confirm', {deckname: deckName})}}</span>
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn flat :label="$t('base.cancel')" color="primary" v-close-popup />
+          <q-btn flat :label="$t('base.delete')" color="primary" @click="deleteCurrentDeck" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 </template>
 
 <script>
@@ -47,6 +59,7 @@ export default {
   emits: ['deck-selected', 'dragstart'],
   data (){
     return{
+      deleteDialogVisible: false,
       cardList: this.deck && this.deck.cards ? this.deck.cards : [],
       deckName: this.deck && this.deck.name ? this.deck.name : '',
       nameMin: 3,

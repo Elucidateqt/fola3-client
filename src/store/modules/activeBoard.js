@@ -40,12 +40,11 @@ const  initializeSocketListeners = (store) => {
     })
 
     socket.on('setBoard', (data) => {
-      console.log("received setBoard with cards", data.board.cards)
       store.commit("SET_ACTIVE_BOARD", data.board)
     })
 
     socket.on('playerJoined', (data) => {
-      store.commit("SET_PLAYER_ONLINE", {playerId: data.user})
+      store.dispatch("handlePlayerJoin", data)
     })
 
     socket.on('playerLeft', (data) => {
@@ -207,8 +206,8 @@ const emitImportCurrentDeck = async ({state, commit, rootState}) => {
   }
 }
 
-const addPlayer = async (state, player, rootState) => {
-    state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline}
+const addPlayer = async (state, player) => {
+    state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline, "permissions": player.permissions, "roles": player.roles}
     state.playerHands[player.uuid] = player.cards
 }
 
@@ -377,7 +376,6 @@ const deleteCard = ({state, commit}, data) => {
 }
 
 const attachCard = ({state, commit}, data) => {
-  console.log("attach card received ", data)
   switch (data.cardOrigin.container) {
     case 'hand':
       commit('REMOVE_CARD_FROM_PLAYER_HAND', {playerId: data.cardOrigin.playerId, cardId: data.cardId})
@@ -404,6 +402,14 @@ const joinBoardByInvite = async ({ state, commit }, data) => {
   }
 }
 
+const handlePlayerJoin = ({state, commit}, data) => {
+  if(Object.keys(state.players).some(playerId => playerId === data.user.uuid)){
+    commit("SET_PLAYER_ONLINE", {playerId: data.user.uuid})
+  }else{
+    commit("ADD_PLAYER", data.user)
+  }
+}
+
 const setActiveBoard = (state, board) => {
     state.uuid = board.uuid
     state.name = board.name
@@ -416,7 +422,7 @@ const setActiveBoard = (state, board) => {
     state.players = {}
     state.playerHands = {}
     board.members.forEach(player => {
-      state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline}
+      state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline, "permissions": player.permissions, "roles": player.roles}
       state.playerHands[player.uuid] = player.cards
     });
 }
@@ -479,6 +485,7 @@ export default {
         connectSocket,
         disconnectSocket,
         joinBoardByInvite,
+        handlePlayerJoin,
         emitMessage,
         emitPlayInteraction,
         emitPickUpInteraction,

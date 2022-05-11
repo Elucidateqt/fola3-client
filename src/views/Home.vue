@@ -14,6 +14,7 @@ export default {
   async created () {
     await this.loadOwnPermissions()
     await this.loadOwnProfile()
+    this.$matomo && this.$matomo.trackPageView()
   },
   methods: {
     ...mapActions('profile', ['loadProfile']),

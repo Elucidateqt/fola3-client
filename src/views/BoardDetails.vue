@@ -2,10 +2,10 @@
   <q-page>
     <div class="q-pa-md row items-start q-gutter-md">
       <div v-if="boardId !== null">
-        <q-input v-model="messageInput" filled label="message" />
-        <q-btn @click="sendMessage" flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="messageInput === ''" color="primary" />
-        <q-btn v-if="inviteCode" flat :label="$t('boards.copy_link')" :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" />
-        <div class="text-center">Inv: {{inviteCode}}</div>
+        <div class="row items-start">
+        <q-input filled readonly v-model="inviteUrl" class="text-center" style="max-width: 10em" />
+        <q-btn v-if="inviteCode" flat :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" icon="content_copy" />
+        </div>
         <q-card class="row no-wrap" style="width: 90vw; height: 80vh; background-color: grey; overflow-x: auto;" @drop="handleCardDrop($event, boardState.length ,0)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
           <div v-for="(column, index) in boardState" :key="`board_column_${index}`" class="self-center">
             <div class=" row items-start q-pa-xl">
@@ -30,6 +30,7 @@
                 @dragstart="handleDragStart($event, index, cardIndex)"
                 @drop="handleAddonDrop($event, cardId)"
                 @addon-removed="handleAddonRemove($event, cardId)"
+                @card-edit-submitted="(editConfig) => emitUpdateCard({ config: editConfig })"
                 @pick-up-card="handlePickUpInteraction($event, index, cardIndex)"
               />
             </div>
@@ -78,7 +79,7 @@ export default {
     inviteUrl () {
       return `${window.location.origin}/boards/${this.boardId}?inv=${this.inviteCode}`
     },
-    ...mapState('player', ['permissions']),
+    ...mapState('player', ['permissions', 'uuid']),
     ...mapState('activeBoard', ['name', 'description', 'inviteCode', 'boardState', 'cards']),
     ...mapState('activeBoard', {
       boardId: state => state.uuid
@@ -93,16 +94,22 @@ export default {
     await this.loadOwnPermissions()
     this.connectSocket({token: this.accessToken})
     this.emitJoinBoard({boardId: this.$route.params.id})
+    this.$matomo && this.$matomo.trackPageView()
   },
   beforeUnmount(){
-    //this.emitLeaveBoard()
     this.disconnectSocket()
     this.resetBoard()
   },
+  watch:{
+    $route (to, from){
+    this.disconnectSocket()
+    this.resetBoard()
+    }
+  }, 
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
-    ...mapActions('player', ['loadOwnProfile', 'uuid']),
+    ...mapActions('player', ['loadOwnProfile']),
     ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition', 'disconnectSocket']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {

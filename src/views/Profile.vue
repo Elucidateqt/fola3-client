@@ -132,6 +132,7 @@ export default {
       if(this.canSetGroups){
         this.updateRoleModel()
       }
+      this.$matomo && this.$matomo.trackPageView()
     } catch (err) {
         this.setAlert({
           type: 'negative',

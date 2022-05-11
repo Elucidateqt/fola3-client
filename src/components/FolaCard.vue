@@ -70,7 +70,7 @@
               </q-item>
             </q-menu>
           </q-item>
-          <q-item clickable v-if="allowDelete" @click="this.$emit('cardDeleted', uuid)" v-close-popup>
+          <q-item clickable v-if="allowDelete" @click="deleteDialogVisible = true" v-close-popup>
             <q-item-section side>
               <q-icon name="delete" color="negative" />
             </q-item-section>
@@ -205,6 +205,19 @@
         </q-form>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="deleteDialogVisible" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm">{{$t('card.delete_card_confirm', {cardname: name})}}</span>
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn flat :label="$t('base.cancel')" color="primary" v-close-popup />
+          <q-btn flat :label="$t('base.delete')" color="primary" @click="this.$emit('cardDeleted', uuid)" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -220,6 +233,7 @@ export default {
   emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated'],
   data() {
     return {
+      deleteDialogVisible: false,
       activeDrag: null,
       cardUuid: this.uuid,
       pluginsTop: this.type === 'interaction' ? this.addonsTop : [],

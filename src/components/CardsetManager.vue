@@ -1,6 +1,7 @@
 <template>
   <div>
       <q-card v-if="selectedSet === null" class="q-pa-md scroll">
+        <q-card-section>
           <q-list v-if="getPublicSets && getPublicSets.length > 0">
             <q-item v-for="set in getPublicSets" :key="set.uuid">
                 <q-item-section side v-if="set.iconUrl && isImageUrl(set.iconUrl)">
@@ -21,19 +22,14 @@
                   <q-btn icon="edit" @click="handleSetSelection(set)" />
                 </q-item-section>
                 <q-item-section side>
-                  <q-btn icon="delete" @click="handleSetDeletion(set)" />
+                  <q-btn icon="delete" @click="deletionSet = set" />
                 </q-item-section>
             </q-item>
-            <q-item clickable @click="createTemplateCardset" :aria-label="$t('cardset.new_set')" class="text-center">
-              
-              <q-item-section class="text-primary">
-                <q-item-label>
-                <q-icon name="add" />
-                  {{ $t('cardset.new_set') }}
-                </q-item-label>
-              </q-item-section>
-            </q-item>
           </q-list>
+          </q-card-section>
+          <q-card-actions align="around">
+            <q-btn @click="createTemplateCardset" :aria-label="$t('cardset.new_set')"  icon="add" />
+          </q-card-actions>
       </q-card>
 
     <q-card v-else class="q-pa-md">
@@ -47,6 +43,18 @@
           </q-card-actions>
       </q-form>
     </q-card>
+    <q-dialog v-model="deletionPending" class="q-pa-md" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm text-h6">{{$t('cardset.delete_set_confirm', {setname: deletionSet.name})}}</span>
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn flat :label="$t('base.cancel')" color="primary" @click="deletionSet = null" v-close-popup />
+          <q-btn flat :label="$t('base.delete')" color="primary" @click="handleSetDeletion(deletionSet)" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -60,6 +68,7 @@ export default {
 
   },
   data: () => ({
+    deletionSet: null,
     selectedSet: null,
     editName: null,
     editIconUrl: null,
@@ -70,6 +79,9 @@ export default {
   computed: {
     ...mapState('cardsets', ['cardsets']),
     ...mapGetters('cardsets', ['getPublicSets']),
+    deletionPending: function(){
+      return this.deletionSet !== null
+    },
     nameRules: function () {
       return [
       val => (val !== null && val !== '') || '  ',
@@ -177,9 +189,13 @@ export default {
         }
 
     },
+    showDeletionGuard(set){
+      this.deletionSet = set
+    },
     async handleSetDeletion(set) {
         try {
             await this.deleteCardset({"set": set})
+            this.deletionSet = null
             this.setAlert({
           type: 'positive',
           visible: true,

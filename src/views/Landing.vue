@@ -1,5 +1,5 @@
 <template>
-  <h1>Welcome to FOLA³</h1>
+  <h1>Welcome to FoLA3</h1>
 </template>
 
 <script>

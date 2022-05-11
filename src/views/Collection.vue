@@ -157,6 +157,7 @@ export default {
       await this.loadWIPCardSets()
     }
     this.selectedSets[0] = this.getCheckboxOptions[0].value
+    this.$matomo && this.$matomo.trackPageView()
   },
   beforeUnmount(){
     this.resetCardSets()

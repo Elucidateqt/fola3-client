@@ -12,7 +12,7 @@
       <q-separator />
       <q-card-actions align="around">
         <div>
-          <q-icon :name="board.members.length > 1 ? 'group' : 'person'" size="md" />
+          <q-icon :name="Object.keys(board.members).length > 1 ? 'group' : 'person'" size="md" />
         </div>
         <div class="update-timestamp">
           <span class="text-subtext" :aria-label="$t('boards.updated_at', {date: $d(board.createdAt, 'short')})">{{ $d(board.createdAt, 'short') }}</span>
@@ -20,7 +20,12 @@
         <q-btn flat icon="more_vert">
           <q-menu>
             <q-list style="min-width: 100px">
-              <q-item clickable @click="deleteBoard(board)">
+              <q-item clickable @click="activeBoardLeave = board.uuid" v-close-popup>
+                <q-item-section>
+                  <q-item-label>{{ $t('boards.leave_board') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="board.members[uuid].permissions.includes('API:BOARD:DELETE')" clickable @click="deletionBoard = board.uuid" v-close-popup>
                 <q-item-section>
                   <q-item-label>{{ $t('base.delete') }}</q-item-label>
                 </q-item-section>
@@ -40,6 +45,34 @@
   <q-page-sticky position="bottom-right" :offset="[18, 18]" v-if="canCreateBoards">
     <board-creator />
   </q-page-sticky>
+
+
+      <q-dialog v-model="deletionPending" class="q-pa-md" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm text-h6">{{$t('boards.delete_board_confirm', {boardname: boards[deletionBoard].name})}}</span>
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn flat :label="$t('base.cancel')" color="primary" @click="deletionBoard = null" v-close-popup />
+          <q-btn flat :label="$t('base.delete')" color="primary" @click="handleBoardDeletion" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+
+    <q-dialog v-model="leavePending" class="q-pa-md" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="q-ml-sm text-h6">{{$t('boards.leave_board_confirm', {boardname: boards[activeBoardLeave].name})}}</span>
+        </q-card-section>
+
+        <q-card-actions align="around">
+          <q-btn flat :label="$t('base.cancel')" color="primary" @click="activeBoardLeave = null" v-close-popup />
+          <q-btn flat :label="$t('boards.leave_board')" color="primary" @click="handleBoardLeave" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 </q-page>
 </template>
 
@@ -52,29 +85,56 @@ export default {
   components: {
     BoardCreator
   },
+  data: () => ({
+    deletionBoard: null,
+    activeBoardLeave: null
+  }),
   computed: {
+    deletionPending () {
+      return this.deletionBoard !== null
+    },
+    leavePending () {
+      return this.activeBoardLeave !== null
+    },
     canCreateBoards () {
       return this.userHasPermission()('API:BOARD:CREATE')
     },
-    ...mapState('player', ['permissions']),
+    ...mapState('player', ['permissions', 'uuid']),
     ...mapState('boards', ['boards', 'hasMore'])
   },
   async created () {
     await this.loadOwnPermissions()
+    this.$matomo && this.$matomo.trackPageView()
   },
   beforeUnmount() {
+    this.resetBoards()
+  },
+  beforeRouteUpdate(to, from){
     this.resetBoards()
   },
   methods: {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
-    ...mapActions('boards', ['loadOwnBoards', 'resetBoards']),
+    ...mapActions('boards', ['loadOwnBoards', 'resetBoards', 'resetBoardPagination', 'deleteBoard', 'leaveBoard']),
     loadMoreBoards (index, done) {
-      this.loadOwnBoards()
+      if(this.hasMore){
+        this.loadOwnBoards()
+      }
       done()
     },
     formatBoardName (name) {
       return (name.length < 15) ? name : `${name.substring(0,12)}...`
+    },
+    async handleBoardLeave(){
+      const boardId = this.activeBoardLeave
+      this.activeBoardLeave = null
+      await this.leaveBoard(boardId)
+
+    },
+    async handleBoardDeletion(){
+      const boardId = this.deletionBoard
+      this.deletionBoard = null
+      await this.deleteBoard(boardId)
     }
   },
 

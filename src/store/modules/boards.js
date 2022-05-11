@@ -6,22 +6,15 @@ const loadOwnBoards = async ({ state, commit }) => {
       let offset = state.offset
       commit('INCREASE_OFFSET')
       let res = await axiosApi.get(`/boards/my?limit=${state.limit}&offset=${offset}`)
-      if (res.data.boardList.length == 0) {
-          commit('LOADING_FINISHED')
-          return
+      if (res.data.boardList.length === 0) {
+        commit('LOADING_FINISHED')
+        return
       }
       commit('ADD_BOARDS', res.data.boardList)
     }
   } catch(err) {
       throw new Error(err)
   }
-}
-
-const getActiveBoardPlayers = (state) => {
-  if(state.activeBoard && state.activeBoard.members){
-    return state.activeBoard.members
-  }
-  return []
 }
 
 const loadBoardDetails = async ({ state, commit }, uuid) => {
@@ -47,8 +40,28 @@ const createBoard = async ({ state, commit }, data) => {
     }
 }
 
-const addBoards = (state, data) => {
-  state.boards = state.boards.concat(data)
+const leaveBoard = async ({ state, commit }, boardId) => {
+  try {
+      const res = await axiosApi.delete(`/boards/${boardId}/users/me`)
+      delete state.boards[boardId]
+  } catch (err) {
+      throw new Error(err)
+  }
+}
+
+const deleteBoard = async ({ state, commit }, boardId) => {
+  try {
+      const res = await axiosApi.delete(`/boards/${boardId}`)
+      delete state.boards[boardId]
+  } catch (err) {
+      throw new Error(err)
+  }
+}
+
+const addBoards = (state, newBoards) => {
+  newBoards.forEach(board => {
+    state.boards[board.uuid] = board
+  })
 }
 
 const increaseOffset = (state) => {
@@ -60,10 +73,9 @@ const loadingFinished = (state) => {
 }
 
 const reset = (state) => {
-  state.boards = []
+  state.boards = {}
   state.offset = 0
   state.hasMore = true
-  state.activeBoard = null
 }
 
 const resetBoards = ({state, commit}) => {
@@ -77,12 +89,7 @@ export default {
       hasMore: true,
       limit: 5,
       offset: 0,
-      boards: [],
-      activeBoard: {},
-      activeBoardState: [],
-      activeAddonCards: {},
-      activeBoardPlayers: {},
-      activeBoardHands: {},
+      boards: {},
     },
     mutations: {
       ADD_BOARDS: addBoards,
@@ -91,10 +98,12 @@ export default {
       RESET: reset
     },
     getters: {
-      activeBoardMembers : getActiveBoardPlayers
+
     },
     actions: {
         createBoard,
+        leaveBoard,
+        deleteBoard,
         loadOwnBoards,
         loadBoardDetails,
         resetBoards,

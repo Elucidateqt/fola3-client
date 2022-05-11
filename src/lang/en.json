@@ -52,14 +52,18 @@
             "confirm_creation": "Board created",
             "updated_at": "Updated at {date}",
             "copy_link": "Copy invite link",
-            "link_copied": "Link copied"
+            "link_copied": "Link copied",
+            "leave_board": "Leave board",
+            "leave_board_confirm": "Leave board '{boardname}'?",
+            "delete_board_confirm": "Delete board '{boardname}'?"
         },
         "card": {
             "external_link": "External Link",
             "pick_up": "Pick up",
             "change_cardset": "change cardset",
             "no_cards": "No cards found",
-            "create_card": "Create Card"
+            "create_card": "Create Card",
+            "delete_card_confirm": "Delete card '{cardname}'?"
         },
         "cardset": {
             "new_set": "New Set",
@@ -68,7 +72,8 @@
             "icon_url": "Icon URL",
             "public_visible": "Public?",
             "confirm_update": "Cardset updated." ,
-            "confirm_deletion": "Cardset deleted."
+            "confirm_deletion": "Cardset deleted.",
+            "delete_set_confirm": "Delete cardset '{setname}'?"
         },
         "deck": {
             "no_decks": "No decks found.",
@@ -77,7 +82,8 @@
             "delete": "Delete Deck",
             "ask_selection": "Please select a deck",
             "show_deckmanager": "Show deck manager",
-            "hide_deckmanager": "Hide deck manager"
+            "hide_deckmanager": "Hide deck manager",
+            "delete_deck_confirm": "Delete card '{deckname}'?"
         },
         "validation": {
             "min_length": "Must be at least {min} characters long.",
