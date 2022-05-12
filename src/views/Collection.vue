@@ -206,7 +206,7 @@ export default {
         "uuid": data.uuid,
         "name": data.name,
         "description": data.description,
-        "externalLink": data.externalUrl,
+        "externalLink": data.externalLink,
         "imageUrl": data.imageUrl,
         "type": data.cardType,
         "interactionSubjectLeft": data.interactionSubjectLeft,
