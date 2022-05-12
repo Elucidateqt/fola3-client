@@ -190,9 +190,17 @@ export default {
       }})
     },
     async handleSetChange(event, card) {
-        await this.updateCard({
+      await this.updateCard({
         "uuid": card.uuid,
-        "cardset": event.newSet
+        "name": card.name,
+        "cardset": event.newSet,
+        "description": card.description,
+        "externalLink": card.externalLink,
+        "imageUrl": card.imageUrl,
+        "type": card.cardType,
+        "interactionSubjectLeft": card.interactionSubjectLeft,
+        "interactionSubjectRight": card.interactionSubjectRight,
+        "interactionDirection": card.interactionDirection
       })
     },
     handleSetSelection(selection) {
