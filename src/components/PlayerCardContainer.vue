@@ -85,14 +85,12 @@
 <script>
  import { defineComponent } from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
-import FolaCard from '@/components/FolaCard.vue'
 import FolaDeck from '@/components/FolaDeck.vue'
 
 export default defineComponent( {
   name: "PlayerCardContainer",
 
   components: {
-      FolaCard,
       FolaDeck
   },
   props: ['selectedHand'],

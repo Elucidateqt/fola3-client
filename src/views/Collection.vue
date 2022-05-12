@@ -98,7 +98,6 @@
 import { scroll } from 'quasar'
 const { getScrollTarget, setVerticalScrollPosition } = scroll
 import { mapState, mapGetters, mapActions } from 'vuex'
-import FolaCard from '@/components/FolaCard.vue'
 import DeckManager from '@/components/DeckManager.vue'
 import CardsetManager from '@/components/CardsetManager.vue'
 
@@ -106,7 +105,6 @@ export default {
   name: "Collection",
   emits: ['dragstart'],
   components: {
-    FolaCard,
     DeckManager,
     CardsetManager
   },

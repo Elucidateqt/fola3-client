@@ -57,13 +57,11 @@
 import { copyToClipboard } from 'quasar'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import PlayerCardContainer from '@/components/PlayerCardContainer.vue'
-import FolaCard from '@/components/FolaCard.vue'
 
 export default {
   name: "BoardDetails",
   components: {
     PlayerCardContainer,
-    FolaCard
   },
   data() {
     return {

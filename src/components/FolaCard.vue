@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="(cardId) in addonsTop" :key="cardId" class="row items-start q-gutter-xs">
-      <q-chip square removable @remove="handlePluginRemove($event, cardId)" text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip col-12" :icon="getTypeIconName(cards[cardId].cardType)" @dragstart="handleDragStart($event, cardId)">{{cards[cardId].name}}</q-chip>
+      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addonPickedUp="handlePluginRemove($event, cardId)" />
     </div>
     <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, uuid)" @dragleave="activeDrag = null">
       <q-separator />
@@ -26,7 +26,7 @@
         {{ description }}
       </q-card-section>
       <q-separator />
-      <q-menu touch-position>
+      <q-menu touch-position context-menu>
         <q-list style="min-width: 100px">
           <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {cardId: uuid})"  v-close-popup>
             <q-item-section avatar>
@@ -86,7 +86,7 @@
       </q-menu>
     </q-card>
     <div v-for="(cardId) in addonsBot" :key="cardId" class="row items-start q-gutter-xs">
-      <q-chip removable @remove="handlePluginRemove($event, cardId)" square text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip col-12" :icon="getTypeIconName(cards[cardId].cardType)" @dragstart="handleDragStart($event, cardId)">{{cards[cardId].name}}</q-chip>
+      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addonPickedUp="handlePluginRemove($event, cardId)" />
     </div>
     
 
@@ -235,11 +235,13 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
-export default {
+import FolaCardAddon from '@/components/FolaCardAddon.vue';
+import { defineComponent } from 'vue'
+export default defineComponent ({
   name: "FolaCard",
 
   components: {
-    
+    FolaCardAddon
   },
   props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions'],
   emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated'],
@@ -500,7 +502,7 @@ export default {
     },
   },
 
-};
+});
 </script>
 <style scoped>
 .card:hover {

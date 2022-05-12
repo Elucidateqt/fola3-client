@@ -8,6 +8,7 @@ import quasarUserOptions from "./quasar-user-options";
 import { createI18n } from 'vue-i18n'
 import translations from './lang'
 import VueMatomo from 'vue-matomo'
+import FolaCard from './components/FolaCard'
 
 const i18n = createI18n({
   locale: 'de',
@@ -22,8 +23,10 @@ const i18n = createI18n({
   }
 })
 
-createApp(App)
-  .use(Quasar, quasarUserOptions)
+const app = createApp(App)
+app.component("FolaCard", FolaCard)
+
+app.use(Quasar, quasarUserOptions)
   .use(store)
   .use(router)
   .use(i18n)
