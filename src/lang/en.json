@@ -59,6 +59,9 @@
         },
         "card": {
             "external_link": "External Link",
+            "subject_teacher": "Teacher",
+            "subject_learner": "Student",
+            "subject_material": "Learning material",
             "image_url": "Image-URL",
             "pick_up": "Pick up",
             "change_cardset": "Change cardset",

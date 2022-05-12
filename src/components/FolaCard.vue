@@ -4,8 +4,10 @@
       <q-chip square removable @remove="handlePluginRemove($event, cardId)" text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip col-12" :icon="getTypeIconName(cards[cardId].cardType)" @dragstart="handleDragStart($event, cardId)">{{cards[cardId].name}}</q-chip>
     </div>
     <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, uuid)" @dragleave="activeDrag = null">
-      <q-card-section class="text-center">
-        {{ name }}
+      <q-separator />
+      <q-card-section class="text-center row">
+        <div class="col-9 text-weight-bold">{{ name }}</div>
+        <q-icon class="col-3" :name="getTypeIconName(type)" size="sm" :color="getTypeColor(type)" />
       </q-card-section>
       <q-separator />
       <q-card-section v-if="type === 'interaction'" class="row justify-around">
@@ -19,13 +21,11 @@
           {{$t('validation.no_image')}}
         </div>
       </q-card-section>
+      <q-separator />
       <q-card-section>
         {{ description }}
       </q-card-section>
       <q-separator />
-      <q-card-section class="text-center">
-        <q-icon :name="getTypeIconName(type)" size="md" :color="getTypeColor(type)" />
-      </q-card-section>
       <q-menu touch-position>
         <q-list style="min-width: 100px">
           <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {cardId: uuid})"  v-close-popup>
@@ -93,6 +93,33 @@
     <q-dialog v-model="editFormVisible" @hide="$emit('editorClosed')">
       <q-card class="edit-dialog">
         <q-form @submit="submitCardForm">
+          <q-card-section class="row justify-center"> 
+            <q-select
+              filled
+              v-model="editorTypeModel"
+              :options="typeOptions"
+              stack-label
+              label=""
+              class="col-6"
+            >
+              <template v-slot:selected>
+                <q-icon :name="getTypeIconName(editorTypeModel.value)" size="md" :color="getTypeColor(editorTypeModel.value)" />
+              </template>
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section avatar>
+                    <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt.label }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </q-card-section>
+
+          <q-separator />
+
           <q-card-section class="text-center">
             <q-input v-model="editorCardName" filled label="" :rules="nameRules" />
             <span class="text-start">
@@ -117,6 +144,7 @@
                   <q-item-section avatar>
                     <q-icon :name="scope.opt.icon" color="primary" />
                   </q-item-section>
+                  <q-item-section>{{ scope.opt.label }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -157,6 +185,7 @@
                   <q-item-section avatar>
                     <q-icon :name="scope.opt.icon" color="primary" />
                   </q-item-section>
+                  <q-item-section>{{ scope.opt.label }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -180,30 +209,7 @@
 
           <q-separator />
 
-          <q-card-section class="row justify-center"> 
-            <q-select
-              filled
-              v-model="editorTypeModel"
-              :options="typeOptions"
-              stack-label
-              label=""
-              class="col-6"
-            >
-              <template v-slot:selected>
-                <q-icon :name="getTypeIconName(editorTypeModel.value)" size="md" :color="getTypeColor(editorTypeModel.value)" />
-              </template>
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section avatar>
-                    <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </q-card-section>
-
-          <q-separator />
-
+ 
           <q-card-actions align="around">
             <q-btn flat :label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :aria-label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :disable="!isFormValid" color="primary" type="submit" />
             <q-btn flat :label="$t('base.cancel')" :aria-label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
@@ -267,17 +273,17 @@ export default {
       isDraggable: this.allowDrag || false,
       typeOptions: [
         {
-          label:'',
+          label:'Interaction',
           icon: this.getTypeIconName('interaction'),
           value: 'interaction'
         },
         {
-          label:'',
+          label:'Learning Enhancing Technology',
           icon: this.getTypeIconName('LET'),
           value: 'LET'
         },
         {
-          label:'',
+          label:'What do we want to know?',
           icon: this.getTypeIconName('what'),
           value: 'what'
         }
@@ -316,17 +322,17 @@ export default {
       },
       interactionSubjectOptions: [
         {
-          label:'',
+          label: this.$t('card.subject_teacher'),
           icon: this.getInteractionSubjectIconName('teacher'),
           value: 'teacher'
         },
         {
-          label:'',
+          label: this.$t('card.subject_learner'),
           icon: this.getInteractionSubjectIconName('student'),
           value: 'student'
         },
         {
-          label:'',
+          label: this.$t('card.subject_material'),
           icon: this.getInteractionSubjectIconName('material'),
           value: 'material'
         }
