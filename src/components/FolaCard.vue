@@ -446,7 +446,7 @@ export default defineComponent ({
       this.$emit("addonRemoved", {"hostCardId": this.uuid, "addonId": cardId})
     },
     containsSpecialCharacters: function (val){
-      return /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val)
+      return /[`!@#$%^&*_+\=\[\]{};'"\\|<>\/?~]/.test(val)
     },
     isValidUrl (val){
       return /^(ftp|http|https):\/\/[^ "]+$/.test(val)
