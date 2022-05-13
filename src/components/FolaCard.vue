@@ -493,7 +493,7 @@ export default defineComponent ({
         case 'student':
           return 'school'
         case 'material':
-          return 'local_library'
+          return 'menu_book'
         case 'teacher':
           return 'person'
         default:
