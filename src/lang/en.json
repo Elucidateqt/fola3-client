@@ -69,6 +69,7 @@
             "create_card": "Create Card",
             "delete_card_confirm": "Delete card '{cardname}'?",
             "copy_to_collection": "Copy to collection",
+            "copy_to_hand": "Copy to hand",
             "confirm_copy": "Card copied successfully."
         },
         "cardset": {

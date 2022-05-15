@@ -23,6 +23,7 @@
               :key="cardId"
               allow-edit="true"
               allow-delete="true"
+              :allow-copy-to-hand="true"
               :name="cards[cardId].name"
               :uuid="cards[cardId].uuid"
               :description="cards[cardId].description"
@@ -39,45 +40,47 @@
               @dragstart="handleDragStart($event, player.uuid)"
               @card-edit-submitted="(editConfig) => emitUpdateCard({ config: editConfig })"
               @card-deleted="handleCardDelete($event, player.uuid)"
+              @card-copy-submitted="handleCardCopy($event)"
             />
           </div>
         </q-scroll-area>
 
 
-                <q-fab color="accent" icon="add" direction="up" class="btn-add-card">
-        <q-fab-action color="secondary" @click="cardCreatorVisible = true" icon="library_add" :aria-label="$t('card.create_card')" :label="$t('card.create_card')" />
-        <q-fab-action color="primary" @click="deckImporterVisible = true" icon="unarchive" :aria-label="$t('deck.import_deck')" :label="$t('deck.import_deck')" />
-      </q-fab>
-            <fola-card v-if="cardCreatorVisible"
-                name="new cardname"
-                description="new Description"
-                type="LET"
-                interactionSubjectLeft="teacher"
-                interactionSubjectRight="student"
-                interactionDirection="rightToLeft"
-                :mode="cardCreatorVisible === true ? 'create' : 'view'" allow-drag="false" @card-create-submitted="handleCardCreation($event, player.uuid)" class="card-creator" />
-        </q-tab-panel>
-      </q-tab-panels>
+        <q-fab color="accent" icon="add" direction="up" class="btn-add-card">
+          <q-fab-action color="secondary" @click="cardCreatorVisible = true" icon="library_add" :aria-label="$t('card.create_card')" :label="$t('card.create_card')" />
+          <q-fab-action color="primary" @click="deckImporterVisible = true" icon="unarchive" :aria-label="$t('deck.import_deck')" :label="$t('deck.import_deck')" />
+        </q-fab>
+        <fola-card v-if="cardCreatorVisible"
+                   name="new cardname"
+                   description="new Description"
+                   type="LET"
+                   interactionSubjectLeft="teacher"
+                   interactionSubjectRight="student"
+                   interactionDirection="rightToLeft"
+                   :mode="cardCreatorVisible === true ? 'create' : 'view'" allow-drag="false" @card-create-submitted="handleCardCreation($event, player.uuid)" @editor-closed="cardCreatorVisible = false" class="card-creator" />
+      </q-tab-panel>
+    </q-tab-panels>
     <q-dialog v-model="deckImporterVisible">
-        <q-card  class="q-pa-sm deck-importer">
-    <q-card-section class="text-center">
-      {{$t('deck.ask_selection')}}:
-    </q-card-section>
-    <q-separator />
-    <q-card-section class="q-gutter-md scroll row" style="max-height: 80vh">
-      <div v-if="ownDecks.length === 0" class="text-center">
-        {{$t('deck.no_decks')}}
-      </div>
-      <q-separator />
-      <fola-deck v-for="(deck, index) in ownDecks" :key="deck.uuid" :deck="deck" mode="view" @deck-selected="setCurrentDeck(index)"
-      :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'selected': isSelectedDeck(deck.uuid)}]"  />
-    </q-card-section>
-    <q-separator />
-    <q-card-actions align="around">
-      <q-btn @click="importSelectedDeck" :disable="!currentDeck" color="primary" :label="$t('deck.import_deck')" :aria-label="$t('deck.import_deck')" />
-      <q-btn :label="$t('base.cancel')" :aria-label="$t('base.cancel')" @click="deckImporterVisible = false; resetCurrentDeck();" />
-    </q-card-actions>
-        </q-card>
+      <q-card class="q-pa-sm deck-importer">
+        <q-card-section class="text-center">
+          {{ $t('deck.ask_selection') }}:
+        </q-card-section>
+        <q-separator />
+        <q-card-section class="q-gutter-md scroll row" style="max-height: 80vh">
+          <div v-if="ownDecks.length === 0" class="text-center">
+            {{ $t('deck.no_decks') }}
+          </div>
+          <q-separator />
+          <fola-deck v-for="(deck, index) in ownDecks"
+                     :key="deck.uuid" :deck="deck" mode="view" @deck-selected="setCurrentDeck(index)"
+                     :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'selected': isSelectedDeck(deck.uuid)}]"  />
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="around">
+          <q-btn @click="importSelectedDeck" :disable="!currentDeck" color="primary" :label="$t('deck.import_deck')" :aria-label="$t('deck.import_deck')" />
+          <q-btn :label="$t('base.cancel')" :aria-label="$t('base.cancel')" @click="deckImporterVisible = false; resetCurrentDeck();" />
+        </q-card-actions>
+      </q-card>
     </q-dialog>
 </div>
 </template>
@@ -142,9 +145,12 @@ export default defineComponent( {
       this.emitAddCard({cardId: cardId, target: {container: "hand", playerId: uuid}})
       this.emitRemoveCard({cardId: card.uuid, location: origin })
     },
-    handleCardCreation (e, playerId) {
+    handleCardCreation (e) {
       this.emitCreateCard({"card": e})
       this.cardCreatorVisible = false
+    },
+    handleCardCopy (e) {
+      this.emitCreateCard({"card": e})
     },
     importSelectedDeck () {
       this.emitImportCurrentDeck()

@@ -70,6 +70,7 @@
             "create_card": "Karte erstellen",
             "delete_card_confirm": "Karte '{cardname}' löschen?",
             "copy_to_collection": "In Sammlung kopieren",
+            "copy_to_hand": "Kopie in Hand erstellen",
             "confirm_copy": "Karte erfolgreich kopiert."
         },
         "cardset": {

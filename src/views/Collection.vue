@@ -216,7 +216,7 @@ export default {
         "description": data.description,
         "externalLink": data.externalLink,
         "imageUrl": data.imageUrl,
-        "type": data.cardType,
+        "cardType": data.cardType,
         "interactionSubjectLeft": data.interactionSubjectLeft,
         "interactionSubjectRight": data.interactionSubjectRight,
         "interactionDirection": data.interactionDirection

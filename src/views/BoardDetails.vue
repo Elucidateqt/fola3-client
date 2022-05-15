@@ -8,11 +8,12 @@
         </div>
         <q-card class="row no-wrap" style="width: 90vw; height: 80vh; background-color: grey; overflow-x: auto;" @drop="handleCardDrop($event, boardState.length ,0)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
           <div v-for="(column, index) in boardState" :key="`board_column_${index}`" class="self-center">
-            <div class=" row items-start q-pa-xl">
+            <div class=" row items-start q-pa-md">
               <fola-card 
                 v-for="(cardId, cardIndex) in column" 
                 :key="cardId" 
                 :allow-edit="true"
+                :allow-copy-to-hand="true"
                 :name="cards[cardId].name"
                 :uuid="cards[cardId].uuid"
                 :description="cards[cardId].description"
@@ -32,6 +33,7 @@
                 @addon-removed="handleAddonRemove($event, cardId)"
                 @card-edit-submitted="(editConfig) => emitUpdateCard({ config: editConfig })"
                 @pick-up-card="handlePickUpInteraction($event, index, cardIndex)"
+                @card-copy-submitted="handleCardCopy($event)"
               />
             </div>
         </div>
@@ -108,7 +110,7 @@ export default {
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('player', ['loadOwnPermissions']),
     ...mapActions('player', ['loadOwnProfile']),
-    ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition', 'disconnectSocket']),
+    ...mapActions('activeBoard', ['connectSocket', 'joinBoardByInvite', 'emitMessage', 'emitPlayInteraction', 'emitPickUpInteraction', 'emitAttachCard', 'emitDetachCard', 'emitRemoveCard', 'emitUpdateCard', 'emitAddCard', 'emitJoinBoard', 'emitLeaveBoard', 'resetBoard', 'getCardAtPosition', 'disconnectSocket', 'emitCreateCard']),
     ...mapActions('alert', ['setAlert']),
     async copyInviteLink () {
       await copyToClipboard(this.inviteUrl)
@@ -174,7 +176,11 @@ export default {
     handlePickUpInteraction(event, column, index){
       const cardId = event.cardId
       this.emitPickUpInteraction({cardId: cardId, column: column})
-    }
+    },
+    handleCardCopy (e) {
+      this.emitCreateCard({"card": e})
+      this.showPlayerHands = true
+    },
   },
 
 };

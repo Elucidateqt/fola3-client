@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-for="(cardId) in addonsTop" :key="cardId" class="row items-start q-gutter-xs">
-      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addonPickedUp="handlePluginRemove($event, cardId)" />
+      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addon-copy-submitted="$emit('cardCopySubmitted', $event)" @addonPickedUp="handlePluginRemove($event, cardId)" />
     </div>
     <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, uuid)" @dragleave="activeDrag = null">
       <q-separator />
@@ -39,6 +39,12 @@
               <q-icon name="open_in_new" />
             </q-item-section>
             <q-item-section>{{$t('nav.visit_link')}}</q-item-section>
+          </q-item>
+          <q-item v-if="allowCopyToHand === true" clickable @click="emitCopyToHand"  v-close-popup>
+            <q-item-section side>
+              <q-icon name="content_copy" />
+            </q-item-section>
+            <q-item-section>{{ $t('card.copy_to_hand') }}</q-item-section>
           </q-item>
           <q-item clickable @click="createCopyInCollection"  v-close-popup>
             <q-item-section side>
@@ -243,8 +249,8 @@ export default defineComponent ({
   components: {
     FolaCardAddon
   },
-  props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions'],
-  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated'],
+  props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions', 'allowCopyToHand'],
+  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated', 'cardCopySubmitted'],
   data() {
     return {
       deleteDialogVisible: false,
@@ -351,7 +357,7 @@ export default defineComponent ({
         "description": this.cardDescription,
         ...this.isValidUrl(this.externalLink) && { "externalLink": this.externalLink },
         ...this.isImageUrl(this.imageUrl) && { "imageUrl": this.imageUrl },
-        "type": this.type,
+        "cardType": this.type,
         "interactionSubjectLeft": this.interactionSubjectLeft,
         "interactionSubjectRight": this.interactionSubjectRight,
         "interactionDirection": this.interactionDirection,
@@ -424,6 +430,10 @@ export default defineComponent ({
         visible: true,
         message: this.$i18n.t('card.confirm_copy'),
       })
+    },
+    emitCopyToHand: async function () {
+      const config = this.getViewConfig
+      this.$emit('cardCopySubmitted', config)
     },
     handleDragStart: function (event, cardId) {
       event.dataTransfer.dropEffect = 'move'

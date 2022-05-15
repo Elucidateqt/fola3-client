@@ -37,7 +37,7 @@ const createCard = async ({ state, commit }, data) => {
           "description": data.card.description,
           "externalLink": data.card.externalLink,
           "imageUrl": data.card.imageUrl,
-          "type": data.card.type,
+          "cardType": data.card.cardType,
           "interactionSubjectLeft": data.card.interactionSubjectLeft,
           "interactionSubjectRight": data.card.interactionSubjectRight,
           "interactionDirection": data.card.interactionDirection

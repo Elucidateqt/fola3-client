@@ -6,6 +6,7 @@
     v-else
     allow-edit="true"
     :allow-pick-up="true"
+    :allow-copy-to-hand="true"
     @pick-up-card="$emit('addonPickedUp')"
     :name="cards[cardId].name"
     :uuid="cards[cardId].uuid"
@@ -19,7 +20,8 @@
     :addons-top="cards[cardId].addonsTop"
     :addons-bot="cards[cardId].addonsBot"
     mode="view"
-    @card-edit-submitted="(editConfig) => $emit('addonEditSubmitted', editConfig)"
+     @card-edit-submitted="(editConfig) => $emit('addonEditSubmitted', editConfig)"
+     @card-copy-submitted="$emit('addonCopySubmitted', $event)"
 />
 </div>
 </template>
@@ -36,7 +38,7 @@ export default defineComponent ({
 
   },
   props: ['cardId'],
-  emits: ['addonEditSubmitted', 'addonPickedUp'],
+  emits: ['addonEditSubmitted', 'addonPickedUp', 'addonCopySubmitted'],
   data: () => ({
     isOpen: false,
   }),
