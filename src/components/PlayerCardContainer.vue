@@ -150,6 +150,9 @@ export default defineComponent( {
       this.cardCreatorVisible = false
     },
     handleCardCopy (e) {
+      //remove any addons that may be attached before creating copy
+      delete e.addonsTop
+      delete e.addonsBot
       this.emitCreateCard({"card": e})
     },
     importSelectedDeck () {
