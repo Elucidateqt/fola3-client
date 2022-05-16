@@ -117,7 +117,7 @@
                     <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>{{ scope.opt.label }}</q-item-label>
+                    <q-item-label class="text-weight-bold">{{ scope.opt.label }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </template>
@@ -150,7 +150,7 @@
                   <q-item-section avatar>
                     <q-icon :name="scope.opt.icon" color="primary" />
                   </q-item-section>
-                  <q-item-section>{{ scope.opt.label }}</q-item-section>
+                  <q-item-section class="text-weight-bold">{{ scope.opt.label }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -191,7 +191,7 @@
                   <q-item-section avatar>
                     <q-icon :name="scope.opt.icon" color="primary" />
                   </q-item-section>
-                  <q-item-section>{{ scope.opt.label }}</q-item-section>
+                  <q-item-section class="text-weight-bold">{{ scope.opt.label }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
