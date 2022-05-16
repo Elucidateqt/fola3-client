@@ -261,7 +261,7 @@ export default defineComponent ({
       pluginsBot: this.type === 'interaction' ? this.addonsBot : [],
       cardName: this.name,
       editorCardName: this.name,
-      nameMinLength: 10,
+      nameMinLength: 3,
       nameMaxLength: 128,
       descriptionMinLength: 10,
       descriptionMaxLength: 256,
@@ -502,11 +502,11 @@ export default defineComponent ({
     getInteractionSubjectIconName (interactionSubject) {
       switch (interactionSubject) {
         case 'student':
-          return 'school'
+          return 'person'
         case 'material':
           return 'menu_book'
         case 'teacher':
-          return 'person'
+          return 'school'
         default:
           return 'style'
       }

@@ -183,7 +183,7 @@ export default {
         "description": card.description,
         "externalLink": card.externalLink,
         "imageUrl": card.imageUrl,
-        "type": card.cardType,
+        "cardType": card.cardType,
         "interactionSubjectLeft": card.interactionSubjectLeft,
         "interactionSubjectRight": card.interactionSubjectRight,
         "interactionDirection": card.interactionDirection
