@@ -7,6 +7,7 @@
     allow-edit="true"
     :allow-pick-up="true"
     :allow-copy-to-hand="true"
+    :disable-type-edit="true"
     @pick-up-card="$emit('addonPickedUp')"
     :name="cards[cardId].name"
     :uuid="cards[cardId].uuid"

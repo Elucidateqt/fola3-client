@@ -14,6 +14,7 @@
                 :key="cardId" 
                 :allow-edit="true"
                 :allow-copy-to-hand="true"
+                :disable-type-edit="true"
                 :name="cards[cardId].name"
                 :uuid="cards[cardId].uuid"
                 :description="cards[cardId].description"

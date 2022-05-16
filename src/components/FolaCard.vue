@@ -107,6 +107,7 @@
               stack-label
               label=""
               class="col-6"
+              :disable="disableTypeEdit"
             >
               <template v-slot:selected>
                 <q-icon :name="getTypeIconName(editorTypeModel.value)" size="md" :color="getTypeColor(editorTypeModel.value)" />
@@ -249,7 +250,7 @@ export default defineComponent ({
   components: {
     FolaCardAddon
   },
-  props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions', 'allowCopyToHand'],
+  props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions', 'allowCopyToHand', 'disableTypeEdit'],
   emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated', 'cardCopySubmitted'],
   data() {
     return {
