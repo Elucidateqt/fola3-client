@@ -53,7 +53,7 @@ const setRevokedPermissions = (state, permissions) => {
   state.revokedPermissions = permissions
 }
 
-const resetProfile = (state, commit) => {
+const resetProfile = ({state, commit}) => {
   commit('RESET')
 }
 

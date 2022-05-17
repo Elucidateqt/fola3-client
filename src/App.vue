@@ -121,13 +121,25 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['request_new_tokens', 'logoutUser']),
+    ...mapActions('boards', ['resetBoards']),
+    ...mapActions('cards', ['resetCards']),
+    ...mapActions('cardsets', ['resetCardSets']),
+    ...mapActions('decks', ['resetDecks']),
     ...mapMutations('auth', ['SET_REFRESH_TOKEN']),
+    ...mapActions('permissions', ['resetPermissions']),
+    ...mapActions('profile', ['resetProfile']),
     ...mapGetters('player', ['userHasPermission']),
     ...mapActions('alert', ['resetAlert']),
     ...mapActions('player', ['loadOwnProfile', 'resetPlayerData']),
     async logout(){
       await this.logoutUser()
       this.resetPlayerData()
+      this.resetProfile()
+      this.resetBoards()
+      this.resetCards()
+      this.resetDecks()
+      this.resetCardSets()
+      this.resetPermissions()
       this.$router.push({name: 'Landing'})
     }
   },

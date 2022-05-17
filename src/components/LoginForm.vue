@@ -103,10 +103,11 @@ export default {
   },
   methods: {
     ...mapActions('auth', ['loginUser', 'signupUser']),
-    ...mapActions('player', ['loadOwnPermissions']),
+    ...mapActions('player', ['loadOwnPermissions', 'loadOwnProfile']),
     async login() {
       try {
         await this.loginUser({email: this.email, password: this.password})
+        await this.loadOwnProfile()
         await this.loadOwnPermissions()
         if(this.$route.query.redirect){
           this.$router.push(this.$route.query.redirect)

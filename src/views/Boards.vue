@@ -25,7 +25,7 @@
                   <q-item-label>{{ $t('boards.leave_board') }}</q-item-label>
                 </q-item-section>
               </q-item>
-              <q-item v-if="board.members[uuid].permissions.includes('API:BOARD:DELETE')" clickable @click="deletionBoard = board.uuid" v-close-popup>
+              <q-item v-if="board.members[uuid].permissions.includes('API:BOARD:DELETE') || canDeleteBoards" clickable @click="deletionBoard = board.uuid" v-close-popup>
                 <q-item-section>
                   <q-item-label>{{ $t('base.delete') }}</q-item-label>
                 </q-item-section>
@@ -98,6 +98,9 @@ export default {
     },
     canCreateBoards () {
       return this.userHasPermission()('API:BOARD:CREATE')
+    },
+    canDeleteBoards () {
+      return this.userHasPermission()('API:BOARD:DELETE')
     },
     ...mapState('player', ['permissions', 'uuid']),
     ...mapState('boards', ['boards', 'hasMore'])
