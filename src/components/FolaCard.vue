@@ -92,7 +92,7 @@
       </q-menu>
     </q-card>
     <div v-for="(cardId) in addonsBot" :key="cardId" class="row items-start q-gutter-xs">
-      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addonPickedUp="handlePluginRemove($event, cardId)" />
+      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addon-copy-submitted="$emit('cardCopySubmitted', $event)" @addonPickedUp="handlePluginRemove($event, cardId)" />
     </div>
     
 
