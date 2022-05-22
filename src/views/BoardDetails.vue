@@ -50,7 +50,7 @@
       </q-card>
     </q-dialog>
     <q-page-sticky position="bottom">
-      <q-icon color="primary" size="5em" name="pan_tool" @click="showPlayerHands = !showPlayerHands" />
+      <q-icon style="cursor: pointer;" color="primary" size="5em" name="pan_tool" @click="showPlayerHands = !showPlayerHands" />
     </q-page-sticky>
 
   </q-page>
