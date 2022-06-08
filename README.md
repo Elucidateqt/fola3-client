@@ -1,9 +1,26 @@
-# client
+# FoLA3's client-application
+## Overview
+This is a client built with Vue 3 and Quasar that enables users to interact with FoLA3's server application
+
 
 ## Project setup
+
+### List of environment variables:
+ Name | Description | example 
+ ---|---|---
+VUE_APP_AUTH_API_URL | URL to auth server | https://auth.your-domain.com
+VUE_APP_AUTH_API_PORT | port used for authorization requests | 1234
+VUE_APP_BASE_API_URL | URL of the FoLA3 server application | https://api.your-domain.com
+VUE_APP_BASE_API_PORT | port on which the FoLA3 server application is listening | 1234 
+VUE_APP_SOCKET_URL | URL used by WebSockets during active play | https://socket.xour-domain.com
+VUE_APP_SOCKET_PORT | server-side port used for WebSocket connections | 1234
+
+After cloning this repository, run the following command:
 ```
 npm install
 ```
+
+
 
 ### Compiles and hot-reloads for development
 ```
@@ -19,6 +36,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
