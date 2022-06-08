@@ -1,3 +1,8 @@
+/**
+ * Vuex root module.
+ * Creates the axios plugin and imports all sub-modules.
+ */
+
 import { createStore } from "vuex";
 import users from './modules/users'
 import profile from './modules/profile'

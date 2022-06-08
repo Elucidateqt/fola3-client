@@ -1,3 +1,7 @@
+/**
+ * vuex module that handles management of JWTs
+ */
+
 import axiosApi, {authClient as axiosAuth} from '../../api/axios.js'
 import jwt from 'jsonwebtoken'
 

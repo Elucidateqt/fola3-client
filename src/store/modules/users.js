@@ -1,3 +1,7 @@
+/**
+ * vuex module that handles data related to users in FoLA3
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadUsers = async ({ state, commit }) => {
@@ -7,11 +11,6 @@ const loadUsers = async ({ state, commit }) => {
       commit('INCREASE_OFFSET')
       let res = await axiosApi.get(`/users/`)
       state.users = res.data.userList
-      /*if (res.data.userList.length == 0) {
-          commit('LOADING_FINISHED')
-          return
-      }
-      commit('ADD_USERS', res.data.userList)*/
     }
   } catch(err) {
       throw new Error(err)

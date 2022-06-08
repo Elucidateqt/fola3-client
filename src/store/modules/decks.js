@@ -1,3 +1,7 @@
+/**
+ * Vuex Decks module
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadOwnDecks = async ({ state, commit }) => {
@@ -25,7 +29,7 @@ const loadPublicDecks = async ({ state, commit }) => {
 const loadWIPDecks = async ({ state, commit }) => {
   try {
     const res = await axiosApi.get(`/decks?owner=public&public=false`)
-    commit('SET_WIP_SETS', res.data.decks)
+    commit('SET_WIP_DECKS', res.data.decks)
   } catch(err) {
       throw new Error(err)
   }

@@ -1,3 +1,7 @@
+/**
+ * vuex module to handle data related to bugreports
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const submitBugReport = async ({ state, commit }, data) => {
@@ -15,18 +19,11 @@ const submitBugReport = async ({ state, commit }, data) => {
 const loadBugReports = async ({ state, commit }) => {
     try {
       if(state.hasMore) {
-        let offset = state.offset
-        commit('INCREASE_OFFSET')
         let res = await axiosApi.get(`/bugreports/`)
         state.users = res.data.userList
-        /*if (res.data.bugreports.length == 0) {
-            commit('LOADING_FINISHED')
-            return
-        }
-        commit('ADD_Bugreports', res.data.bugreports)*/
       }
     } catch(e) {
-        console.error("could not load users",e)
+        console.error("could not load bugreports",e)
     }
   }
 

@@ -1,3 +1,7 @@
+/**
+ * Vuex module to manage data related to permissions.
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadAllPermissions = async ({state, commit}) => {

@@ -1,3 +1,8 @@
+/**
+ * module that creates HTTP-clients for authorization and interaction with content.
+ * Note: seperated into two instances to enable easy integration of external authorization servers.
+ */
+
 import axios from 'axios'
 
 const authClient = axios.create({

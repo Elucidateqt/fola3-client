@@ -84,7 +84,6 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
 import SecretInput from '@/components/SecretInput.vue';
-//import {axiosAuth} from "../api/index.js";
 
 export default {
   name: "LoginForm",

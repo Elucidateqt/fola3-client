@@ -10,9 +10,10 @@ import translations from './lang'
 import VueMatomo from 'vue-matomo'
 import FolaCard from './components/FolaCard'
 
+//include language files and create internationalization plugin
 const i18n = createI18n({
-  locale: 'de',
-  fallbackLocale: 'en',
+  locale: 'en',
+  fallbackLocale: 'de',
   messages: {
     en: translations.en.dict,
     de: translations.de.dict
@@ -93,7 +94,7 @@ app.use(Quasar, quasarUserOptions)
   
     // Tell Matomo the website domain so that clicks on these domains are not tracked as 'Outlinks'
     // Default: undefined, example: '*.example.com'
-    domains: 'http://192.168.0.227:3002/',
+    domains: 'https://fola3.elvir.dev',
   
     // A list of pre-initialization actions that run before matomo is loaded
     // Default: []

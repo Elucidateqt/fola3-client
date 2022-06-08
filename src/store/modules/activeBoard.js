@@ -1,7 +1,19 @@
+/**
+ * Vuex module for managing data of active boards.
+ * Uses SocketIO instead of the API for most communication
+ */
+
 import axiosApi from '../../api/axios.js'
 import {io} from 'socket.io-client'
 let socket = null
 
+/**
+ * Creates a new socketIO connection to the server. This is triggered when
+ * a user enters a board
+ * @param {Object} context - the current vuex context
+ * @param {Object} data - data-object containing the access-token that is
+ *  required for establishing the connection
+ */
 const connectSocket = (context, data) => {
   socket = io(`${process.env.VUE_APP_SOCKET_URL}:${process.env.VUE_APP_SOCKET_PORT}`,{
     path: "/socket/",
@@ -94,7 +106,9 @@ const  initializeSocketListeners = (store) => {
     })
 }
 
-
+/**
+ * socketIO emitters start here
+ */
 
 const emitJoinBoard = async ({ state, commit, rootState }, data) => {
   try {
@@ -205,6 +219,10 @@ const emitImportCurrentDeck = async ({state, commit, rootState}) => {
     throw new Error(err)
   }
 }
+
+/**
+ * Getters and Mutators for the board state start here
+ */
 
 const addPlayer = async (state, player) => {
     state.players[player.uuid] = {"uuid": player.uuid, "username": player.username, "isOnline": player.isOnline, "permissions": player.permissions, "roles": player.roles}

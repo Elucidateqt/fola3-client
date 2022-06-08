@@ -1,3 +1,7 @@
+/**
+ * Vuex module to handle content and behavior of alerts in a centralized way
+ */
+
 const setAlertConfig = (state, data) => {
     state.message = data.message,
     state.type = data.type

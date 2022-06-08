@@ -1,3 +1,7 @@
+/**
+ * Vuex cardset module. Used to handle data related to cardsets in the collection
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadOwnCardSets = async ({ state, commit, rootState }) => {

@@ -1,3 +1,7 @@
+/**
+ * vuex module that manages data used in the board overview
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadOwnBoards = async ({ state, commit }) => {

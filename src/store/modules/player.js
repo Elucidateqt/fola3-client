@@ -1,3 +1,7 @@
+/**
+ * Vuex module that manages data of the currently logged in user
+ */
+
 import axiosApi from '../../api/axios.js'
 
 

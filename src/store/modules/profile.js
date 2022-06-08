@@ -1,3 +1,7 @@
+/**
+ * Vuex Module that handles data used for the profile-page
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadProfile = async ({ state, commit }, uuid) => {

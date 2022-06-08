@@ -1,3 +1,7 @@
+/**
+ * Vuex module to handle data related to cards
+ */
+
 import axiosApi from '../../api/axios.js'
 
 const loadCards = async ({ state, commit }, data) => {

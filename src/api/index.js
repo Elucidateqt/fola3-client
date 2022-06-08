@@ -1,3 +1,9 @@
+/**
+ * module that exports a constructor for the axios-plugin used in conjunction with vuex.
+ * This implements interceptors to automatically perform tasks like refreshing tokens before
+ * and - if necessary - handling errors of API-requests
+ */
+
 import store from "../store";
 import apiClient, { authClient } from "./axios";
 
