@@ -1,79 +1,150 @@
 <template>
-<q-page padding class="row justify-center">
-  <div class="col-xs-8">
-  <q-infinite-scroll @load="loadMoreBoards" :offset="5" class="row q-gutter-md">
-    <q-card v-for="board in boards" :key="board.uuid" class="col-xs-12 col-sm-4 col-md-4 col-lg-2">
-      <router-link :to="`/boards/${board.uuid}`">
-        <q-img src="https://cdn.quasar.dev/img/parallax2.jpg" class="board-thumbnail" />
-        <q-card-section>
-          {{ formatBoardName(board.name) }}
-        </q-card-section>
-      </router-link>
-      <q-separator />
-      <q-card-actions align="around">
-        <div>
-          <q-icon :name="Object.keys(board.members).length > 1 ? 'group' : 'person'" size="md" />
-        </div>
-        <div class="update-timestamp">
-          <span class="text-subtext" :aria-label="$t('boards.updated_at', {date: $d(board.createdAt, 'short')})">{{ $d(board.createdAt, 'short') }}</span>
-        </div>
-        <q-btn flat icon="more_vert">
-          <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item clickable @click="activeBoardLeave = board.uuid" v-close-popup>
-                <q-item-section>
-                  <q-item-label>{{ $t('boards.leave_board') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item v-if="board.members[uuid].permissions.includes('API:BOARD:DELETE') || canDeleteBoards" clickable @click="deletionBoard = board.uuid" v-close-popup>
-                <q-item-section>
-                  <q-item-label>{{ $t('base.delete') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-      </q-card-actions>
-    </q-card>
-    <template v-slot:loading>
-      <div class="row justify-center q-my-md">
-        <q-spinner-dots color="primary" size="40px" />
-      </div>
-    </template>
-  </q-infinite-scroll>
-  </div>
-  <q-page-sticky position="bottom-right" :offset="[18, 18]" v-if="canCreateBoards">
-    <board-creator />
-  </q-page-sticky>
+  <q-page
+    padding
+    class="row justify-center"
+  >
+    <div class="col-xs-8">
+      <q-infinite-scroll
+        :offset="5"
+        class="row q-gutter-md"
+        @load="loadMoreBoards"
+      >
+        <q-card
+          v-for="board in boards"
+          :key="board.uuid"
+          class="col-xs-12 col-sm-4 col-md-4 col-lg-2"
+        >
+          <router-link :to="`/boards/${board.uuid}`">
+            <q-img
+              src="https://cdn.quasar.dev/img/parallax2.jpg"
+              class="board-thumbnail"
+            />
+            <q-card-section>
+              {{ formatBoardName(board.name) }}
+            </q-card-section>
+          </router-link>
+          <q-separator />
+          <q-card-actions align="around">
+            <div>
+              <q-icon
+                :name="Object.keys(board.members).length > 1 ? 'group' : 'person'"
+                size="md"
+              />
+            </div>
+            <div class="update-timestamp">
+              <span
+                class="text-subtext"
+                :aria-label="$t('boards.updated_at', {date: $d(board.createdAt, 'short')})"
+              >{{ $d(board.createdAt, 'short') }}</span>
+            </div>
+            <q-btn
+              flat
+              icon="more_vert"
+            >
+              <q-menu>
+                <q-list style="min-width: 100px">
+                  <q-item
+                    v-close-popup
+                    clickable
+                    @click="activeBoardLeave = board.uuid"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ $t('boards.leave_board') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    v-if="board.members[uuid].permissions.includes('API:BOARD:DELETE') || canDeleteBoards"
+                    v-close-popup
+                    clickable
+                    @click="deletionBoard = board.uuid"
+                  >
+                    <q-item-section>
+                      <q-item-label>{{ $t('base.delete') }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </q-card-actions>
+        </q-card>
+        <template #loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots
+              color="primary"
+              size="40px"
+            />
+          </div>
+        </template>
+      </q-infinite-scroll>
+    </div>
+    <q-page-sticky
+      v-if="canCreateBoards"
+      position="bottom-right"
+      :offset="[18, 18]"
+    >
+      <board-creator />
+    </q-page-sticky>
 
 
-      <q-dialog v-model="deletionPending" class="q-pa-md" persistent>
+    <q-dialog
+      v-model="deletionPending"
+      class="q-pa-md"
+      persistent
+    >
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm text-h6">{{$t('boards.delete_board_confirm', {boardname: boards[deletionBoard].name})}}</span>
+          <span class="q-ml-sm text-h6">{{ $t('boards.delete_board_confirm', {boardname: boards[deletionBoard].name}) }}</span>
         </q-card-section>
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.cancel')" color="primary" @click="deletionBoard = null" v-close-popup />
-          <q-btn flat :label="$t('base.delete')" color="primary" @click="handleBoardDeletion" v-close-popup />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            color="primary"
+            @click="deletionBoard = null"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.delete')"
+            color="primary"
+            @click="handleBoardDeletion"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
 
 
-    <q-dialog v-model="leavePending" class="q-pa-md" persistent>
+    <q-dialog
+      v-model="leavePending"
+      class="q-pa-md"
+      persistent
+    >
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm text-h6">{{$t('boards.leave_board_confirm', {boardname: boards[activeBoardLeave].name})}}</span>
+          <span class="q-ml-sm text-h6">{{ $t('boards.leave_board_confirm', {boardname: boards[activeBoardLeave].name}) }}</span>
         </q-card-section>
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.cancel')" color="primary" @click="activeBoardLeave = null" v-close-popup />
-          <q-btn flat :label="$t('boards.leave_board')" color="primary" @click="handleBoardLeave" v-close-popup />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            color="primary"
+            @click="activeBoardLeave = null"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('boards.leave_board')"
+            color="primary"
+            @click="handleBoardLeave"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
-</q-page>
+  </q-page>
 </template>
 
 <script>
@@ -84,6 +155,9 @@ export default {
   name: "Boards",
   components: {
     BoardCreator
+  },
+  beforeRouteUpdate(to, from){
+    this.resetBoards()
   },
   data: () => ({
     deletionBoard: null,
@@ -110,9 +184,6 @@ export default {
     this.$matomo && this.$matomo.trackPageView()
   },
   beforeUnmount() {
-    this.resetBoards()
-  },
-  beforeRouteUpdate(to, from){
     this.resetBoards()
   },
   methods: {

@@ -1,97 +1,129 @@
 <template>
-<q-page padding class="row justify-center">
-  <div class="col-xs-8 collection-container" @dragover.prevent @drop="handleCardDrop">
-    <q-form class="row">
-          <q-option-group
-      v-model="selectedSets"
-      @update:model-value="handleSetSelection"
-      :options="getCheckboxOptions"
-      color="primary"
-      type="checkbox"
-      inline
-    />
-    <q-icon v-if="canManageSets" name="settings" size="sm" class="grey q-pl-md" @click="cardsetManagerVisible = true" style="cursor: pointer" />
-    </q-form>
+  <q-page
+    padding
+    class="row justify-center"
+  >
+    <div
+      class="col-xs-8 collection-container"
+      @dragover.prevent
+      @drop="handleCardDrop"
+    >
+      <q-form class="row">
+        <q-option-group
+          v-model="selectedSets"
+          :options="getCheckboxOptions"
+          color="primary"
+          type="checkbox"
+          inline
+          @update:model-value="handleSetSelection"
+        />
+        <q-icon
+          v-if="canManageSets"
+          name="settings"
+          size="sm"
+          class="grey q-pl-md"
+          style="cursor: pointer"
+          @click="cardsetManagerVisible = true"
+        />
+      </q-form>
 
 
-  <q-infinite-scroll @load="loadMoreCards" class="row q-gutter-xl">
-    <fola-card v-for="cardId in filteredCards" :key="cardId" :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(cardId)}]"
-    :data-card-id="cardId"
-    :cardset="cards[cardId].cardset"
-    :allow-set-change="canChangeCardsetOfCard"
-    :allow-delete="canDeleteCard(cards[cardId])"
-    :allow-edit="canEditCard(cards[cardId])"
-    :allow-drag="isCardInCurrentDeck(cardId) === false ? true : false"
-    :name="cards[cardId].name"
-    :uuid="cards[cardId].uuid"
-    :description="cards[cardId].description"
-    :external-link="cards[cardId].externalLink"
-    :image-url="cards[cardId].imageUrl"
-    :type="cards[cardId].cardType"
-    :interactionSubjectLeft="cards[cardId].interactionSubjectLeft"
-    :interactionSubjectRight="cards[cardId].interactionSubjectRight"
-    :interactionDirection="cards[cardId].interactionDirection"
-    mode="view"
-    :setOptions="getCheckboxOptions"
-    @set-changed="handleSetChange($event, cards[cardId])"
-    @card-deleted="handleCardDeletion($event)"
-    @card-edit-submitted="handleCardUpdate($event)"
-    @dragstart="handleDragStart($event, cardId)"
-    />
-    <template v-slot:loading>
-      <div class="row justify-center q-my-md">
-        <q-spinner-dots color="primary" size="40px" />
-      </div>
-    </template>
-  </q-infinite-scroll>
-  <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn
-    round
-    color="accent"
-    :aria-label="$t('base.create')"
-    icon="add"
-    @click="cardCreatorVisible = true"
-  />
-  </q-page-sticky>
-  </div>
-
-
-
-     <q-drawer
-        v-model="deckManagerVisible"
-        side="right"
-        behavior="desktop"
-        :width="deckManagerWidth"
-        elevated
-        bordered
+      <q-infinite-scroll
+        class="row q-gutter-xl"
+        @load="loadMoreCards"
       >
-        <deck-manager />
-      </q-drawer>
+        <fola-card
+          v-for="cardId in filteredCards"
+          :key="cardId"
+          :class="['col-xs-12', 'col-sm-4', 'col-md-4', 'col-lg-2', {'faded': isCardInCurrentDeck(cardId)}]"
+          :data-card-id="cardId"
+          :cardset="cards[cardId].cardset"
+          :allow-set-change="canChangeCardsetOfCard"
+          :allow-delete="canDeleteCard(cards[cardId])"
+          :allow-edit="canEditCard(cards[cardId])"
+          :allow-drag="isCardInCurrentDeck(cardId) === false ? true : false"
+          :name="cards[cardId].name"
+          :uuid="cards[cardId].uuid"
+          :description="cards[cardId].description"
+          :external-link="cards[cardId].externalLink"
+          :image-url="cards[cardId].imageUrl"
+          :type="cards[cardId].cardType"
+          :interaction-subject-left="cards[cardId].interactionSubjectLeft"
+          :interaction-subject-right="cards[cardId].interactionSubjectRight"
+          :interaction-direction="cards[cardId].interactionDirection"
+          mode="view"
+          :set-options="getCheckboxOptions"
+          @set-changed="handleSetChange($event, cards[cardId])"
+          @card-deleted="handleCardDeletion($event)"
+          @card-edit-submitted="handleCardUpdate($event)"
+          @dragstart="handleDragStart($event, cardId)"
+        />
+        <template #loading>
+          <div class="row justify-center q-my-md">
+            <q-spinner-dots
+              color="primary"
+              size="40px"
+            />
+          </div>
+        </template>
+      </q-infinite-scroll>
+      <q-page-sticky
+        position="bottom-right"
+        :offset="[18, 18]"
+      >
+        <q-btn
+          round
+          color="accent"
+          :aria-label="$t('base.create')"
+          icon="add"
+          @click="cardCreatorVisible = true"
+        />
+      </q-page-sticky>
+    </div>
+
+
+
+    <q-drawer
+      v-model="deckManagerVisible"
+      side="right"
+      behavior="desktop"
+      :width="deckManagerWidth"
+      elevated
+      bordered
+    >
+      <deck-manager />
+    </q-drawer>
         
-        <q-page-sticky position="right">
+    <q-page-sticky position="right">
       <q-btn
-    round
-    color="accent"
-    :aria-label="deckManagerVisible === true ? $t('deck.hide_deckmanager') : $t('deck.show_deckmanager')"
-    :icon="deckManagerVisible === true ? 'arrow_forward_ios' : 'arrow_back_ios'"
-    @click="deckManagerVisible = !deckManagerVisible"
-  />
-  </q-page-sticky>
+        round
+        color="accent"
+        :aria-label="deckManagerVisible === true ? $t('deck.hide_deckmanager') : $t('deck.show_deckmanager')"
+        :icon="deckManagerVisible === true ? 'arrow_forward_ios' : 'arrow_back_ios'"
+        @click="deckManagerVisible = !deckManagerVisible"
+      />
+    </q-page-sticky>
 
 
-  <fola-card v-if="cardCreatorVisible" v-show="false"
-                class="card-creator"
-                name="new cardname"
-                description="new Description"
-                type="LET"
-                interactionSubjectLeft="teacher"
-                interactionSubjectRight="student"
-                interactionDirection="rightToLeft"
-                mode="create" allow-drag="false" @card-create-submitted="handleCardCreation($event)" @editor-closed="cardCreatorVisible = false" />
-  <q-dialog v-model="cardsetManagerVisible">
-    <cardset-manager />
-  </q-dialog>
-</q-page>
+    <fola-card
+      v-if="cardCreatorVisible"
+      v-show="false"
+      class="card-creator"
+      name="new cardname"
+      description="new Description"
+      type="LET"
+      interaction-subject-left="teacher"
+      interaction-subject-right="student"
+      interaction-direction="rightToLeft"
+      mode="create"
+      allow-drag="false"
+      @card-create-submitted="handleCardCreation($event)"
+      @editor-closed="cardCreatorVisible = false"
+    />
+    <q-dialog v-model="cardsetManagerVisible">
+      <cardset-manager />
+    </q-dialog>
+  </q-page>
 </template>
 
 <script>
@@ -103,11 +135,11 @@ import CardsetManager from '@/components/CardsetManager.vue'
 
 export default {
   name: "Collection",
-  emits: ['dragstart'],
   components: {
     DeckManager,
     CardsetManager
   },
+  emits: ['dragstart'],
   data: () => ({
     cardCreatorVisible: false,
     deckManagerVisible: true,

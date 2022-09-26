@@ -21,7 +21,12 @@ export default {
   name: "SecretInput",
   components: {
   },
-  props: ['label'],
+  props: {
+    label: {
+      type: String,
+      default: 'no label specified'
+    }
+  },
   data: () => ({
     password: null,
     hidePassword: true

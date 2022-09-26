@@ -1,30 +1,42 @@
 
 <template>
-<div @click="isOpen = !isOpen" style="cursor: pointer">
-<q-chip v-if="isOpen === false" square text-color="white" :color="getTypeColor(cards[cardId].cardType)" class="plugin-chip" :icon="getTypeIconName(cards[cardId].cardType)">{{cards[cardId].name}}</q-chip>
-<fola-card
-    v-else
-    allow-edit="true"
-    :allow-pick-up="true"
-    :allow-copy-to-hand="true"
-    :disable-type-edit="true"
-    @pick-up-card="$emit('addonPickedUp')"
-    :name="cards[cardId].name"
-    :uuid="cards[cardId].uuid"
-    :description="cards[cardId].description"
-    :external-link="cards[cardId].externalLink"
-    :image-url="cards[cardId].imageUrl"
-    :type="cards[cardId].cardType"
-    :interactionSubjectLeft="cards[cardId].interactionSubjectLeft"
-    :interactionSubjectRight="cards[cardId].interactionSubjectRight"
-    :interactionDirection="cards[cardId].interactionDirection"
-    :addons-top="cards[cardId].addonsTop"
-    :addons-bot="cards[cardId].addonsBot"
-    mode="view"
-     @card-edit-submitted="(editConfig) => $emit('addonEditSubmitted', editConfig)"
-     @card-copy-submitted="$emit('addonCopySubmitted', $event)"
-/>
-</div>
+  <div
+    style="cursor: pointer"
+    @click="isOpen = !isOpen"
+  >
+    <q-chip
+      v-if="isOpen === false"
+      square
+      text-color="white"
+      :color="getTypeColor(cards[cardId].cardType)"
+      class="plugin-chip"
+      :icon="getTypeIconName(cards[cardId].cardType)"
+    >
+      {{ cards[cardId].name }}
+    </q-chip>
+    <fola-card
+      v-else
+      allow-edit="true"
+      :allow-pick-up="true"
+      :allow-copy-to-hand="true"
+      :disable-type-edit="true"
+      :name="cards[cardId].name"
+      :uuid="cards[cardId].uuid"
+      :description="cards[cardId].description"
+      :external-link="cards[cardId].externalLink"
+      :image-url="cards[cardId].imageUrl"
+      :type="cards[cardId].cardType"
+      :interaction-subject-left="cards[cardId].interactionSubjectLeft"
+      :interaction-subject-right="cards[cardId].interactionSubjectRight"
+      :interaction-direction="cards[cardId].interactionDirection"
+      :addons-top="cards[cardId].addonsTop"
+      :addons-bot="cards[cardId].addonsBot"
+      mode="view"
+      @pick-up-card="$emit('addonPickedUp')"
+      @card-edit-submitted="(editConfig) => $emit('addonEditSubmitted', editConfig)"
+      @card-copy-submitted="$emit('addonCopySubmitted', $event)"
+    />
+  </div>
 </template>
 
 
@@ -38,7 +50,12 @@ export default defineComponent ({
   components: {
 
   },
-  props: ['cardId'],
+  props: {
+    'cardId': {
+      type: String,
+      default: null
+    }
+  },
   emits: ['addonEditSubmitted', 'addonPickedUp', 'addonCopySubmitted'],
   data: () => ({
     isOpen: false,

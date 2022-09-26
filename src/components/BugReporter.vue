@@ -8,26 +8,45 @@
   />
   <q-dialog v-model="showForm">
     <q-card class="report-form">
-      <q-form ref="reportForm" @submit.prevent="sendBugReport">
+      <q-form
+        ref="reportForm"
+        @submit.prevent="sendBugReport"
+      >
         <q-card-section>
-          <div class="text-h6 text-center">{{$t('bugreport.title')}}</div>
+          <div class="text-h6 text-center">
+            {{ $t('bugreport.title') }}
+          </div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section style="min-height: 20vh">
-          <div class="text-h4">{{$t('bugreport.summary_ask')}}:</div>
-          <q-input v-model="bugSummary" filled label="" :rules="summaryRules" />
+          <div class="text-h4">
+            {{ $t('bugreport.summary_ask') }}:
+          </div>
+          <q-input
+            v-model="bugSummary"
+            filled
+            label=""
+            :rules="summaryRules"
+          />
           <span>
-            {{$t('validation.curr_length', {"curr": bugSummary.length, "max": summaryMax})}}
+            {{ $t('validation.curr_length', {"curr": bugSummary.length, "max": summaryMax}) }}
           </span>
         </q-card-section>
         <q-card-section class="scroll">
-          <div class="text-h4">{{$t('bugreport.description_ask')}}:</div>
+          <div class="text-h4">
+            {{ $t('bugreport.description_ask') }}:
+          </div>
           <div class="col-12">
-            <q-input v-model="bugDescription" filled type="textarea" :rules="descriptionRules"/>
+            <q-input
+              v-model="bugDescription"
+              filled
+              type="textarea"
+              :rules="descriptionRules"
+            />
             <span>
-              {{$t('validation.curr_length', {"curr": bugDescription.length, "max": descriptionMax})}}
+              {{ $t('validation.curr_length', {"curr": bugDescription.length, "max": descriptionMax}) }}
             </span>
           </div>
         </q-card-section>
@@ -35,8 +54,22 @@
         <q-separator />
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.submit')" :aria-label="$t('base.submit')" :disable="!isFormValid" color="primary" type="submit" />
-          <q-btn flat :label="$t('base.cancel')" :aria-label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
+          <q-btn
+            flat
+            :label="$t('base.submit')"
+            :aria-label="$t('base.submit')"
+            :disable="!isFormValid"
+            color="primary"
+            type="submit"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            :aria-label="$t('base.cancel')"
+            color="primary"
+            type="reset"
+          />
         </q-card-actions>
       </q-form>
     </q-card>

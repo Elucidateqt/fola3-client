@@ -16,7 +16,10 @@
             :label="$t('nav.home')"
             to="/home"
           />
-          <q-separator dark vertical />
+          <q-separator
+            dark
+            vertical
+          />
           <q-route-tab
             flat
             stretch
@@ -24,7 +27,10 @@
             :label="$t('nav.boards')"
             to="/boards"
           />
-          <q-separator dark vertical />
+          <q-separator
+            dark
+            vertical
+          />
           <q-route-tab
             flat
             stretch
@@ -40,7 +46,10 @@
             to="/collection"
           />
         </q-tabs>
-        <div id="auth-buttons" class="row">
+        <div
+          id="auth-buttons"
+          class="row"
+        >
           <q-btn
             v-if="isLoggedIn"
             flat
@@ -58,7 +67,10 @@
             icon="login"
             to="/login"
           />
-          <q-separator dark vertical />
+          <q-separator
+            dark
+            vertical
+          />
         </div>
         <locale-changer />
       </q-toolbar>
@@ -66,7 +78,11 @@
 
     <q-page-container>
       <router-view />
-      <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="canReportBugs">
+      <q-page-sticky
+        v-if="canReportBugs"
+        position="bottom-left"
+        :offset="[18, 18]"
+      >
         <bug-reporter />
       </q-page-sticky>
     </q-page-container>

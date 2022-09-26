@@ -1,57 +1,119 @@
 <template>
   <div>
-      <q-card v-if="selectedSet === null" class="q-pa-md scroll">
-        <q-card-section>
-          <q-list v-if="getPublicSets && getPublicSets.length > 0">
-            <q-item v-for="set in getPublicSets" :key="set.uuid">
-                <q-item-section side v-if="set.iconUrl && isImageUrl(set.iconUrl)">
-                  <q-icon :name="`img:${set.iconUrl}`" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    {{set.name}}
-                  </q-item-label>
-                  <q-item-label caption :aria-label="$t('base.last_changed', {date: $d(set.createdAt, 'short')})">
-                    {{ $t('base.last_changed', {date: $d(set.createdAt, 'short')}) }}
-                  </q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon :name="set.public === true ? 'visibility' : 'visibility_off'" />
-                </q-item-section>
-                <q-item-section side>
-                  <q-btn icon="edit" @click="handleSetSelection(set)" />
-                </q-item-section>
-                <q-item-section side>
-                  <q-btn icon="delete" @click="deletionSet = set" />
-                </q-item-section>
-            </q-item>
-          </q-list>
-          </q-card-section>
-          <q-card-actions align="around">
-            <q-btn @click="createTemplateCardset" :aria-label="$t('cardset.new_set')"  icon="add" />
-          </q-card-actions>
-      </q-card>
+    <q-card
+      v-if="selectedSet === null"
+      class="q-pa-md scroll"
+    >
+      <q-card-section>
+        <q-list v-if="getPublicSets && getPublicSets.length > 0">
+          <q-item
+            v-for="set in getPublicSets"
+            :key="set.uuid"
+          >
+            <q-item-section
+              v-if="set.iconUrl && isImageUrl(set.iconUrl)"
+              side
+            >
+              <q-icon :name="`img:${set.iconUrl}`" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>
+                {{ set.name }}
+              </q-item-label>
+              <q-item-label
+                caption
+                :aria-label="$t('base.last_changed', {date: $d(set.createdAt, 'short')})"
+              >
+                {{ $t('base.last_changed', {date: $d(set.createdAt, 'short')}) }}
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-icon :name="set.public === true ? 'visibility' : 'visibility_off'" />
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                icon="edit"
+                @click="handleSetSelection(set)"
+              />
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                icon="delete"
+                @click="deletionSet = set"
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <q-card-actions align="around">
+        <q-btn
+          :aria-label="$t('cardset.new_set')"
+          icon="add"
+          @click="createTemplateCardset"
+        />
+      </q-card-actions>
+    </q-card>
 
-    <q-card v-else class="q-pa-md">
+    <q-card
+      v-else
+      class="q-pa-md"
+    >
       <q-form @submit.prevent="updateSelectedSet">
-          <q-input :label="$t('cardset.name')" v-model="editName" :rules="nameRules" />
-          <q-input :label="$t('cardset.icon_url')" v-model="editIconUrl" :rules="imageUrlRules" />
-          <q-img v-if="isImageUrl(editIconUrl)" :src="editIconUrl" />
-          <q-toggle v-model="editIsPublic" :label="$t('cardset.public_visible')" />
-          <q-card-actions align="around">
-            <q-btn flat :label="$t('base.save')" :aria-label="$t('base.save')" :disable="!isFormValid" color="primary" type="submit" />
-          </q-card-actions>
+        <q-input
+          v-model="editName"
+          :label="$t('cardset.name')"
+          :rules="nameRules"
+        />
+        <q-input
+          v-model="editIconUrl"
+          :label="$t('cardset.icon_url')"
+          :rules="imageUrlRules"
+        />
+        <q-img
+          v-if="isImageUrl(editIconUrl)"
+          :src="editIconUrl"
+        />
+        <q-toggle
+          v-model="editIsPublic"
+          :label="$t('cardset.public_visible')"
+        />
+        <q-card-actions align="around">
+          <q-btn
+            flat
+            :label="$t('base.save')"
+            :aria-label="$t('base.save')"
+            :disable="!isFormValid"
+            color="primary"
+            type="submit"
+          />
+        </q-card-actions>
       </q-form>
     </q-card>
-    <q-dialog v-model="deletionPending" class="q-pa-md" persistent>
+    <q-dialog
+      v-model="deletionPending"
+      class="q-pa-md"
+      persistent
+    >
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm text-h6">{{$t('cardset.delete_set_confirm', {setname: deletionSet.name})}}</span>
+          <span class="q-ml-sm text-h6">{{ $t('cardset.delete_set_confirm', {setname: deletionSet.name}) }}</span>
         </q-card-section>
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.cancel')" color="primary" @click="deletionSet = null" v-close-popup />
-          <q-btn flat :label="$t('base.delete')" color="primary" @click="handleSetDeletion(deletionSet)" v-close-popup />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            color="primary"
+            @click="deletionSet = null"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.delete')"
+            color="primary"
+            @click="handleSetDeletion(deletionSet)"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>

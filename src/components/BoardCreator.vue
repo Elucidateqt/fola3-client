@@ -10,32 +10,60 @@
     <q-card class="creation-form">
       <q-form @submit.prevent="createNewBoard">
         <q-card-section>
-          <div class="text-h6 text-center">{{$t('boards.create')}}</div>
+          <div class="text-h6 text-center">
+            {{ $t('boards.create') }}
+          </div>
         </q-card-section>
 
         <q-separator />
 
         <q-card-section>
-          <div class="text-h4">{{$t('boards.name')}}:</div>
-          <q-input v-model="boardName" filled label="" :rules="nameRules" />
+          <div class="text-h4">
+            {{ $t('boards.name') }}:
+          </div>
+          <q-input
+            v-model="boardName"
+            filled
+            label=""
+            :rules="nameRules"
+          />
           <span>
-            {{$t('validation.curr_length', {"curr": boardName.length, "max": nameMax})}}
+            {{ $t('validation.curr_length', {"curr": boardName.length, "max": nameMax}) }}
           </span>
         </q-card-section>
 
         <q-card-section style="min-height: 20vh">
-          <div class="text-h4">{{$t('boards.description')}}:</div>
-            <q-input v-model="boardDescription" filled type="textarea" :rules="descriptionRules" />
+          <div class="text-h4">
+            {{ $t('boards.description') }}:
+          </div>
+          <q-input
+            v-model="boardDescription"
+            filled
+            type="textarea"
+            :rules="descriptionRules"
+          />
           <span>
-            {{$t('validation.curr_length', {"curr": boardDescription.length, "max": descriptionMax})}}
+            {{ $t('validation.curr_length', {"curr": boardDescription.length, "max": descriptionMax}) }}
           </span>
         </q-card-section>
 
         <q-separator />
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('boards.create')" :disable="!isFormValid" color="primary" type="submit" />
-          <q-btn flat :label="$t('base.cancel')" color="primary" v-close-popup type="reset" />
+          <q-btn
+            flat
+            :label="$t('boards.create')"
+            :disable="!isFormValid"
+            color="primary"
+            type="submit"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            color="primary"
+            type="reset"
+          />
         </q-card-actions>
       </q-form>
     </q-card>

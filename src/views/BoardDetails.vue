@@ -3,11 +3,35 @@
     <div class="q-pa-md row items-start q-gutter-md">
       <div v-if="boardId !== null">
         <div class="row items-start">
-        <q-input filled readonly v-model="inviteUrl" class="text-center" style="max-width: 10em" />
-        <q-btn v-if="inviteCode" flat :aria-label="$t('boards.copy_link')" @click="copyInviteLink" color="primary" icon="content_copy" />
+          <q-input
+            v-model="inviteUrl"
+            filled
+            readonly
+            class="text-center"
+            style="max-width: 10em"
+          />
+          <q-btn
+            v-if="inviteCode"
+            flat
+            :aria-label="$t('boards.copy_link')"
+            color="primary"
+            icon="content_copy"
+            @click="copyInviteLink"
+          />
         </div>
-        <q-card class="row no-wrap" style="width: 90vw; height: 80vh; background-color: grey; overflow-x: auto;" @drop="handleCardDrop($event, boardState.length ,0)" @dragover.prevent @dragenter="handleDragEnter($event)" @click="showPlayerHands = false">
-          <div v-for="(column, index) in boardState" :key="`board_column_${index}`" class="self-center">
+        <q-card
+          class="row no-wrap"
+          style="width: 90vw; height: 80vh; background-color: grey; overflow-x: auto;"
+          @drop="handleCardDrop($event, boardState.length ,0)"
+          @dragover.prevent
+          @dragenter="handleDragEnter($event)"
+          @click="showPlayerHands = false"
+        >
+          <div
+            v-for="(column, index) in boardState"
+            :key="`board_column_${index}`"
+            class="self-center"
+          >
             <div class=" row items-start q-pa-md">
               <fola-card 
                 v-for="(cardId, cardIndex) in column" 
@@ -21,9 +45,9 @@
                 :external-link="cards[cardId].externalLink"
                 :image-url="cards[cardId].imageUrl"
                 :type="cards[cardId].cardType"
-                :interactionSubjectLeft="cards[cardId].interactionSubjectLeft"
-                :interactionSubjectRight="cards[cardId].interactionSubjectRight"
-                :interactionDirection="cards[cardId].interactionDirection"
+                :interaction-subject-left="cards[cardId].interactionSubjectLeft"
+                :interaction-subject-right="cards[cardId].interactionSubjectRight"
+                :interaction-direction="cards[cardId].interactionDirection"
                 :addons-top="cards[cardId].addonsTop"
                 :addons-bot="cards[cardId].addonsBot"
                 mode="view"
@@ -37,22 +61,35 @@
                 @card-copy-submitted="handleCardCopy($event)"
               />
             </div>
-        </div>
+          </div>
         </q-card>
       </div>
       <div v-else>
         No board
       </div>
     </div>
-    <q-dialog seamless v-model="showPlayerHands" full-width position="bottom">
+    <q-dialog
+      v-model="showPlayerHands"
+      seamless
+      full-width
+      position="bottom"
+    >
       <q-card>
-        <player-card-container v-if="showPlayerHands" :selected-hand="selectedHand"/>
+        <player-card-container
+          v-if="showPlayerHands"
+          :selected-hand="selectedHand"
+        />
       </q-card>
     </q-dialog>
     <q-page-sticky position="bottom">
-      <q-icon style="cursor: pointer;" color="primary" size="5em" name="pan_tool" @click="showPlayerHands = !showPlayerHands" />
+      <q-icon
+        style="cursor: pointer;"
+        color="primary"
+        size="5em"
+        name="pan_tool"
+        @click="showPlayerHands = !showPlayerHands"
+      />
     </q-page-sticky>
-
   </q-page>
 </template>
 
@@ -87,6 +124,12 @@ export default {
     }),
     ...mapState('player', ['uuid'])
   },
+  watch:{
+    $route (to, from){
+    this.disconnectSocket()
+    this.resetBoard()
+    }
+  },
   async created () {
     if(this.$route.query.inv){
         await this.joinBoardByInvite({uuid: this.$route.params.id, inviteCode: this.$route.query.inv})
@@ -100,12 +143,6 @@ export default {
   beforeUnmount(){
     this.disconnectSocket()
     this.resetBoard()
-  },
-  watch:{
-    $route (to, from){
-    this.disconnectSocket()
-    this.resetBoard()
-    }
   }, 
   methods: {
     ...mapGetters('player', ['userHasPermission']),

@@ -1,19 +1,42 @@
 <template>
-  <q-card v-if="currentDeck === null" class="q-pa-sm">
+  <q-card
+    v-if="currentDeck === null"
+    class="q-pa-sm"
+  >
     <q-card-section class="text-center text-h3">
       Decks
     </q-card-section>
-    <q-card-section class="q-gutter-md scroll" style="max-height: 80vh">
-      <div v-if="ownDecks.length === 0" class="text-center">
-        {{$t('deck.no_decks')}}
+    <q-card-section
+      class="q-gutter-md scroll"
+      style="max-height: 80vh"
+    >
+      <div
+        v-if="ownDecks.length === 0"
+        class="text-center"
+      >
+        {{ $t('deck.no_decks') }}
       </div>
-      <fola-deck v-for="(deck, index) in ownDecks" :key="deck.uuid" :deck="deck" mode="view" @deck-selected="handleDeckSelection(index)"  />
+      <fola-deck
+        v-for="(deck, index) in ownDecks"
+        :key="deck.uuid"
+        :deck="deck"
+        mode="view"
+        @deck-selected="handleDeckSelection(index)"
+      />
     </q-card-section>
     <q-card-actions align="around">
-      <q-btn @click="createTemplateDeck" color="primary" :label="$t('deck.new_deck')" />
+      <q-btn
+        color="primary"
+        :label="$t('deck.new_deck')"
+        @click="createTemplateDeck"
+      />
     </q-card-actions>
   </q-card>
-  <fola-deck v-else :deck="currentDeck" mode="edit" />
+  <fola-deck
+    v-else
+    :deck="currentDeck"
+    mode="edit"
+  />
 </template>
 
 <script>

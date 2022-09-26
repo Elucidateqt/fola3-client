@@ -40,34 +40,62 @@
         @click="updatePassword"
       />
     </q-card-section>
-    <q-card-section class="q-gutter-md" v-if="roles">
-          <q-chip v-for="role in roles" :key="role.uuid">{{role.name}}</q-chip>
-          <q-btn v-if="canSetGroups" flat round icon="settings" @click="roleEditorVisible=true" />
+    <q-card-section
+      v-if="roles"
+      class="q-gutter-md"
+    >
+      <q-chip
+        v-for="role in roles"
+        :key="role.uuid"
+      >
+        {{ role.name }}
+      </q-chip>
+      <q-btn
+        v-if="canSetGroups"
+        flat
+        round
+        icon="settings"
+        @click="roleEditorVisible=true"
+      />
     </q-card-section>
     <q-card-section v-if="canRevokePermissions">
-      {{$t('permissions.revoked_permissions_title')}}:
-      <q-chip v-for="permission in revokedPermissions" :key="permission.uuid">{{permission.name}}</q-chip>
+      {{ $t('permissions.revoked_permissions_title') }}:
+      <q-chip
+        v-for="permission in revokedPermissions"
+        :key="permission.uuid"
+      >
+        {{ permission.name }}
+      </q-chip>
     </q-card-section>
   </q-card>
 
   <q-dialog v-model="roleEditorVisible">
     <q-card class="q-pa-md q-gutter-md">
       <q-form @submit.prevent="handleRoleUpdate">
-      <q-card-section>
-      <q-select
-        filled
-        v-model="roleModel"
-        multiple
-        :options="playerRoleOptions"
-        use-chips
-        stack-label
-        :label="$t('roles.title')"
-      />
-      </q-card-section>
-      <q-card-actions align="around">
-        <q-btn :label="$t('base.save')" flat color="primary" type="submit" />
-        <q-btn :label="$t('base.cancel')" flat @click="resetRoleForm" />
-      </q-card-actions>
+        <q-card-section>
+          <q-select
+            v-model="roleModel"
+            filled
+            multiple
+            :options="playerRoleOptions"
+            use-chips
+            stack-label
+            :label="$t('roles.title')"
+          />
+        </q-card-section>
+        <q-card-actions align="around">
+          <q-btn
+            :label="$t('base.save')"
+            flat
+            color="primary"
+            type="submit"
+          />
+          <q-btn
+            :label="$t('base.cancel')"
+            flat
+            @click="resetRoleForm"
+          />
+        </q-card-actions>
       </q-form>
     </q-card>
   </q-dialog>

@@ -1,24 +1,70 @@
 <template>
   <div>
-    <div v-for="(cardId) in addonsTop" :key="cardId" class="row items-start q-gutter-xs">
-      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addon-copy-submitted="$emit('cardCopySubmitted', $event)" @addonPickedUp="handlePluginRemove($event, cardId)" />
+    <div
+      v-for="(cardId) in addonsTop"
+      :key="cardId"
+      class="row items-start q-gutter-xs"
+    >
+      <fola-card-addon
+        :card-id="cardId"
+        @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)"
+        @addon-copy-submitted="$emit('cardCopySubmitted', $event)"
+        @addonPickedUp="handlePluginRemove($event, cardId)"
+      />
     </div>
-    <q-card class="card-view" :draggable="allowDrag || false" @dragstart="handleDragStart($event, uuid)" @dragleave="activeDrag = null">
+    <q-card
+      class="card-view"
+      :draggable="allowDrag || false"
+      @dragstart="handleDragStart($event, uuid)"
+      @dragleave="activeDrag = null"
+    >
       <q-separator />
       <q-card-section class="text-center row">
-        <div class="col-9 text-weight-bold">{{ name }}</div>
-        <q-icon class="col-3" :name="getTypeIconName(type)" size="sm" :color="getTypeColor(type)" />
+        <div class="col-9 text-weight-bold">
+          {{ name }}
+        </div>
+        <q-icon
+          class="col-3"
+          :name="getTypeIconName(type)"
+          size="sm"
+          :color="getTypeColor(type)"
+        />
       </q-card-section>
       <q-separator />
-      <q-card-section v-if="type === 'interaction'" class="row justify-around">
-        <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
-        <q-icon class="col-4" :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
-        <q-icon class="col-4" :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
+      <q-card-section
+        v-if="type === 'interaction'"
+        class="row justify-around"
+      >
+        <q-icon
+          class="col-4"
+          :name="getInteractionSubjectIconName(subjectLeftModel.value)"
+          size="md"
+          color="primary"
+        />
+        <q-icon
+          class="col-4"
+          :name="getDirectionIconName(interactionDirectionModel.value)"
+          size="md"
+          color="primary"
+        />
+        <q-icon
+          class="col-4"
+          :name="getInteractionSubjectIconName(subjectRightModel.value)"
+          size="md"
+          color="primary"
+        />
       </q-card-section>
       <q-card-section v-else>
-        <q-img :src="imageUrl" v-if="isImageUrl(imageUrl)" :ratio="4/3" />
-        <div v-else class="image-placeholder text-center">
-          {{$t('validation.no_image')}}
+        <q-img
+          v-if="isImageUrl(imageUrl)"
+          :src="imageUrl"
+          :ratio="4/3"
+        />
+        <div
+          v-else
+          class="image-placeholder text-center"
+        >
+          {{ $t('validation.no_image') }}
         </div>
       </q-card-section>
       <q-separator />
@@ -26,48 +72,90 @@
         {{ description }}
       </q-card-section>
       <q-separator />
-      <q-menu touch-position context-menu>
+      <q-menu
+        touch-position
+        context-menu
+      >
         <q-list style="min-width: 100px">
-          <q-item v-if="allowPickUp === true" clickable @click="$emit('pickUpCard', {cardId: uuid})"  v-close-popup>
+          <q-item
+            v-if="allowPickUp === true"
+            v-close-popup
+            clickable
+            @click="$emit('pickUpCard', {cardId: uuid})"
+          >
             <q-item-section avatar>
-              <q-icon color="primary" name="pan_tool" />
+              <q-icon
+                color="primary"
+                name="pan_tool"
+              />
             </q-item-section>
-            <q-item-section>{{$t('card.pick_up')}}</q-item-section>
+            <q-item-section>{{ $t('card.pick_up') }}</q-item-section>
           </q-item>
-          <q-item clickable :disable="!isValidUrl(externalLink)" @click="openExternalLink"  v-close-popup>
+          <q-item
+            v-close-popup
+            clickable
+            :disable="!isValidUrl(externalLink)"
+            @click="openExternalLink"
+          >
             <q-item-section side>
               <q-icon name="open_in_new" />
             </q-item-section>
-            <q-item-section>{{$t('nav.visit_link')}}</q-item-section>
+            <q-item-section>{{ $t('nav.visit_link') }}</q-item-section>
           </q-item>
-          <q-item v-if="allowCopyToHand === true" clickable @click="emitCopyToHand"  v-close-popup>
+          <q-item
+            v-if="allowCopyToHand === true"
+            v-close-popup
+            clickable
+            @click="emitCopyToHand"
+          >
             <q-item-section side>
               <q-icon name="content_copy" />
             </q-item-section>
             <q-item-section>{{ $t('card.copy_to_hand') }}</q-item-section>
           </q-item>
-          <q-item clickable @click="createCopyInCollection"  v-close-popup>
+          <q-item
+            v-close-popup
+            clickable
+            @click="createCopyInCollection"
+          >
             <q-item-section side>
               <q-icon name="drive_file_move" />
             </q-item-section>
-            <q-item-section>{{$t('card.copy_to_collection')}}</q-item-section>
+            <q-item-section>{{ $t('card.copy_to_collection') }}</q-item-section>
           </q-item>
-          <q-item clickable v-if="allowEdit" @click="viewMode = 'edit';editFormVisible = true" v-close-popup>
+          <q-item
+            v-if="allowEdit"
+            v-close-popup
+            clickable
+            @click="viewMode = 'edit';editFormVisible = true"
+          >
             <q-item-section side>
               <q-icon name="edit" />
             </q-item-section>
-            <q-item-section>{{$t('base.edit')}}</q-item-section>
+            <q-item-section>{{ $t('base.edit') }}</q-item-section>
           </q-item>
-          <q-item clickable v-if="allowSetChange === true && setOptions && setOptions.length > 0">
+          <q-item
+            v-if="allowSetChange === true && setOptions && setOptions.length > 0"
+            clickable
+          >
             <q-item-section side>
               <q-icon name="drive_file_move" />
             </q-item-section>
-            <q-item-section>{{$t('card.change_cardset')}}</q-item-section>
+            <q-item-section>{{ $t('card.change_cardset') }}</q-item-section>
             <q-item-section side>
               <q-icon name="keyboard_arrow_right" />
             </q-item-section>
-            <q-menu anchor="top end" self="top start">
-              <q-item :clickable="set.value !== cardset" @click="$emit('setChanged', {'newSet': set.value, 'cardId': uuid})" v-for="set in setOptions" :key="set.value" v-close-popup>
+            <q-menu
+              anchor="top end"
+              self="top start"
+            >
+              <q-item
+                v-for="set in setOptions"
+                :key="set.value"
+                v-close-popup
+                :clickable="set.value !== cardset"
+                @click="$emit('setChanged', {'newSet': set.value, 'cardId': uuid})"
+              >
                 <q-item-section>
                   {{ set.label }}
                 </q-item-section>
@@ -76,49 +164,86 @@
                     <q-img :src="set['checked-icon']" />
                   </q-avatar>
                 </q-item-section>
-                <q-item-section v-if="set.value === cardset" side>
-                  <q-icon name="check" color="positive" />
+                <q-item-section
+                  v-if="set.value === cardset"
+                  side
+                >
+                  <q-icon
+                    name="check"
+                    color="positive"
+                  />
                 </q-item-section>
               </q-item>
             </q-menu>
           </q-item>
-          <q-item clickable v-if="allowDelete" @click="deleteDialogVisible = true" v-close-popup>
+          <q-item
+            v-if="allowDelete"
+            v-close-popup
+            clickable
+            @click="deleteDialogVisible = true"
+          >
             <q-item-section side>
-              <q-icon name="delete" color="negative" />
+              <q-icon
+                name="delete"
+                color="negative"
+              />
             </q-item-section>
-            <q-item-section class="text-negative">{{$t('base.delete')}}</q-item-section>
+            <q-item-section class="text-negative">
+              {{ $t('base.delete') }}
+            </q-item-section>
           </q-item>
         </q-list>
       </q-menu>
     </q-card>
-    <div v-for="(cardId) in addonsBot" :key="cardId" class="row items-start q-gutter-xs">
-      <fola-card-addon :card-id="cardId" @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)" @addon-copy-submitted="$emit('cardCopySubmitted', $event)" @addonPickedUp="handlePluginRemove($event, cardId)" />
+    <div
+      v-for="(cardId) in addonsBot"
+      :key="cardId"
+      class="row items-start q-gutter-xs"
+    >
+      <fola-card-addon
+        :card-id="cardId"
+        @addonEditSubmitted="(config) => $emit('cardEditSubmitted', config)"
+        @addon-copy-submitted="$emit('cardCopySubmitted', $event)"
+        @addonPickedUp="handlePluginRemove($event, cardId)"
+      />
     </div>
     
 
-    <q-dialog v-model="editFormVisible" @hide="$emit('editorClosed')">
+    <q-dialog
+      v-model="editFormVisible"
+      @hide="$emit('editorClosed')"
+    >
       <q-card class="edit-dialog">
         <q-form @submit="submitCardForm">
           <q-card-section class="row justify-center"> 
             <q-select
-              filled
               v-model="editorTypeModel"
+              filled
               :options="typeOptions"
               stack-label
               label=""
               class="col-6"
               :disable="disableTypeEdit"
             >
-              <template v-slot:selected>
-                <q-icon :name="getTypeIconName(editorTypeModel.value)" size="md" :color="getTypeColor(editorTypeModel.value)" />
+              <template #selected>
+                <q-icon
+                  :name="getTypeIconName(editorTypeModel.value)"
+                  size="md"
+                  :color="getTypeColor(editorTypeModel.value)"
+                />
               </template>
-              <template v-slot:option="scope">
+              <template #option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section avatar>
-                    <q-icon :name="scope.opt.icon" :color="getTypeColor(scope.opt.value)" />
+                    <q-icon
+                      :name="scope.opt.icon"
+                      :color="getTypeColor(scope.opt.value)"
+                    />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label class="text-weight-bold">{{ scope.opt.label }}</q-item-label>
+                    <q-item-label class="text-weight-bold">
+                      {{ scope.opt.label }}
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </template>
@@ -128,71 +253,109 @@
           <q-separator />
 
           <q-card-section class="text-center">
-            <q-input v-model="editorCardName" filled label="" :rules="nameRules" />
-            <span class="text-start">
-              {{$t('validation.curr_length', {"curr": editorCardName.length, "max": nameMaxLength})}}
-            </span>
-            <q-input v-model="editorExtUrl" filled :label="$t('card.external_link')" :rules="extUrlRules" />
-          </q-card-section>
-          <q-card-section v-if="editorTypeModel.value === 'interaction'" class="row justify-center">
-            <q-select
+            <q-input
+              v-model="editorCardName"
               filled
+              label=""
+              :rules="nameRules"
+            />
+            <span class="text-start">
+              {{ $t('validation.curr_length', {"curr": editorCardName.length, "max": nameMaxLength}) }}
+            </span>
+            <q-input
+              v-model="editorExtUrl"
+              filled
+              :label="$t('card.external_link')"
+              :rules="extUrlRules"
+            />
+          </q-card-section>
+          <q-card-section
+            v-if="editorTypeModel.value === 'interaction'"
+            class="row justify-center"
+          >
+            <q-select
               v-model="subjectLeftModel"
+              filled
               :options="interactionSubjectOptions"
               stack-label
               label=""
               class="col-4"
             >
-              <template v-slot:selected>
-                <q-icon :name="getInteractionSubjectIconName(subjectLeftModel.value)" size="md" color="primary" />
+              <template #selected>
+                <q-icon
+                  :name="getInteractionSubjectIconName(subjectLeftModel.value)"
+                  size="md"
+                  color="primary"
+                />
               </template>
-              <template v-slot:option="scope">
+              <template #option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section avatar>
-                    <q-icon :name="scope.opt.icon" color="primary" />
+                    <q-icon
+                      :name="scope.opt.icon"
+                      color="primary"
+                    />
                   </q-item-section>
-                  <q-item-section class="text-weight-bold">{{ scope.opt.label }}</q-item-section>
+                  <q-item-section class="text-weight-bold">
+                    {{ scope.opt.label }}
+                  </q-item-section>
                 </q-item>
               </template>
             </q-select>
 
             <q-select
-              filled
               v-model="interactionDirectionModel"
+              filled
               :options="interactionDirectionOptions"
               stack-label
               label=""
               class="col-4"
             >
-              <template v-slot:selected>
-                <q-icon :name="getDirectionIconName(interactionDirectionModel.value)" size="md" color="primary" />
+              <template #selected>
+                <q-icon
+                  :name="getDirectionIconName(interactionDirectionModel.value)"
+                  size="md"
+                  color="primary"
+                />
               </template>
-              <template v-slot:option="scope">
+              <template #option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section avatar>
-                    <q-icon :name="scope.opt.icon" color="primary" />
+                    <q-icon
+                      :name="scope.opt.icon"
+                      color="primary"
+                    />
                   </q-item-section>
                 </q-item>
               </template>
             </q-select>
 
             <q-select
-              filled
               v-model="subjectRightModel"
+              filled
               :options="interactionSubjectOptions"
               stack-label
               label=""
               class="col-4"
             >
-              <template v-slot:selected>
-                <q-icon :name="getInteractionSubjectIconName(subjectRightModel.value)" size="md" color="primary" />
+              <template #selected>
+                <q-icon
+                  :name="getInteractionSubjectIconName(subjectRightModel.value)"
+                  size="md"
+                  color="primary"
+                />
               </template>
-              <template v-slot:option="scope">
+              <template #option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section avatar>
-                    <q-icon :name="scope.opt.icon" color="primary" />
+                    <q-icon
+                      :name="scope.opt.icon"
+                      color="primary"
+                    />
                   </q-item-section>
-                  <q-item-section class="text-weight-bold">{{ scope.opt.label }}</q-item-section>
+                  <q-item-section class="text-weight-bold">
+                    {{ scope.opt.label }}
+                  </q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -200,17 +363,32 @@
 
 
           <q-card-section v-else>
-            <q-input v-model="editorImgUrl" filled :label="$t('card.image_url')" :rules="imageUrlRules" />
-            <q-img v-if="isImageUrl(editorImgUrl)" class="card-image" :src="editorImgUrl" :ratio="4/3" />
+            <q-input
+              v-model="editorImgUrl"
+              filled
+              :label="$t('card.image_url')"
+              :rules="imageUrlRules"
+            />
+            <q-img
+              v-if="isImageUrl(editorImgUrl)"
+              class="card-image"
+              :src="editorImgUrl"
+              :ratio="4/3"
+            />
           </q-card-section>
 
           <q-separator />
 
         
           <q-card-section class="scroll">
-            <q-input v-model="editorCardDescription" filled type="textarea" :rules="descriptionRules"/>
+            <q-input
+              v-model="editorCardDescription"
+              filled
+              type="textarea"
+              :rules="descriptionRules"
+            />
             <span>
-              {{$t('validation.curr_length', {"curr": editorCardDescription.length, "max": descriptionMaxLength})}}
+              {{ $t('validation.curr_length', {"curr": editorCardDescription.length, "max": descriptionMaxLength}) }}
             </span>
           </q-card-section>
 
@@ -218,22 +396,50 @@
 
  
           <q-card-actions align="around">
-            <q-btn flat :label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :aria-label="viewMode === 'create' ? $t('base.create') : $t('base.save')" :disable="!isFormValid" color="primary" type="submit" />
-            <q-btn flat :label="$t('base.cancel')" :aria-label="$t('base.cancel')" color="primary" type="reset" v-close-popup />
+            <q-btn
+              flat
+              :label="viewMode === 'create' ? $t('base.create') : $t('base.save')"
+              :aria-label="viewMode === 'create' ? $t('base.create') : $t('base.save')"
+              :disable="!isFormValid"
+              color="primary"
+              type="submit"
+            />
+            <q-btn
+              v-close-popup
+              flat
+              :label="$t('base.cancel')"
+              :aria-label="$t('base.cancel')"
+              color="primary"
+              type="reset"
+            />
           </q-card-actions>
         </q-form>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="deleteDialogVisible" persistent>
+    <q-dialog
+      v-model="deleteDialogVisible"
+      persistent
+    >
       <q-card>
         <q-card-section class="row items-center">
-          <span class="q-ml-sm">{{$t('card.delete_card_confirm', {cardname: name})}}</span>
+          <span class="q-ml-sm">{{ $t('card.delete_card_confirm', {cardname: name}) }}</span>
         </q-card-section>
 
         <q-card-actions align="around">
-          <q-btn flat :label="$t('base.cancel')" color="primary" v-close-popup />
-          <q-btn flat :label="$t('base.delete')" color="primary" @click="this.$emit('cardDeleted', uuid)" v-close-popup />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.cancel')"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            :label="$t('base.delete')"
+            color="primary"
+            @click="$emit('cardDeleted', uuid)"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -250,8 +456,93 @@ export default defineComponent ({
   components: {
     FolaCardAddon
   },
-  props: ['uuid', 'cardset', 'allowSetChange', 'allowEdit', 'allowDelete', 'addonsTop', 'addonsBot', 'allowPickUp', 'name', 'description', 'type', 'externalLink', 'imageUrl', 'interactionSubjectLeft', 'interactionSubjectRight', 'interactionDirection', 'mode', 'allowDrag', 'setOptions', 'allowCopyToHand', 'disableTypeEdit'],
-  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setUpdated', 'cardCopySubmitted'],
+  props: {
+    uuid: {
+      type: String,
+      default: null
+    }, 
+    cardset: {
+      type: String,
+      default: null
+    },
+    allowSetChange: {
+      type: Boolean,
+      default: false
+    },
+    allowEdit: {
+      type: Boolean,
+      default: false
+    },
+    allowDelete: {
+      type: Boolean,
+      default: false
+    },
+    addonsTop: {
+      type: Array,
+      default: () => {return []}
+    },
+    addonsBot: {
+      type: Array,
+      default: () => {return []}
+    },
+    allowPickUp: {
+      type: Boolean,
+      default: false
+    },
+    name: {
+      type: String,
+      default: 'no name specified'
+    },
+    description: {
+      type: String,
+      default: 'no description specified'
+    },
+    type: {
+      type: String,
+      default: 'interaction'
+    },
+    externalLink: {
+      type: String,
+      default: null
+    },
+    imageUrl: {
+      type: String,
+      default: null
+    },
+    interactionSubjectLeft: {
+      type: String,
+      default: 'teacher'
+    },
+    interactionSubjectRight: {
+      type: String,
+      default: 'learner'
+    },
+    interactionDirection: {
+      type: String,
+      default: 'both'
+    },
+    mode: {
+      type: String,
+      default: 'view'
+    },
+    allowDrag: {
+      type: Boolean,
+      default: false
+    },
+    setOptions: {
+      type: Array,
+      default: null
+    },
+    allowCopyToHand: {
+      type: Boolean,
+      default: false
+    },
+    disableTypeEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['dragstart', 'cardEditSubmitted', 'cardCreateSubmitted', 'addonRemoved', 'cardDeleted', 'pickUpCard', 'editorClosed', 'setChanged', 'cardCopySubmitted'],
   data() {
     return {
       deleteDialogVisible: false,
